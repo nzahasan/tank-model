@@ -1,0 +1,21 @@
+{
+	"name":"brahmaputra",
+
+	"nodes":[
+
+		{	
+			"name":"w120",
+			"type":"subbasin",
+			"area":"1000",
+			"up_stream":"nan",
+			"down_stream":"r120"
+		},
+		{
+
+			"name":"r120",
+			"type":"channel",
+			"up_stream":"w120",
+			"down_stream":"rw320"
+		}
+	]
+}
