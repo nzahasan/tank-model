@@ -1,13 +1,19 @@
+#! /usr/bin/env python3
+
+
+'''
+: Core computation module for Tank Hydrologic model
+
+'''
+
 
 import numpy as np
 
 
 def shapeAlike(x,y):
-    if x.shape==y.shape:
-        return True
-    else:
-        return False
-
+    # checks if x,y numpy array are of same shape
+    if x.shape==y.shape: return True
+    else: return False
 
 
 
