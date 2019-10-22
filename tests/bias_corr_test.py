@@ -15,3 +15,15 @@ print(gqm.obsParam['b'])
 gqm.fit(data['obs'].values,data['sim'].values)
 
 print(gqm.obsParam['a'])
+
+corr = gqm.correct(data['sim'])
+
+
+import pylab as pl 
+
+pl.plot(data['obs'],label='observed')
+# pl.plot(data['sim'],label='simulated')
+pl.plot(corr,label='corrected')
+pl.legend()
+pl.plot()
+pl.show()

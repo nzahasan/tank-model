@@ -32,15 +32,15 @@ def tank_discharge(
     t3_is,t3_soc):
     
     '''
-        ------------------------------------------------
+        ________________________________________________
         |                UNITS:                        |
-        ------------------------------------------------
-        |    area                 |       km^2         |
-        |    delT                 |       hr           |
-        |    discharge            |       m^3/s        |
-        |    rainfall             |       mm           |
-        |    evapotranspiration   |       mm           |
-        ------------------------------------------------
+        |______________________________________________|
+        |    area                 |       KM^2         |
+        |    delT                 |       HR           |
+        |    discharge            |       M^3/s        |
+        |    rainfall             |       MM           |
+        |    evapotranspiration   |       MM           |
+        |_________________________|____________________|
 
         :: returns a time-series of simulated discharge
     '''
@@ -57,7 +57,7 @@ def tank_discharge(
 
     # check for parameter: for Tank-0
     if t0_soh_uo < t0_soh_lo:
-        print('WARNING 1001: Parameter error upper outlet height is less than lower outlet height (Tank 0)')
+        print('WARNING 5001: Parameter error upper outlet height is less than lower outlet height (Tank 0)')
 
     tankStorage      = np.zeros((timeSetp,4),dtype=np.float64)
     sideOutletFlow   = np.zeros((timeSetp,4),dtype=np.float64) 
@@ -97,6 +97,8 @@ def tank_discharge(
 
             tankStorage[t,3] = ( tankStorage[t-1,3] + bottomOutletFlow[t-1,2] ) - ( sideOutletFlow[t-1,3]  ) 
                 
+        
+
         '''
         Handling negetive tank storage:
         -------------------------------
@@ -106,7 +108,10 @@ def tank_discharge(
         in that case tank storage can be negetive value
         '''
         
-        for i in range(4): tankStorage[t,i]= max(tankStorage[t,i],0)
+        tankStorage[t,0]= max(tankStorage[t,0],0)
+        tankStorage[t,1]= max(tankStorage[t,1],0)
+        tankStorage[t,2]= max(tankStorage[t,2],0)
+        tankStorage[t,3]= max(tankStorage[t,3],0)
 
         '''
         If tank outflow becmes greater than  current storage(previous storage + inflow) the storage will be negetive
@@ -200,13 +205,26 @@ def tank_discharge(
         for i in range(4):
             if i <=2:
                 if tankStorage[t,i] < bottomOutletFlow[t,i] + sideOutletFlow[t,i]:
-                    print('WARNING 1002: Total outlet flow exceeded tank storage for tank ',i)
+                    print('WARNING 5002: Total outlet flow exceeded tank storage for tank ',i)
             if i==3:
                 # again no bottom outlet in Tank-3
                 if tankStorage[t,i] < sideOutletFlow[t,i]:
-                    print('WARNING 1003: Side outlet flow exceeded tank storage for tank ',i)
+                    print('WARNING 5003: Side outlet flow exceeded tank storage for tank ',i)
     
-    discharge = sideOutletFlow.sum(axis=1) * ( (area * 1e3) / (delT*60*60)  ) 
+
+    '''
+        unit conversion coefficent for m^3/s
+
+            MM x KM^2     10^-3 x 10^6                1000
+        :: ----------- = --------------- [m^3/2]  = -------- [m^3/2]
+                Hr            60x60                   3600
+
+
+    '''
+
+    UNIT_CONV_COEFF = 1000/3600
+
+    discharge = UNIT_CONV_COEFF * (sideOutletFlow.sum(axis=1) *  area / delT)
 
 
     return discharge
