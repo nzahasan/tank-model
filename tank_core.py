@@ -67,36 +67,34 @@ def tank_discharge(
     
     delRf_Et = rainfall - evapotranspiration
     
+    
+    # set initial tank storages
+
+    tankStorage[t,0] = t0_is
+    tankStorage[t,1] = t1_is
+    tankStorage[t,2] = t2_is
+    tankStorage[t,3] = t3_is
+
     # Loop through the timeseries 
     
-    for t in range(timeSetp):
+    for t in np.arange(1,timeSetp):
     
-       
-
-        if t == 0:
-            # set initial storage of the tank's
-            tankStorage[t,0] = t0_is
-            tankStorage[t,1] = t1_is
-            tankStorage[t,2] = t2_is
-            tankStorage[t,3] = t3_is
+           
+        '''
+            Tank Storage Calculation
+        ----------------------------
+        storage  =  inflow - outflow
         
-        else:
-            
-            '''
-                Tank Storage Calculation
-            ----------------------------
-            storage  =  inflow - outflow
-            
-            '''
-            
-            tankStorage[t,0] = ( tankStorage[t-1,0] + delRf_Et[t] ) - ( sideOutletFlow[t-1,0] + bottomOutletFlow[t-1,0] )
+        '''
         
-            tankStorage[t,1] = ( tankStorage[t-1,1] + bottomOutletFlow[t-1,0] ) - ( sideOutletFlow[t-1,1] + bottomOutletFlow[t-1,1] ) 
-            
-            tankStorage[t,2] = ( tankStorage[t-1,2] + bottomOutletFlow[t-1,1] ) - ( sideOutletFlow[t-1,2] + bottomOutletFlow[t-1,2] ) 
+        tankStorage[t,0] = ( tankStorage[t-1,0] + delRf_Et[t] ) - ( sideOutletFlow[t-1,0] + bottomOutletFlow[t-1,0] )
+    
+        tankStorage[t,1] = ( tankStorage[t-1,1] + bottomOutletFlow[t-1,0] ) - ( sideOutletFlow[t-1,1] + bottomOutletFlow[t-1,1] ) 
+        
+        tankStorage[t,2] = ( tankStorage[t-1,2] + bottomOutletFlow[t-1,1] ) - ( sideOutletFlow[t-1,2] + bottomOutletFlow[t-1,2] ) 
 
-            tankStorage[t,3] = ( tankStorage[t-1,3] + bottomOutletFlow[t-1,2] ) - ( sideOutletFlow[t-1,3]  ) 
-                
+        tankStorage[t,3] = ( tankStorage[t-1,3] + bottomOutletFlow[t-1,2] ) - ( sideOutletFlow[t-1,3]  ) 
+            
         
 
         '''
