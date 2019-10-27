@@ -70,10 +70,10 @@ def tank_discharge(
     
     # set initial tank storages
 
-    tankStorage[t,0] = t0_is
-    tankStorage[t,1] = t1_is
-    tankStorage[t,2] = t2_is
-    tankStorage[t,3] = t3_is
+    tankStorage[0,0] = t0_is
+    tankStorage[0,1] = t1_is
+    tankStorage[0,2] = t2_is
+    tankStorage[0,3] = t3_is
 
     # Loop through the timeseries 
     
@@ -159,7 +159,7 @@ def tank_discharge(
         # --- TANK 2 / sub-base runoff---
         
         if tankStorage[t,2] > t2_soh:
-            sideOutletFlow[t,2]  = t2_soc * ( tankStorage[t,2] - t2soh )
+            sideOutletFlow[t,2]  = t2_soc * ( tankStorage[t,2] - t2_soh )
     
         else:
             sideOutletFlow[t,2] = 0
@@ -226,3 +226,4 @@ def tank_discharge(
 
 
     return discharge
+
