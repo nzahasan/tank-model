@@ -1,42 +1,41 @@
 #! /usr/bin/env python3
-
+#cython: language_level=3
+'''
+:: Core computation module for Tank Hydrologic model ::
 
 '''
-: Core computation module for Tank Hydrologic model
-
-'''
-
 
 import numpy as np
 
 
-def shapeAlike(x,y):
+def shape_alike(x,y):
     # checks if x,y numpy array are of same shape
-    if x.shape==y.shape: return True
-    else: return False
+    return True if x.shape == y.shape else False
+        
 
 
 
 def tank_discharge(
-    #time series information
-    rainfall,evapotranspiration,delT,
+    # time series information
+    rainfall, evapotranspiration, del_t,
+
     # basin characterstics
     area,
     # tank 0 
-    t0_is,t0_boc,t0_soc_uo,t0_soc_lo,t0_soh_uo,t0_soh_lo,
+    t0_is, t0_boc, t0_soc_uo,t0_soc_lo, t0_soh_uo, t0_soh_lo,
     # tank 1
-    t1_is,t1_boc,t1_soc,t1_soh,
+    t1_is, t1_boc, t1_soc, t1_soh,
     # tank 2
-    t2_is,t2_boc,t2_soc,t2_soh,
+    t2_is, t2_boc, t2_soc, t2_soh,
     # tank 3
-    t3_is,t3_soc):
+    t3_is, t3_soc):
     
     '''
         ________________________________________________
         |                UNITS:                        |
         |______________________________________________|
         |    area                 |       KM^2         |
-        |    delT                 |       HR           |
+        |    del_t                |       HR           |
         |    discharge            |       M^3/s        |
         |    rainfall             |       MM           |
         |    evapotranspiration   |       MM           |
@@ -48,8 +47,8 @@ def tank_discharge(
 
     # calculate timestep length
     
-    if shapeAlike(rainfall, evapotranspiration):
-        timeSetp = rainfall.shape[0]
+    if shape_alike(rainfall, evapotranspiration):
+        time_step = rainfall.shape[0]
     else:
         print('ERROR 1001: length mismatch between rainfall and evapotranspiration data')
         return -1
@@ -59,25 +58,25 @@ def tank_discharge(
     if t0_soh_uo < t0_soh_lo:
         print('WARNING 5001: Parameter error upper outlet height is less than lower outlet height (Tank 0)')
 
-    tankStorage      = np.zeros((timeSetp,4),dtype=np.float64)
-    sideOutletFlow   = np.zeros((timeSetp,4),dtype=np.float64) 
-    bottomOutletFlow = np.zeros((timeSetp,3),dtype=np.float64)   
+    tank_storage       = np.zeros((time_step,4),dtype=np.float64)
+    side_outlet_flow   = np.zeros((time_step,4),dtype=np.float64) 
+    bottom_outlet_flow = np.zeros((time_step,3),dtype=np.float64)   
     
     # Difference of rainfall & evapotranspiration [only inflow to Tank 0]
     
-    delRf_Et = rainfall - evapotranspiration
+    del_rf_et = rainfall - evapotranspiration
     
     
     # set initial tank storages
 
-    tankStorage[0,0] = t0_is
-    tankStorage[0,1] = t1_is
-    tankStorage[0,2] = t2_is
-    tankStorage[0,3] = t3_is
+    tank_storage[0,0] = t0_is
+    tank_storage[0,1] = t1_is
+    tank_storage[0,2] = t2_is
+    tank_storage[0,3] = t3_is
 
     # Loop through the timeseries 
     
-    for t in np.arange(1,timeSetp):
+    for t in np.arange(1,time_step):
     
            
         '''
@@ -87,13 +86,13 @@ def tank_discharge(
         
         '''
         
-        tankStorage[t,0] = ( tankStorage[t-1,0] + delRf_Et[t] ) - ( sideOutletFlow[t-1,0] + bottomOutletFlow[t-1,0] )
+        tank_storage[t,0] = ( tank_storage[t-1,0] + del_rf_et[t] ) - ( side_outlet_flow[t-1,0] + bottom_outlet_flow[t-1,0] )
     
-        tankStorage[t,1] = ( tankStorage[t-1,1] + bottomOutletFlow[t-1,0] ) - ( sideOutletFlow[t-1,1] + bottomOutletFlow[t-1,1] ) 
+        tank_storage[t,1] = ( tank_storage[t-1,1] + bottom_outlet_flow[t-1,0] ) - ( side_outlet_flow[t-1,1] + bottom_outlet_flow[t-1,1] ) 
         
-        tankStorage[t,2] = ( tankStorage[t-1,2] + bottomOutletFlow[t-1,1] ) - ( sideOutletFlow[t-1,2] + bottomOutletFlow[t-1,2] ) 
+        tank_storage[t,2] = ( tank_storage[t-1,2] + bottom_outlet_flow[t-1,1] ) - ( side_outlet_flow[t-1,2] + bottom_outlet_flow[t-1,2] ) 
 
-        tankStorage[t,3] = ( tankStorage[t-1,3] + bottomOutletFlow[t-1,2] ) - ( sideOutletFlow[t-1,3]  ) 
+        tank_storage[t,3] = ( tank_storage[t-1,3] + bottom_outlet_flow[t-1,2] ) - ( side_outlet_flow[t-1,3]  ) 
             
         
 
@@ -106,10 +105,10 @@ def tank_discharge(
         in that case tank storage can be negetive value
         '''
         
-        tankStorage[t,0]= max(tankStorage[t,0],0)
-        tankStorage[t,1]= max(tankStorage[t,1],0)
-        tankStorage[t,2]= max(tankStorage[t,2],0)
-        tankStorage[t,3]= max(tankStorage[t,3],0)
+        tank_storage[t,0] = max(tank_storage[t,0],0)
+        tank_storage[t,1] = max(tank_storage[t,1],0)
+        tank_storage[t,2] = max(tank_storage[t,2],0)
+        tank_storage[t,3] = max(tank_storage[t,3],0)
 
         '''
         If tank outflow becmes greater than  current storage(previous storage + inflow) the storage will be negetive
@@ -123,73 +122,74 @@ def tank_discharge(
         '''
         Side Outlet Flow :
         ------------------
-        side outlet flow = f(tankStorage,outletHeight)
+        side outlet flow = f(tank_storage,outletHeight)
         
         There will be zero flow if tank storage less than outlet height
         '''
 
-        # --- TANK 0 / surface runoff ---
+        # TANK 0 : surface runoff
         
         '''
-        Note: If Tank-0's storage is not greater than lower outlet then
-        there is no way there will be flow from upper outlet
+        Note: If Tank-0's storage is not greater than lower outlet
+        then there is no flow from upper outlet
         '''
         
         # Check if storage height > Lower Outlet
-        if tankStorage[t,0] >  t0_soh_lo:
+        if tank_storage[t,0] >  t0_soh_lo:
             
-            sideOutletFlow[t,0] = t0_soc_lo * ( tankStorage[t,0] - t0_soh_lo )
+            side_outlet_flow[t,0] = t0_soc_lo * ( tank_storage[t,0] - t0_soh_lo )
             
             # Lower outlet is filled check for upper outlet
-            if tankStorage[t,0] >  t0_soh_uo:
-                sideOutletFlow[t,0] += t0_soc_uo * ( tankStorage[t,0] - t0_soh_uo )
+            if tank_storage[t,0] >  t0_soh_uo:
+                side_outlet_flow[t,0] += t0_soc_uo * ( tank_storage[t,0] - t0_soh_uo )
         
         else:
-            sideOutletFlow[t,0] = 0
+            side_outlet_flow[t,0] = 0
 
 
-        # --- TANK 1 / intermediate runoff ---
+        # TANK 1 : intermediate runoff
         
-        if tankStorage[t,1] > t1_soh:
-            sideOutletFlow[t,1]  = t1_soc * ( tankStorage[t,1] - t1_soh )
+        if tank_storage[t,1] > t1_soh:
+            side_outlet_flow[t,1]  = t1_soc * ( tank_storage[t,1] - t1_soh )
         
         else:
-            sideOutletFlow[t,1] = 0
+            side_outlet_flow[t,1] = 0
 
-        # --- TANK 2 / sub-base runoff---
+        # TANK 2 : sub-base runoff
         
-        if tankStorage[t,2] > t2_soh:
-            sideOutletFlow[t,2]  = t2_soc * ( tankStorage[t,2] - t2_soh )
+        if tank_storage[t,2] > t2_soh:
+            side_outlet_flow[t,2]  = t2_soc * ( tank_storage[t,2] - t2_soh )
     
         else:
-            sideOutletFlow[t,2] = 0
+            side_outlet_flow[t,2] = 0
             
         
-        # --- TANK 3 / baseflow ---
+        # [TANK 3 : baseflow] 
+        
         '''
         Side outlet height = 0
         '''
-        if tankStorage[t,3] >=0:
-            sideOutletFlow[t,3]  = t3_soc * ( tankStorage[t,3] )
+        if tank_storage[t,3] >=0:
+            side_outlet_flow[t,3]  = t3_soc * ( tank_storage[t,3] )
 
         else:
-            sideOutletFlow[t,3]
+            side_outlet_flow[t,3]
         
         
         '''
         Bottom outlet flow :
         --------------------
-        bottom outlet flow = f(tankStorage)
+        bottom outlet flow = f(tank_storage)
         
         No need apply condition here, 
-        because theoritacilly tankStorage will never be negetive
+        because theoritacilly tank_storage will never be negetive
         '''
 
-        bottomOutletFlow[t,0] = t0_boc * tankStorage[t,0]
+        bottom_outlet_flow[t,0] = t0_boc * tank_storage[t,0]
 
-        bottomOutletFlow[t,1] = t1_boc * tankStorage[t,1]
+        bottom_outlet_flow[t,1] = t1_boc * tank_storage[t,1]
         
-        bottomOutletFlow[t,2] = t2_boc * tankStorage[t,2]
+        bottom_outlet_flow[t,2] = t2_boc * tank_storage[t,2]
 
         # N.B. tank 3 has no bottom outlet
 
@@ -202,11 +202,11 @@ def tank_discharge(
 
         for i in range(4):
             if i <=2:
-                if tankStorage[t,i] < bottomOutletFlow[t,i] + sideOutletFlow[t,i]:
+                if tank_storage[t,i] < bottom_outlet_flow[t,i] + side_outlet_flow[t,i]:
                     print('WARNING 5002: Total outlet flow exceeded tank storage for tank ',i)
             if i==3:
                 # again no bottom outlet in Tank-3
-                if tankStorage[t,i] < sideOutletFlow[t,i]:
+                if tank_storage[t,i] < side_outlet_flow[t,i]:
                     print('WARNING 5003: Side outlet flow exceeded tank storage for tank ',i)
     
 
@@ -222,8 +222,9 @@ def tank_discharge(
 
     UNIT_CONV_COEFF = 1000/3600
 
-    discharge = UNIT_CONV_COEFF * (sideOutletFlow.sum(axis=1) *  area / delT)
+    discharge = UNIT_CONV_COEFF * (side_outlet_flow.sum(axis=1) *  area / del_t)
 
 
+    # time series of discharge
     return discharge
 
