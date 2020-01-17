@@ -1,8 +1,9 @@
 
 import sys
-sys.path.append('../')
+sys.path.append('..')
+
 import numpy as np
-import ChannelRouting as CR
+import src.channel_routing as cr
 
 def main():
 
@@ -15,7 +16,7 @@ def main():
 	X = 0.2
 
 
-	a = CR.Muskingum(inflowDat,delT,K,X)
+	a = cr.muskingum(inflowDat,delT,K,X)
 	print(a)
 
 

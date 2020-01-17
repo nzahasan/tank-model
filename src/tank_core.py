@@ -220,11 +220,10 @@ def tank_discharge(
 
     '''
 
-    UNIT_CONV_COEFF = 1000/3600
+    UNIT_CONV_COEFF = (area/del_t) * (1000/3600)
 
-    discharge = UNIT_CONV_COEFF * (side_outlet_flow.sum(axis=1) *  area / del_t)
+    discharge = UNIT_CONV_COEFF * side_outlet_flow.sum(axis=1)
 
 
     # time series of discharge
     return discharge
-

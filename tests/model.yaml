@@ -1,0 +1,21 @@
+# basin structure configuration
+
+- basin:
+    name: basin-1
+    area: 1000.11
+    params: []
+    upstream: null
+    downstream: ch_1
+
+- basin:
+    name: basin-1
+    area: 2000.11
+    params: [1,11,3,4,5,6,7,8]
+
+
+- reach:
+    name: ch_1
+    length: 50.11
+    params: []
+    upstream: basin-1
+    downstream: null
