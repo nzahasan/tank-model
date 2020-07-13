@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
-#cython: language_level=3
+
 '''
-:: Core computation module for Tank Hydrologic model ::
+ Core computation module for Tank Hydrologic model ::
 
 '''
 
@@ -16,9 +16,8 @@ def shape_alike(x,y):
 
 
 def tank_discharge(
-    # time series information
+    # time series information [should be of regular interval]
     rainfall, evapotranspiration, del_t,
-
     # basin characterstics
     area,
     # tank 0 

@@ -1,3 +1,8 @@
 __pycache__
 *.pyc
 .directory
+*.nc
+basin.yaml
+basin.json
+Brahmaputra.basin
+.mypy_cache/

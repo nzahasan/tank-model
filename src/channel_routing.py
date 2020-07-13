@@ -27,7 +27,7 @@ def muskingum(in_flow,del_t,k,x):
 	C1 = ( k*x+0.5*del_t) / (k-k*x+0.5*del_t)
 	C2 = 1- (C0+C1)
 
-	for t in range(time_step):
+	for t in np.arange(time_step):
 
 		if t==0: 
 			out_flow[t] = in_flow[t]
