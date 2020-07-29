@@ -1,47 +1,53 @@
+#!/usr/bin/env python3
 
 
+'''
+	compute tank model form config files
+	may be do recursive
+'''
 
 # build computation graph [incomplete]
 
+import yaml,pprint
 
-class node(object):
-	def __init__(self, arg):
-		self.name = None
-		self.childs = []
-		
+pp = pprint.PrettyPrinter(width=41, compact=True)
 
+project = yaml.load(open('basin.yaml','r'),Loader=yaml.FullLoader)
 
-class basin_tree(object):
+for node in project['BASIN_DEF']:
 	
-	def __init__(self, arg):
-		self.root  = None
-		self.nodes = {}
+	# identify root
+
+	# add child notation
+
+	ds = project['BASIN_DEF'][node].get('Downstream',None)
+	
+	if ds==None:
+		project['basin_root_node'] = node
+	
+	if ds!=None:
+		if project['BASIN_DEF'][ds].get('childs',None) == None:
+
+			project['BASIN_DEF'][ds]['childs'] = [node]
+		else:
+			project['BASIN_DEF'][ds]['childs'].append(node)
 
 
-	def add_node(self,node_name):
-
-		self.nodes[node_name] = {'childs': [] }
-
-	def add_child(self,parent_node_name,child_node_name):
-
-		
-
-		self.nodes[parent_node_name]['childs'].append(child_node_name)
+pp.pprint(project)	
 
 
-	# basin_tree['node']['childs'] = ['B1','B2' ...]
+# build computation stack while traversing
 
 
+# c_stack = []
 
-# insert nodes into list
+# jump_stack = []
 
-
-# build tree by index
-
-t = node('W120','basin',0,None)
-
-
-print(t.up)
+# for 
 
 
 
+# check time series for missing values
+
+
+# compute tank

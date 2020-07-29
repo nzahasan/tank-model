@@ -1,6 +1,7 @@
 '''
 	parse hec-hms basin config file
-	 
+	
+	note: need to fix this
 
 '''
 import json,yaml

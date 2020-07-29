@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 '''
 	Calculate ETo  form CPC global gridded temperature data
-	using Hargreaves and Samani et0 model
+	using Hargreaves and Samani,1982 et0 model
 
 '''
 
@@ -49,7 +49,7 @@ def main():
 
 	tmax_var = tmax_nc.variables['tmax'][:]
 
-	
+	# move this to argument parser
 	lat_min,lat_max=15,45
 	lon_min,lon_max=60,110
 
@@ -69,13 +69,13 @@ def main():
 				mask = root_mask
 				)
 
+	# zip with initial index
 	lat_z = list(zip(np.arange(lats.shape[0])[lat_mask],lat_f))
 	lon_z = list(zip(np.arange(lons.shape[0])[lon_mask],lon_f))
 
-
-
 	for ic,(io,i_lat) in enumerate(lat_z):
 		for jc,(jo,j_lon) in enumerate(lon_z):
+			# vectorize for each location
 			var_et[:,ic,jc] = np.vectorize(et.hargreaves)(tmin_var[:,io,jo],tmax_var[:,io,jo],dates,i_lat)
 
 
@@ -113,15 +113,15 @@ def main():
 		lon_var.units         = tmax_nc.variables['lon'].units
 
 		et0_nc = ncwf.createVariable('et0','f4',dimensions=('time','lat','lon'))
-		et0_nc[:]          =var_et
+		et0_nc[:]          = var_et
 		et0_nc.long_name   = 'Reference Evapotranspiration'
 		et0_nc.var_desc    = 'Daily reference evapotranspiration using Hargreaves & Samani'
-		et0_nc.units       ='mm'
+		et0_nc.units       = 'mm'
 		et0_nc.description = 'Reference et derived from CPC daily temperature data'
 		et0_nc.level_desc  = tmax_nc.variables['tmax'].level_desc;
 
 		# global attr
-		ncwf.version         = "CPC_ET0_1.0"
+		ncwf.version         = "CPC_HS_ET0_V1.0"
 		ncwf.dataset_title   = "Reference evapotranspiration derived from CPC temperature data using Hargreaves & Samani model"
 		ncwf.cpc_data_source = "https://psl.noaa.gov/data/gridded/data.cpc.globaltemp.html"
 		ncwf.creation_time   = datetime.today().strftime('%Y-%m-%d %H:%M')
