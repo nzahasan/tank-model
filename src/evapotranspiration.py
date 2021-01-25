@@ -1,8 +1,7 @@
 '''
-    Evapotranspiration calculatin models
-
-
+    Reference evapotranspiration calculatin models
 '''
+
 from math import sqrt,pi,radians,sin,cos,tan,acos,atan,sqrt
 from datetime import datetime
 

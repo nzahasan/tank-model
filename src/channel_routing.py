@@ -1,9 +1,7 @@
-#! /usr/bin/env python3
-
 import numpy as np 
 
 
-def muskingum(in_flow,del_t,k,x):
+def muskingum(in_flow:np.ndarray, del_t:float, k:float, x:float) -> np.ndarray:
 
 	'''
 	Returns routed flow using Muskingum routing method

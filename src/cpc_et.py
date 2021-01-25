@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 '''
-	Calculate ETo  form CPC global gridded temperature data
-	using Hargreaves and Samani,1982 et0 model
+	Calculate reference evapotranspiration (ETo) form CPC 
+	global gridded temperature data using 
+	Hargreaves and Samani,1982 et0 model
 
+	CPC data link:
+	 - https://psl.noaa.gov/data/gridded/data.cpc.globaltemp.html
 '''
 
-from netCDF4 import Dataset as nco ,num2date
-import numpy as np
-import evapotranspiration as et
 import argparse
+import numpy as np
 from datetime import datetime
+import evapotranspiration as et
+from netCDF4 import Dataset, num2date
 
 def main():
 
@@ -29,8 +32,8 @@ def main():
 	args = arg_parser.parse_args()
 
 
-	tmax_nc = nco(args.tmax_nc,'r')
-	tmin_nc = nco(args.tmin_nc,'r')
+	tmax_nc = Dataset(args.tmax_nc,'r')
+	tmin_nc = Dataset(args.tmin_nc,'r')
 	# check if file is already exists
 
 	# check variable
@@ -69,9 +72,9 @@ def main():
 				mask = root_mask
 				)
 
-	# zip with initial index
-	lat_z = list(zip(np.arange(lats.shape[0])[lat_mask],lat_f))
-	lon_z = list(zip(np.arange(lons.shape[0])[lon_mask],lon_f))
+	# zip with original index
+	lat_z = zip( np.arange( lats.shape[0] )[lat_mask], lat_f )
+	lon_z = zip( np.arange( lons.shape[0] )[lon_mask], lon_f )
 
 	for ic,(io,i_lat) in enumerate(lat_z):
 		for jc,(jo,j_lon) in enumerate(lon_z):
@@ -79,9 +82,9 @@ def main():
 			var_et[:,ic,jc] = np.vectorize(et.hargreaves)(tmin_var[:,io,jo],tmax_var[:,io,jo],dates,i_lat)
 
 
-	# write nc file
+	# write to nc file
 
-	with nco(args.out,'w') as ncwf:
+	with Dataset(args.out,'w') as ncwf:
 
 		time_dim = ncwf.createDimension("time",None)
 		lat_dim  = ncwf.createDimension("lat",lat_f.shape[0])
@@ -118,7 +121,7 @@ def main():
 		et0_nc.var_desc    = 'Daily reference evapotranspiration using Hargreaves & Samani'
 		et0_nc.units       = 'mm'
 		et0_nc.description = 'Reference et derived from CPC daily temperature data'
-		et0_nc.level_desc  = tmax_nc.variables['tmax'].level_desc;
+		et0_nc.level_desc  = tmax_nc.variables['tmax'].level_desc
 
 		# global attr
 		ncwf.version         = "CPC_HS_ET0_V1.0"

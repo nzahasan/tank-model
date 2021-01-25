@@ -1,11 +1,10 @@
-#! /usr/bin/env python3
 import numpy as np
 
 
 '''
 This file contains parameter bounds &
-
- necessary parameter defination for calibrating the model
+necessary parameter defination 
+for model calibration
 
 
 Parameter order & description of vertical tanks:
@@ -37,66 +36,92 @@ t3 (2)
 
 '''
 
-tankParamBounds = {
+class tankParamBounds:
+    
+    class t0:
+        class _is:
+            _min = 0.01
+            _max = 100
+        class _boc:
+            _min = 0.1
+            _max = 0.5
+        class _soc: 
+            class _uo:
+                _min = 0.1 
+                _max = 0.5 
+            class _lo: 
+                _min = 0.1 
+                _max = 0.5 
+        class _soh: 
+            class _uo:
+                _min = 25
+                _max = 50 
+            class _lo:
+                _min = 0 
+                _max = 20 
 
-    't0':{
-        'is'  : {'min':0.01,'max':100},
-        'boc' : {'min':0.1,'max':0.5},
-        'soc' : { 
-                'uo': {'min':0.1,'max':0.5}, 
-                'lo': {'min':0.1,'max':0.5} 
-                }, 
-        'soh' : { 
-                'uo': {'min':25,'max':50}, 
-                'lo': {'min':0,'max':20} 
-                }
-    },
+    class t1:
+        class _is: 
+            _min = 0.01
+            _max = 100
+        class _boc:
+            _min = 0.01
+            _max = 0.5
+        class _soc:
+            _min = 0.01
+            _max = 0.5
+        class _soh:
+            _min = 0
+            _max = 50
 
-    't1':{
-        'is'  : {'min':0.01,'max':100},
-        'boc' : {'min':0.01,'max':0.5},
-        'soc' : {'min':0.01,'max':0.5},
-        'soh' : {'min':0,'max':50},
-    },
+    class t2:
+        class _is: 
+            _min = 0.01
+            _max = 100
+        class _boc:
+            _min = 0.01
+            _max = 0.5
+        class _soc:
+            _min = 0.01
+            _max = 0.5
+        class _soh:
+            _min = 0
+            _max = 50
 
-    't2':{
-        'is'  : {'min':0.01,'max':100},
-        'boc' : {'min':0.01,'max':0.5},
-        'soc' : {'min':0.01,'max':0.5},
-        'soh' : {'min':0,'max':50},
-    },
-    't3':{
-        'is'  : {'min':0.01,'max':100},
-        'soc' : {'min':0.01,'max':0.5},
-    }
-}
+    class t3:
+        class _is:
+            _min = 0.01
+            _max = 100
+        class _soc:
+            _min = 0.01
+            _max = 0.5
 
 
 tankLowerBounds = np.array([
             
             # [Tank-0] 
-    tankParamBounds['t0']['is']['min'],
-    tankParamBounds['t0']['boc']['min'],
-    tankParamBounds['t0']['soc']['uo']['min'],
-    tankParamBounds['t0']['soc']['lo']['min'],
-    tankParamBounds['t0']['soh']['uo']['min'],
-    tankParamBounds['t0']['soh']['lo']['min'],
+    tankParamBounds.t0._is._min,
+    tankParamBounds.t0._boc._min,
+    tankParamBounds.t0._soc._uo._min,
+    tankParamBounds.t0._soc._lo._min,
+    tankParamBounds.t0._soh._uo._min,
+    tankParamBounds.t0._soh._lo._min,
             
             # [Tank-1]
-    tankParamBounds['t1']['is']['min'],
-    tankParamBounds['t1']['boc']['min'],
-    tankParamBounds['t1']['soc']['min'],
-    tankParamBounds['t1']['soh']['min'],
+    tankParamBounds.t1._is._min,
+    tankParamBounds.t1._boc._min,
+    tankParamBounds.t1._soc._min,
+    tankParamBounds.t1._soh._min,
             
             # [Tank-2]
-    tankParamBounds['t2']['is']['min'],
-    tankParamBounds['t2']['boc']['min'],
-    tankParamBounds['t2']['soc']['min'],
-    tankParamBounds['t2']['soh']['min'],
+    tankParamBounds.t2._is._min,
+    tankParamBounds.t2._boc._min,
+    tankParamBounds.t2._soc._min,
+    tankParamBounds.t2._soh._min,
             
             # [Tank-3]
-    tankParamBounds['t3']['is']['min'],
-    tankParamBounds['t3']['soc']['min'],
+    tankParamBounds.t3._is._min,
+    tankParamBounds.t3._soc._min,
 
     ])
 
@@ -104,30 +129,31 @@ tankLowerBounds = np.array([
 
 tankUpperBounds = np.array([ 
             
-            # [Tank-0]
-    tankParamBounds['t0']['is']['max'],
-    tankParamBounds['t0']['boc']['max'],
-    tankParamBounds['t0']['soc']['uo']['max'],
-    tankParamBounds['t0']['soc']['lo']['max'],
-    tankParamBounds['t0']['soh']['uo']['max'],
-    tankParamBounds['t0']['soh']['lo']['max'],
-
+            # [Tank-0] 
+    tankParamBounds.t0._is._max,
+    tankParamBounds.t0._boc._max,
+    tankParamBounds.t0._soc._uo._max,
+    tankParamBounds.t0._soc._lo._max,
+    tankParamBounds.t0._soh._uo._max,
+    tankParamBounds.t0._soh._lo._max,
+            
             # [Tank-1]
-    tankParamBounds['t1']['is']['max'],
-    tankParamBounds['t1']['boc']['max'],
-    tankParamBounds['t1']['soc']['max'],
-    tankParamBounds['t1']['soh']['max'],
+    tankParamBounds.t1._is._max,
+    tankParamBounds.t1._boc._max,
+    tankParamBounds.t1._soc._max,
+    tankParamBounds.t1._soh._max,
             
             # [Tank-2]
-    tankParamBounds['t2']['is']['max'],
-    tankParamBounds['t2']['boc']['max'],
-    tankParamBounds['t2']['soc']['max'],
-    tankParamBounds['t2']['soh']['max'],
+    tankParamBounds.t2._is._max,
+    tankParamBounds.t2._boc._max,
+    tankParamBounds.t2._soc._max,
+    tankParamBounds.t2._soh._max,
             
             # [Tank-3]
-    tankParamBounds['t3']['is']['max'],
-    tankParamBounds['t3']['soc']['max'],
+    tankParamBounds.t3._is._max,
+    tankParamBounds.t3._soc._max,
 
-    ])
+])
 
 
+print(tankLowerBounds)

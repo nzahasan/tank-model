@@ -1,33 +1,35 @@
-#! /usr/bin/env python3
-
 '''
- Core computation module for Tank Hydrologic model ::
-
+ Core computation module for Tank Hydrologic model
+ proposed by Sugawara and Funiyuki (1956)
 '''
 
 import numpy as np
 
 
-def shape_alike(x,y):
+def shape_alike(x:np.ndarray,y:np.ndarray) -> bool:
     # checks if x,y numpy array are of same shape
     return True if x.shape == y.shape else False
         
 
-
-
 def tank_discharge(
     # time series information [should be of regular interval]
-    rainfall, evapotranspiration, del_t,
+    rainfall:np.ndarray, evapotranspiration:np.ndarray, del_t:float,
+    
     # basin characterstics
-    area,
+    area:float,
+    
     # tank 0 
-    t0_is, t0_boc, t0_soc_uo,t0_soc_lo, t0_soh_uo, t0_soh_lo,
+    t0_is:float, t0_boc:float, t0_soc_uo:float,
+    t0_soc_lo:float, t0_soh_uo:float, t0_soh_lo:float,
+    
     # tank 1
-    t1_is, t1_boc, t1_soc, t1_soh,
+    t1_is:float, t1_boc:float, t1_soc:float, t1_soh:float,
+    
     # tank 2
-    t2_is, t2_boc, t2_soc, t2_soh,
+    t2_is:float, t2_boc:float, t2_soc:float, t2_soh:float,
+    
     # tank 3
-    t3_is, t3_soc):
+    t3_is:float, t3_soc:float) -> np.ndarray:
     
     '''
         ________________________________________________
@@ -79,7 +81,7 @@ def tank_discharge(
     
            
         '''
-            Tank Storage Calculation
+        Tank Storage Calculation
         ----------------------------
         storage  =  inflow - outflow
         
