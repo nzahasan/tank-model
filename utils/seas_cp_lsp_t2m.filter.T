@@ -5,9 +5,9 @@ if ( cfVarName is 'cp'  || cfVarName is 'lsp' || cfVarName is 't2m' ) {
 	
 	
 	if (perturbationNumber < 10){ 
-		write "/home/nazmul/seas_split/seas.[dataDate].en_0[perturbationNumber].grib"; 
+		write "{{out_dir}}/seas.[dataDate].en_0[perturbationNumber].grib"; 
 	}
 	else { 
-		write "/home/nazmul/seas_split/seas.[dataDate].en_[perturbationNumber].grib"; 
+		write "{{out_dir}}/seas.[dataDate].en_[perturbationNumber].grib"; 
 	}
 }

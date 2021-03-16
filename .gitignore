@@ -7,3 +7,4 @@ basin.json
 Brahmaputra.basin
 .mypy_cache/
 .vscode
+utils/seas_cp_lsp_t2m.filter
