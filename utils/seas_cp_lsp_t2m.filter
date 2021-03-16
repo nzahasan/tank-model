@@ -1,0 +1,15 @@
+# split cp,lsp,t2m variables for each seperate ensemble
+# filename format seas.yyymmdd.en_xx.gbrib
+
+
+if ( cfVarName is 'cp'  || cfVarName is 'lsp' || cfVarName is 't2m' ) {
+	
+	print "var=[cfVarName], ens=[perturbationNumber],date=[date], start=[endStep], end=[endStep]";	
+	
+	if (perturbationNumber < 10){ 
+		write "/home/nazmul/seas_split/seas.[dataDate].en_0[perturbationNumber].grib"; 
+	}
+	else { 
+		write "/home/nazmul/seas_split/seas.[dataDate].en_[perturbationNumber].grib"; 
+	}
+}

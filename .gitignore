@@ -6,3 +6,4 @@ basin.yaml
 basin.json
 Brahmaputra.basin
 .mypy_cache/
+.vscode
