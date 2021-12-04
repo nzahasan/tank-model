@@ -1,0 +1,6 @@
+numpy
+scipy
+pandas
+fiona
+shapely
+pyscissor

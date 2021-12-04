@@ -7,6 +7,34 @@
 import json,yaml
 
 
+def add_childs(project):
+
+	for node in project['BASIN_DEF']:
+	
+		# identify root
+
+		# add child notation
+
+		ds = project['BASIN_DEF'][node].get('downstream',None)
+		
+		if ds==None:
+			
+			if project.get('root_node',None) is None:
+				project['root_node'] = [node]
+
+			else:
+				project['root_node'].append(node)
+		
+		if ds!=None:
+			if project['BASIN_DEF'][ds].get('childs',None) == None:
+
+				project['BASIN_DEF'][ds]['childs'] = [node]
+			else:
+				project['BASIN_DEF'][ds]['childs'].append(node)
+
+	return project
+
+
 def main(basin_file_loc:str)->None:
 
 	nodes = open(basin_file_loc,'r').read().split('End:')
@@ -45,32 +73,24 @@ def main(basin_file_loc:str)->None:
 			val=(':'.join(l_splits[1:])).strip()
 
 			if key in numeric_props: val=float(val)
-			node_dict[key]=val
+			node_dict[key.lower().replace(' ','_')]=val
 
 		# parsed_node.append(node_dict)
 
 
+	project = {"basin_def":parsed_node,"config":{"pr_file":"/pr.csv","et_file":"/et.csv","output":"/output.csv"}}
+
+	project = add_childs(project)
+
+	print(project)
 
 	with open('basin.json','w') as jwf:
-		d = {"BASIN_DEF":parsed_node,"CONFIG":{"subbasin_shapefile":"/sb.shp","pr_file":"/pr.csv","et_file":"/et.csv","output_file":"/output.csv"}}
-		t = json.dumps(d,allow_nan=True,indent=4)
-		# t = yaml.dump(d)
-
-		jwf.write(t)
-
-
-	with open('basin.yaml','w') as ywf:
-		d = {"BASIN_DEF":parsed_node,"CONFIG":{"subbasin_shapefile":"/sb.shp","pr_file":"/pr.csv","et_file":"/et.csv","output_file":"/output.csv"}}
-		# t = json.dumps(d,allow_nan=True,indent=4)
-		t = yaml.dump(d)
-
-		ywf.write(t)
-
+		json.dump(project,jwf,indent=4)
 
 
 
 
 if __name__ == "__main__":
-	main('Brahmaputra.basin')
+	main('BRAHMA_MOD_CLARK.basin')
 
 	

@@ -4,7 +4,6 @@ __pycache__
 *.nc
 basin.yaml
 basin.json
-Brahmaputra.basin
+*.basin
 .mypy_cache/
 .vscode
-utils/seas_cp_lsp_t2m.filter
