@@ -2,8 +2,5 @@ __pycache__
 *.pyc
 .directory
 *.nc
-basin.yaml
-basin.json
-*.basin
 .mypy_cache/
 .vscode
