@@ -5,17 +5,17 @@
 
 '''
 import json,yaml
-
+import click
 
 def add_childs(project):
 
-	for node in project['BASIN_DEF']:
+	for node in project['basin_def']:
 	
 		# identify root
 
 		# add child notation
 
-		ds = project['BASIN_DEF'][node].get('downstream',None)
+		ds = project['basin_def'][node].get('downstream',None)
 		
 		if ds==None:
 			
@@ -26,11 +26,11 @@ def add_childs(project):
 				project['root_node'].append(node)
 		
 		if ds!=None:
-			if project['BASIN_DEF'][ds].get('childs',None) == None:
+			if project['basin_def'][ds].get('childs',None) == None:
 
-				project['BASIN_DEF'][ds]['childs'] = [node]
+				project['basin_def'][ds]['childs'] = [node]
 			else:
-				project['BASIN_DEF'][ds]['childs'].append(node)
+				project['basin_def'][ds]['childs'].append(node)
 
 	return project
 

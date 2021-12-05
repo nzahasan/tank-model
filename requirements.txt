@@ -4,3 +4,4 @@ pandas
 fiona
 shapely
 pyscissor
+click

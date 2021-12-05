@@ -4,3 +4,4 @@ __pycache__
 *.nc
 .mypy_cache/
 .vscode
+.DS_Store
