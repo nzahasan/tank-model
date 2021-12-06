@@ -48,9 +48,12 @@ def build_computation_stack(project:dict) -> list:
 
 def compute_project(computation_stack:list, project:dict)->int:
 	
-	while len(computation_stack)>0:
+	while len(computation_stack) > 0:
 
+		# pop node from top of the node
 		node_name = computation_stack.pop()
+
+
 		node_compute = project['basin_def'][node_name]
 
 		print(node_name)
@@ -59,7 +62,7 @@ def compute_project(computation_stack:list, project:dict)->int:
 			print("compute tank for basin", node_name)
 
 		if node_compute['type'] == 'Reach':
-			print('route flow', node_compute['childs'])
+			print('route flow then sum', node_compute['childs'])
 
 		if node_compute['type'] in ['Sink','Junction']:
 
