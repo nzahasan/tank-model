@@ -127,7 +127,7 @@ def main():
 		ncwf.version         = "CPC_HS_ET0_V1.0"
 		ncwf.dataset_title   = "Reference evapotranspiration derived from CPC temperature data using Hargreaves & Samani model"
 		ncwf.cpc_data_source = "https://psl.noaa.gov/data/gridded/data.cpc.globaltemp.html"
-		ncwf.creation_time   = datetime.today().strftime('%Y-%m-%d %H:%M')
+		ncwf.creation_time   = datetime.today().strftime('%Y-%m-%dT%H:%M%S')
 		
 
 
