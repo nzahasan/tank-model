@@ -8,32 +8,23 @@
 	 - https://psl.noaa.gov/data/gridded/data.cpc.globaltemp.html
 '''
 
-import argparse
+import click
 import numpy as np
 from datetime import datetime
-import evapotranspiration as et
 from netCDF4 import Dataset, num2date
 
-def main():
+from tank_core import evapotranspiration as et
 
 
-	# 
-	arg_parser = argparse.ArgumentParser(
-		description="Calculate ET0 from cpc tmin & tmin data",
-		usage='use "%(prog)s --help" for more information',
-	)
-
-	arg_parser.add_argument('-tmax_nc',dest="tmax_nc",required=True,type=str,help='CPC tmax nc file')
-
-	arg_parser.add_argument('-tmin_nc',dest="tmin_nc",required=True,type=str,help='CPC tmax nc file')
-
-	arg_parser.add_argument('-o',dest="out",required=True,type=str,help='output file name')
-
-	args = arg_parser.parse_args()
+@click.command('Generate ET0 netCDF from CPC tmax & tmin data.')
+@click.option('--tmax_nc', '-tx',  help='tmax netcdf path')
+@click.option('--tmin_nc', '-tn',  help='tmax netcdf path')
+@click.option('--outfile', '-o',  help='output netcdf path')
+def main(tmax_nc, tmin_nc, outfile):
 
 
-	tmax_nc = Dataset(args.tmax_nc,'r')
-	tmin_nc = Dataset(args.tmin_nc,'r')
+	tmax_nc = Dataset(tmax_nc,'r')
+	tmin_nc = Dataset(tmin_nc,'r')
 	# check if file is already exists
 
 	# check variable
@@ -84,7 +75,7 @@ def main():
 
 	# write to nc file
 
-	with Dataset(args.out,'w') as ncwf:
+	with Dataset(outfile,'w') as ncwf:
 
 		time_dim = ncwf.createDimension("time",None)
 		lat_dim  = ncwf.createDimension("lat",lat_f.shape[0])

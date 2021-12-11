@@ -154,6 +154,3 @@ tankUpperBounds = np.array([
     tankParamBounds.t3._soc._max,
 
 ])
-
-
-print(tankLowerBounds)
