@@ -2,3 +2,5 @@
 *.pdf binary
 *.png binary
 *.pyc binary
+*.T linguist-vendored
+*.sh linguist-vendored
