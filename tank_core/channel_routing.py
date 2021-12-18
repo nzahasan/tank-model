@@ -1,6 +1,10 @@
 import numpy as np 
 
 
+'''
+Functions for channel routing
+'''
+
 def muskingum(in_flow:np.ndarray, del_t:float, k:float, x:float) -> np.ndarray:
 
 	'''

@@ -36,8 +36,11 @@ t3 (2)
 
 '''
 
-class tankParamBounds:
-    
+
+# TANK
+
+class TankParamBounds:
+
     class t0:
         class _is:
             _min = 0.01
@@ -96,61 +99,82 @@ class tankParamBounds:
             _min = 0.01
             _max = 0.5
 
-
-tankLowerBounds = np.array([
+tank_lb = np.array([
             
             # [Tank-0] 
-    tankParamBounds.t0._is._min,
-    tankParamBounds.t0._boc._min,
-    tankParamBounds.t0._soc._uo._min,
-    tankParamBounds.t0._soc._lo._min,
-    tankParamBounds.t0._soh._uo._min,
-    tankParamBounds.t0._soh._lo._min,
+    TankParamBounds.t0._is._min,
+    TankParamBounds.t0._boc._min,
+    TankParamBounds.t0._soc._uo._min,
+    TankParamBounds.t0._soc._lo._min,
+    TankParamBounds.t0._soh._uo._min,
+    TankParamBounds.t0._soh._lo._min,
             
             # [Tank-1]
-    tankParamBounds.t1._is._min,
-    tankParamBounds.t1._boc._min,
-    tankParamBounds.t1._soc._min,
-    tankParamBounds.t1._soh._min,
+    TankParamBounds.t1._is._min,
+    TankParamBounds.t1._boc._min,
+    TankParamBounds.t1._soc._min,
+    TankParamBounds.t1._soh._min,
             
             # [Tank-2]
-    tankParamBounds.t2._is._min,
-    tankParamBounds.t2._boc._min,
-    tankParamBounds.t2._soc._min,
-    tankParamBounds.t2._soh._min,
+    TankParamBounds.t2._is._min,
+    TankParamBounds.t2._boc._min,
+    TankParamBounds.t2._soc._min,
+    TankParamBounds.t2._soh._min,
             
             # [Tank-3]
-    tankParamBounds.t3._is._min,
-    tankParamBounds.t3._soc._min,
+    TankParamBounds.t3._is._min,
+    TankParamBounds.t3._soc._min,
 
     ])
 
 
 
-tankUpperBounds = np.array([ 
+tank_ub = np.array([ 
             
             # [Tank-0] 
-    tankParamBounds.t0._is._max,
-    tankParamBounds.t0._boc._max,
-    tankParamBounds.t0._soc._uo._max,
-    tankParamBounds.t0._soc._lo._max,
-    tankParamBounds.t0._soh._uo._max,
-    tankParamBounds.t0._soh._lo._max,
+    TankParamBounds.t0._is._max,
+    TankParamBounds.t0._boc._max,
+    TankParamBounds.t0._soc._uo._max,
+    TankParamBounds.t0._soc._lo._max,
+    TankParamBounds.t0._soh._uo._max,
+    TankParamBounds.t0._soh._lo._max,
             
             # [Tank-1]
-    tankParamBounds.t1._is._max,
-    tankParamBounds.t1._boc._max,
-    tankParamBounds.t1._soc._max,
-    tankParamBounds.t1._soh._max,
+    TankParamBounds.t1._is._max,
+    TankParamBounds.t1._boc._max,
+    TankParamBounds.t1._soc._max,
+    TankParamBounds.t1._soh._max,
             
             # [Tank-2]
-    tankParamBounds.t2._is._max,
-    tankParamBounds.t2._boc._max,
-    tankParamBounds.t2._soc._max,
-    tankParamBounds.t2._soh._max,
+    TankParamBounds.t2._is._max,
+    TankParamBounds.t2._boc._max,
+    TankParamBounds.t2._soc._max,
+    TankParamBounds.t2._soh._max,
             
             # [Tank-3]
-    tankParamBounds.t3._is._max,
-    tankParamBounds.t3._soc._max,
+    TankParamBounds.t3._is._max,
+    TankParamBounds.t3._soc._max,
 
+])
+
+# CHANNEL - Muskingum
+
+class MuskingumParamBound:
+    class K:
+        _min = 0
+        _max = 0.5
+    
+    class X:
+        _min = 0
+        _max = 5
+
+muskingum_lb = np.array([
+    MuskingumParamBound.K._min,
+    MuskingumParamBound.K._max,
+])
+
+
+muskingum_ub = np.array([
+    MuskingumParamBound.K._max,
+    MuskingumParamBound.K._min,
 ])

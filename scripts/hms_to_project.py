@@ -1,11 +1,21 @@
+#!/usr/bin/env python3
 '''
 	parse hec-hms basin config file
 	
 	note: need to fix this
 
 '''
-import json,yaml
+import sys
+import json
+from typing_extensions import Required
 import click
+
+sys.path.append('.')
+
+from tank_core import global_parameters as gp
+
+basin_default = 0.5 * (gp.tank_lb + gp.tank_ub)
+channel_default = 0.5 * (gp.muskingum_lb + gp.muskingum_ub)
 
 def add_childs(project):
 
@@ -36,10 +46,11 @@ def add_childs(project):
 
 
 @click.command()
-@click.option('--hms_basin', '-hb', 'HEC HMS Basin file location')
-@click.option('--output_file', '-of', 'output json file location')
-def main(hms_basin:str, output_file:str)->None:
+@click.option('-hb','--hms_basin', help='HEC HMS Basin file location', required=True)
+@click.option('-of','--output_file', help='output json file location', required=True)
+def main(hms_basin, output_file)->None:
 
+	print(hms_basin, output_file)
 	nodes = open(hms_basin,'r').read().split('End:')
 
 	parsed_node = {}  #[]
@@ -61,6 +72,12 @@ def main(hms_basin:str, output_file:str)->None:
 		# if node
 		node_dict = parsed_node[node_name.strip()] = {}
 		node_dict['type'] = node_type.strip()
+		
+		if node_type=='Reach':
+			node_dict['parameters'] = list(channel_default)
+		
+		if node_type=='Subbasin':
+			node_dict['parameters'] = list(basin_default)
 		# node_dict['name']= node_name.strip()
 
 
