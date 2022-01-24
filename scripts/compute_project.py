@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 '''
-	compute tank model form config files
-	may be do recursive
+	Computes tank model form config files
 '''
 
 import json,pprint

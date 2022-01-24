@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 '''
 	parse hec-hms basin config file
-	
-	note: need to fix this
-
 '''
 import sys
 import json
@@ -98,7 +95,7 @@ def main(hms_basin, output_file)->None:
 		# parsed_node.append(node_dict)
 
 
-	project = {"basin_def":parsed_node,"config":{"pr_file":"/pr.csv","et_file":"/et.csv","output":"/output.csv"}}
+	project = {"basin_def":parsed_node}
 
 	project = add_childs(project)
 

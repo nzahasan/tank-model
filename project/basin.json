@@ -199,11 +199,7 @@
             ]
         }
     },
-    "config": {
-        "pr_file": "/pr.csv",
-        "et_file": "/et.csv",
-        "output": "/output.csv"
-    },
+    
     "root_node": [
         "BAHADURABAD"
     ]

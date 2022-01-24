@@ -1,11 +1,16 @@
 
-import json,pprint
 from queue import Queue
-import pandas as pd
-
 
 from tank_core.tank_basin import tank_discharge
 from tank_core.channel_routing import muskingum
+
+from tank_core.cost_functions import R2, RMSE, NSE
+
+
+def check_input_consistancey():
+
+	pass
+
 
 def build_computation_stack(project:dict) -> list:
 
@@ -42,7 +47,6 @@ def build_computation_stack(project:dict) -> list:
 
 
 
-
 def compute_project(computation_stack:list, project:dict)->int:
 	
 	while len(computation_stack) > 0:
@@ -67,6 +71,15 @@ def compute_project(computation_stack:list, project:dict)->int:
 
 	return 0
 
-def check_input_consistancey():
 
+def stack_parameter(basin:dict):
+
+	pass 
+
+def update_basin_parameter(basin:dict):
+	pass
+
+def optimize_project(basin:dict):
+
+	# stacked_parameters = 
 	pass
