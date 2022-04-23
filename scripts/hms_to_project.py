@@ -16,7 +16,7 @@ from tank_core import global_parameters as gp
 basin_default = 0.5 * (gp.tank_lb + gp.tank_ub)
 channel_default = 0.5 * (gp.muskingum_lb + gp.muskingum_ub)
 
-def add_childs(project):
+def defines_downstream_nodes(project):
 
 	for node in project['basin_def']:
 	
@@ -95,7 +95,7 @@ def main(hms_basin, output_file)->None:
 
 	project = {"basin_def":parsed_node}
 
-	project = add_childs(project)
+	project = defines_downstream_nodes(project)
 
 	with open(output_file,'w') as jwf:
 		json.dump(project,jwf,indent=4)

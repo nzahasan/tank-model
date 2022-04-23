@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd 
 import json
 
+DATE_FMT = '%Y-%m-%dT%H:%M:%S'
+FLOAT_FMT = '0.3f'
 
 def read_input_file(file_path:str)-> tuple:
     '''
@@ -33,8 +35,8 @@ def write_output_file(df:pd.DataFrame,file_path:str)->int:
 
     status  = df.to_csv(
         file_path,
-        float_format='%.3f',
-        date_format='%Y-%m-%dT%H:%M:%S'
+        float_format=FLOAT_FMT,
+        date_format=DATE_FMT
     )
 
     return status
