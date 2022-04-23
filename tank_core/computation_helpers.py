@@ -19,6 +19,8 @@ def build_computation_stack(project:dict) -> list:
 		First traverse the tree with queue(fifo) ass all the 
 		upstream node needs to be computed before computing
 		a specific node, while traversing node put them in stack
+
+		N.B. Upstream is clild node.
 	'''
 	computation_stack = []
 
@@ -37,8 +39,8 @@ def build_computation_stack(project:dict) -> list:
 		computation_stack.append(node)
 
 		# get child nodes and enque child nodes
-		if project['basin_def'][node].get('childs',False):
-			childs = project['basin_def'][node]['childs']
+		if project['basin_def'][node].get('upstream',False):
+			childs = project['basin_def'][node]['upstream']
 
 			for child in childs:
 				node_qeue.put(child)
@@ -47,8 +49,10 @@ def build_computation_stack(project:dict) -> list:
 
 
 
-def compute_project(computation_stack:list, project:dict)->int:
+def compute_project(project:dict)->int:
 	
+	computation_stack = build_computation_stack(project)
+
 	while len(computation_stack) > 0:
 
 		# pop node from top of the node
@@ -63,11 +67,11 @@ def compute_project(computation_stack:list, project:dict)->int:
 			print("compute tank for basin", node_name)
 
 		if node_compute['type'] == 'Reach':
-			print('route flow then sum', node_compute['childs'])
+			print('route flow then sum', node_compute['upstream'])
 
 		if node_compute['type'] in ['Sink','Junction']:
 
-			print('>> sum flow', node_compute['childs'])
+			print('>> sum flow', node_compute['upstream'])
 
 	return 0
 

@@ -8,8 +8,20 @@ guide: https://click.palletsprojects.com/en/8.0.x/commands/
 
 from typing_extensions import Required
 import click
+import json
 from click.decorators import option
 
+
+import sys;
+sys.path.append('.')
+
+from tank_core.computation_helpers import (
+    compute_project
+)
+
+from tank_core.io_helpers import (
+    read_project_file
+)
 
 @click.group()
 def cli(): pass
@@ -17,9 +29,12 @@ def cli(): pass
 
 @click.command()
 @click.option('-pf', '--project-file', help="project file")
-def compute_project( project_file):
-    print(project_file)
-    pass
+def compute(project_file:str):
+    
+    project = read_project_file(project_file)
+    compute_project(project)
+    
+    
 
 
 @click.command()
@@ -37,7 +52,7 @@ def gen_tank_project( basin_file, output_file):
 
 
 
-cli.add_command(compute_project)
+cli.add_command(compute)
 cli.add_command(hms2tank)
 cli.add_command(gen_tank_project)
 

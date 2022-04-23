@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-'''
-	parse hec-hms basin config file
-'''
+
+# parse hec-hms basin configuration file
+# and generates a basin file compatible for 
+# tank model
+
 import sys
 import json
 from typing_extensions import Required
@@ -18,10 +20,6 @@ def add_childs(project):
 
 	for node in project['basin_def']:
 	
-		# identify root
-
-		# add child notation
-
 		ds = project['basin_def'][node].get('downstream',None)
 		
 		if ds==None:
@@ -33,11 +31,11 @@ def add_childs(project):
 				project['root_node'].append(node)
 		
 		if ds!=None:
-			if project['basin_def'][ds].get('childs',None) == None:
+			if project['basin_def'][ds].get('upstream',None) == None:
 
-				project['basin_def'][ds]['childs'] = [node]
+				project['basin_def'][ds]['upstream'] = [node]
 			else:
-				project['basin_def'][ds]['childs'].append(node)
+				project['basin_def'][ds]['upstream'].append(node)
 
 	return project
 
@@ -53,8 +51,8 @@ def main(hms_basin, output_file)->None:
 	parsed_node = {}  #[]
 
 
-	sel_node_list=["Subbasin","Reach","Junction","Sink"]
-	sel_prop_list=["Downstream","Area","Computation Point"]
+	sel_nodes =["Subbasin","Reach","Junction","Sink"]
+	generel_props =["Downstream","Area","Computation Point"]
 	numeric_props = ["Area"]
 
 	for node in nodes:
@@ -65,7 +63,7 @@ def main(hms_basin, output_file)->None:
 		node_type,node_name= (node_lines[0].strip()).split(':')
 		node_type ,node_name = node_type.strip(),node_name.strip()
 
-		if node_type not in sel_node_list: continue
+		if node_type not in sel_nodes : continue
 		# if node
 		node_dict = parsed_node[node_name.strip()] = {}
 		node_dict['type'] = node_type.strip()
@@ -85,7 +83,7 @@ def main(hms_basin, output_file)->None:
 
 			key=l_splits[0].strip()
 
-			if key not in sel_prop_list: continue
+			if key not in generel_props : continue
 
 			val=(':'.join(l_splits[1:])).strip()
 
@@ -98,8 +96,6 @@ def main(hms_basin, output_file)->None:
 	project = {"basin_def":parsed_node}
 
 	project = add_childs(project)
-
-	print(project)
 
 	with open(output_file,'w') as jwf:
 		json.dump(project,jwf,indent=4)

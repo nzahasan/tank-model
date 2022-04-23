@@ -1,9 +1,26 @@
+# python
 __pycache__
-*.pyc
-.directory
+*.py[cod]
+
+# binary blobs
 *.nc
+*.nc4
+*.grib
+*.grib2
+
+# mypy
 .mypy_cache/
 .vscode
+
+# os
+.directory
 .DS_Store
+
+# virtualenv
+.venv/
+.env/
+venv/
+env/
+
+# temporary data
 data/*.csv
-.venv

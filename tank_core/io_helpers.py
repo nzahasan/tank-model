@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd 
+import json
 
 
 def read_input_file(file_path:str)-> tuple:
@@ -30,13 +31,24 @@ def read_input_file(file_path:str)-> tuple:
 
 def write_output_file(df:pd.DataFrame,file_path:str)->int:
 
-    df.to_csv(
+    status  = df.to_csv(
         file_path,
         float_format='%.3f',
         date_format='%Y-%m-%dT%H:%M:%S'
     )
 
-    return 0
+    return status
+
+def read_project_file(project_file:str)->dict:
+
+    with open(project_file,'r') as pfrb:
+        
+        project = json.load(pfrb)
+
+        return project 
+
+    return None
+        
 
 
 

@@ -5,7 +5,7 @@ Python implementation of Tank Hydrologic Model, a conceptual rainfall-runoff mod
 </p>
 
 <p align="center">
-<img align="center" height="500px"  src="assets/ModelDiagram.png" >
+<img align="center" height="500px"  src="assets/ModelDiagram.svg" >
 </p>
 
 
