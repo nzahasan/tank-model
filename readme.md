@@ -1,8 +1,8 @@
-## <p style="font-family:monospace"> Tank Hydrologic Model </p>
+## Tank Hydrologic Model
 
-<p style="font-family:monospace">
+
 Python implementation of Tank Hydrologic Model, a conceptual rainfall-runoff model proposed by Sugawara and Funiyuki (1956)
-</p>
+
 
 <p align="center">
 <img align="center" height="500px"  src="assets/ModelDiagram.svg" >

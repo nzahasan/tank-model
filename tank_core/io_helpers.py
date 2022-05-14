@@ -1,9 +1,11 @@
 import numpy as np
 import pandas as pd 
 import json
+import os
+from datetime import datetime as dt
 
-DATE_FMT = '%Y-%m-%dT%H:%M:%S'
-FLOAT_FMT = '0.3f'
+from tank_core.global_config import FLOAT_FMT,DATE_FMT
+
 
 def read_input_file(file_path:str)-> tuple:
     '''
@@ -15,11 +17,10 @@ def read_input_file(file_path:str)-> tuple:
     df = pd.read_csv(
         file_path,
         index_col=['Time'],
-        parse_dates=['Time'],
-        infer_datetime_format=True
+        parse_dates= True  # will parse index
     )
 
-    # sort by index
+    # sort by time
     df.sort_index(inplace=True)
 
     # check if missing date
@@ -43,14 +44,37 @@ def write_output_file(df:pd.DataFrame,file_path:str)->int:
 
 def read_project_file(project_file:str)->dict:
 
+    if not os.path.exists(project_file):
+        raise Exception('provided project file doesnt exists')
+
     with open(project_file,'r') as pfrb:
         
         project = json.load(pfrb)
+
+        # check if project file is okay
+
+        # check if basin file is  okay
+
 
         return project 
 
     return None
         
+def read_basin_file(basin_file:str)->dict:
+
+    if not os.path.exists(basin_file):
+        raise Exception('provided basin file doesnt exists')
+
+    with open(basin_file,'r') as basin_file_rd_buffer:
+        
+        basin = json.load(basin_file_rd_buffer)
+
+        # check if basin file is  okay [later]
+
+
+        return basin 
+
+    
 
 
 

@@ -4,7 +4,7 @@ import numpy as np
 '''
 This file contains parameter bounds &
 necessary parameter defination 
-for model calibration
+and variables
 
 
 Parameter order & description of vertical tanks:
@@ -178,3 +178,8 @@ muskingum_ub = np.array([
     MuskingumParamBound.K._max,
     MuskingumParamBound.K._min,
 ])
+
+
+
+DATE_FMT = '%Y-%m-%dT%H:%M:%S.%fZ'
+FLOAT_FMT = '0.3f'

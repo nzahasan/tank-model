@@ -1,6 +1,6 @@
 
 from queue import Queue
-
+import pandas as pd
 from tank_core.tank_basin import tank_discharge
 from tank_core.channel_routing import muskingum
 
@@ -47,11 +47,13 @@ def build_computation_stack(project:dict) -> list:
 
 	return computation_stack
 
+# computation
 
-
-def compute_project(project:dict)->int:
+def compute_project(basin:dict, precipitation:pd.DataFrame=pd.DataFrame(), 
+					evapotranspiration:pd.DataFrame=pd.DataFrame()
+				)->pd.DataFrame:
 	
-	computation_stack = build_computation_stack(project)
+	computation_stack = build_computation_stack(basin)
 
 	while len(computation_stack) > 0:
 
@@ -59,7 +61,7 @@ def compute_project(project:dict)->int:
 		node_name = computation_stack.pop()
 
 
-		node_compute = project['basin_def'][node_name]
+		node_compute = basin['basin_def'][node_name]
 
 		print(node_name)
 
@@ -73,8 +75,15 @@ def compute_project(project:dict)->int:
 
 			print('>> sum flow', node_compute['upstream'])
 
-	return 0
+	return pd.DataFrame()
 
+
+def compute_statistics():
+
+	return pd.DataFrame()
+
+
+# optimization
 
 def stack_parameter(basin:dict):
 
@@ -87,3 +96,4 @@ def optimize_project(basin:dict):
 
 	# stacked_parameters = 
 	pass
+
