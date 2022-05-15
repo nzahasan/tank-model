@@ -7,9 +7,9 @@ from datetime import datetime as dt
 from tank_core.global_config import FLOAT_FMT,DATE_FMT
 
 
-def read_input_file(file_path:str)-> tuple:
+def read_ts_file(file_path:str)-> tuple:
     '''
-        reads model input file (precip, et)
+        reads model input/output timeseries files (precip, et, discharge, result etc.)
         returns tuple(dataframe, del_time[seconds])
     '''
 
@@ -17,7 +17,7 @@ def read_input_file(file_path:str)-> tuple:
     df = pd.read_csv(
         file_path,
         index_col=['Time'],
-        parse_dates= True  # will parse index
+        parse_dates= True  # will parse index for datetime
     )
 
     # sort by time
@@ -32,12 +32,18 @@ def read_input_file(file_path:str)-> tuple:
     return (df , t_diff[0]/np.timedelta64(1,'s') )
 
 
-def write_output_file(df:pd.DataFrame,file_path:str)->int:
+def write_ts_file(df:pd.DataFrame,file_path:str)->int:
+
+    '''
+    writes model input/output timeseries files (precip, et, discharge, result etc.)
+    returns 
+    '''
 
     status  = df.to_csv(
         file_path,
         float_format=FLOAT_FMT,
-        date_format=DATE_FMT
+        date_format=DATE_FMT,
+        index=False
     )
 
     return status

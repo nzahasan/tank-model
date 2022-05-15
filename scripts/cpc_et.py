@@ -17,9 +17,9 @@ from tank_core import evapotranspiration as et
 
 
 @click.command('Generate ET0 netCDF from CPC tmax & tmin data.')
-@click.option('--tmax_nc', '-tx',  help='tmax netcdf path')
-@click.option('--tmin_nc', '-tn',  help='tmax netcdf path')
-@click.option('--outfile', '-o',  help='output netcdf path')
+@click.option('--tmax_nc', '-tx',  help='tmax netcdf path', required=True)
+@click.option('--tmin_nc', '-tn',  help='tmax netcdf path', required=True)
+@click.option('--outfile', '-o',  help='output netcdf path', required=True)
 def main(tmax_nc, tmin_nc, outfile):
 
 
@@ -64,22 +64,23 @@ def main(tmax_nc, tmin_nc, outfile):
 				)
 
 	# zip with original index
-	lat_z = zip( np.arange( lats.shape[0] )[lat_mask], lat_f )
-	lon_z = zip( np.arange( lons.shape[0] )[lon_mask], lon_f )
+	lat_z = list(zip( np.arange( lats.shape[0] )[lat_mask], lat_f ))
+	lon_z = list(zip( np.arange( lons.shape[0] )[lon_mask], lon_f ))
+
 
 	for ic,(io,i_lat) in enumerate(lat_z):
 		for jc,(jo,j_lon) in enumerate(lon_z):
 			# vectorize for each location
 			var_et[:,ic,jc] = np.vectorize(et.hargreaves)(tmin_var[:,io,jo],tmax_var[:,io,jo],dates,i_lat)
-
+			
 
 	# write to nc file
 
 	with Dataset(outfile,'w') as ncwf:
 
-		time_dim = ncwf.createDimension("time",None)
-		lat_dim  = ncwf.createDimension("lat",lat_f.shape[0])
-		lon_dim  = ncwf.createDimension("lon",lon_f.shape[0])
+		ncwf.createDimension("time",None)
+		ncwf.createDimension("lat",lat_f.shape[0])
+		ncwf.createDimension("lon",lon_f.shape[0])
 
 		# time var
 		time_var = ncwf.createVariable('time','f8',dimensions=('time'))

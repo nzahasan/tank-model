@@ -182,4 +182,4 @@ muskingum_ub = np.array([
 
 
 DATE_FMT = '%Y-%m-%dT%H:%M:%S.%fZ'
-FLOAT_FMT = '0.3f'
+FLOAT_FMT = '%.3f'

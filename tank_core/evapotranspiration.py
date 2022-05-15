@@ -1,5 +1,13 @@
+# -*- coding: utf-8 -*-
 '''
     Reference evapotranspiration calculatin models
+
+    References: 
+    1. Evaluation of alternative methods for estimating reference evapotranspiration
+       (Daniel K. Fisher, H. C. Pringle)
+    2. Assessing of evapotranspiration models using limited climatic data in Southeast Anatolian Project Region of Turkey
+       (Yusuf Aydin)
+    3. https://www.sciencedirect.com/topics/engineering/solar-hour-angle#tp-snippet-chp-title-B9780080253886500490
 '''
 
 from math import sqrt,pi,radians,sin,cos,tan,acos,atan,sqrt
@@ -18,10 +26,19 @@ def days_in_year(year:int):
 def ext_ra(date:datetime,lat:float):
 
     '''
-        extra-terrestrial radiation [mm/day]
+    Daily extra-terrestrial radiation 
+    ---------------------------------
+    inputs: tmin,tmax,date,lat
+
+    Units:
+    ------
+    lat:  decimal degree 
+
+    Output: MJ m^-2 day^-1
     '''
 
-    lat_r   = radians(lat)                            # convert lat lon to radians
+
+    lat_r   = radians(lat)                            # convert lat lon to radians (φ)
 
     jul_day = date.timetuple().tm_yday                # calculate jul_day 
 
@@ -29,24 +46,26 @@ def ext_ra(date:datetime,lat:float):
 
     gsc     = 0.082                                   # global solar constant
 
-    dr      = 1+(0.033*cos(2*pi* (jul_day/nday )))    # inv. rel. distance Earth-Sun
+    _f = (2*pi*jul_day) / 365
+    
+    dr      = 1 + 0.033 * cos( _f )                  # inv. rel. distance Earth-Sun
 
-    sda     = 0.409*sin( (2*pi*jul_day)/365 - 1.39 )  # solar declination angle
+    sda     = 0.409 * sin( _f - 1.39 )               # solar declination angle (δ)
 
-    # valid for 66.5N to 66.5S
-    sha     = acos( -1*tan(lat_r)*tan(sda) )          # sunset hour angle
+    # can return undefined 
+    sha     = acos( -1*tan(lat_r) * tan(sda) )         # sunset hour angle (ωs)
 
-    ext_ra  = (1440/pi) * gsc * dr * (                # extraterrestial radiation daily
-                sha * sin(lat_r)*sin(sda) 
+    ext_ra  = (1440/pi) * gsc * dr * (               # extraterrestial radiation daily
+                sha * sin(lat_r) * sin(sda) 
                 + 
-                cos(lat_r)*cos(sda)*sin(sha) 
+                sin(sha) * cos(lat_r) * cos(sda) 
               ) 
-    # [0.408 * ra] for converting MJ/d to mm/day (Allen, 1998)
-    return 0.408*ext_ra
+
+    return ext_ra
 
 
-
-def hargreaves(tmin:float,tmax:float,date:datetime,lat:float):
+# NB. this can only be applied to calculate daily et0
+def hargreaves(tmin:float,tmax:float,date:datetime,lat:float)->float:
     '''
     Daily Evapotranspiration calculation (Hargreaves and Samani, 1982)
     ------------------------------------------------------------------
@@ -58,23 +77,26 @@ def hargreaves(tmin:float,tmax:float,date:datetime,lat:float):
     tmax: °C
     lat:  decimal degree 
 
-    output: mm/day
+    output: mm day^-1
+    
     '''
     # check latitude
     if lat> 66.5 or lat<-66.5:
-        return None
+        raise ValueError('latitude out of bound for ext_ra calculation')
 
-    tmean   = 0.5*(tmin+tmax)      # tmean
+    tmean = (tmin+tmax)/2      # tmean
 
     ra = ext_ra(date,lat)
 
-    et = 0.0023 * ra * sqrt(tmax-tmin)*(tmean+17.8) 
+    lhv = 2.45 
+    # λ: the latent heat of vaporization MJ·kg−1 
+    # converts to mm/day (1/2.45) = 0.408
 
-    if et<0: 
-    #     print(f'{tmin:0.2f},{tmax:0.2f},{date},{lat},{et:0.2f}')
-        return None #invalid et
+    et0 = 0.0023 * (ra/lhv) * sqrt(tmax-tmin)*(tmean+17.8) 
+
     
-    return et
+    # et0 cannot be -ve
+    return max(et0, 0.0)
 
 
 '''

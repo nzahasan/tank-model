@@ -13,14 +13,15 @@ def shape_alike(x:np.ndarray,y:np.ndarray) -> bool:
 
 def tank_discharge(
     # time series information [should be of regular interval]
-    rainfall:np.ndarray, evapotranspiration:np.ndarray, del_t:float,
+    precipitation:np.ndarray, evapotranspiration:np.ndarray, del_t:float,
     
     # basin characterstics
     area:float,
     
     # tank 0 
-    t0_is:float, t0_boc:float, t0_soc_uo:float,
-    t0_soc_lo:float, t0_soh_uo:float, t0_soh_lo:float,
+    t0_is:float, t0_boc:float, 
+    t0_soc_uo:float, t0_soc_lo:float, 
+    t0_soh_uo:float, t0_soh_lo:float,
     
     # tank 1
     t1_is:float, t1_boc:float, t1_soc:float, t1_soh:float,
@@ -38,20 +39,20 @@ def tank_discharge(
         |    area                 |       KM^2         |
         |    del_t                |       HR           |
         |    discharge            |       M^3/s        |
-        |    rainfall             |       MM           |
+        |    precipitation        |       MM           |
         |    evapotranspiration   |       MM           |
         |_________________________|____________________|
 
         :: returns a time-series of simulated discharge
     '''
 
-
+    
     # calculate timestep length
     
-    if shape_alike(rainfall, evapotranspiration):
-        time_step = rainfall.shape[0]
+    if shape_alike(precipitation, evapotranspiration):
+        time_step = precipitation.shape[0]
     else:
-        print('ERROR 1001: length mismatch between rainfall and evapotranspiration data')
+        print('ERROR 1001: length mismatch between precipitation and evapotranspiration data')
         return -1
 
 
@@ -63,9 +64,9 @@ def tank_discharge(
     side_outlet_flow   = np.zeros((time_step,4),dtype=np.float64) 
     bottom_outlet_flow = np.zeros((time_step,3),dtype=np.float64)   
     
-    # Difference of rainfall & evapotranspiration [only inflow to Tank 0]
+    # Difference of precipitation & evapotranspiration [only inflow to Tank 0]
     
-    del_rf_et = rainfall - evapotranspiration
+    del_rf_et = precipitation - evapotranspiration
     
     
     # set initial tank storages
@@ -221,7 +222,7 @@ def tank_discharge(
 
     '''
 
-    UNIT_CONV_COEFF = (area/del_t) * (1000/3600)
+    UNIT_CONV_COEFF = (area * 1000)/(del_t * 3600)
 
     discharge = UNIT_CONV_COEFF * side_outlet_flow.sum(axis=1)
 

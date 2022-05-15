@@ -8,8 +8,8 @@ from click.decorators import option
 from tank_core.computation_helpers import compute_project, compute_statistics
 from tank_core.io_helpers import (read_project_file, 
                                 read_basin_file, 
-                                read_input_file, 
-                                write_output_file
+                                read_ts_file, 
+                                write_ts_file
                             )
 from tank_core.project_helpers import hms_basin_to_tank_basin
 import tank_core.global_config as gc
@@ -44,7 +44,7 @@ def new_project(project_name):
     """creates a project directory generates a json formatted project file"""
 
     project  = {
-        "interval": 86400, # time interval in seconds :INT
+        "interval": 24.0, # time interval in hour :float
         "basin": f'{project_name}.basin.json', #basin path :JSON
         "precipitation": f'{project_name}.pr.csv', #precipitation path :CSV
         "evapotranspiration": f'{project_name}.et.csv', #evapotranspiration path :CSV
@@ -90,8 +90,8 @@ def compute(project_file):
     )
 
     basin = read_basin_file(basin_file)
-    precipitation = read_input_file(precipitation_file)
-    evapotranspiration = read_input_file(evapotranspiration_file)
+    precipitation, dt_pr = read_ts_file(precipitation_file)
+    evapotranspiration, dt_et = read_ts_file(evapotranspiration_file)
 
 
 
