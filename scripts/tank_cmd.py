@@ -83,22 +83,49 @@ def compute(project_file):
     evapotranspiration_file = os.path.join(project_dir, project['evapotranspiration'])
     discharge_file = os.path.join(project_dir, project['discharge'])
     statistics_file = os.path.join(project_dir, project['statistics'])
-    result = os.path.join(project_dir, project['result'])
+    result_file = os.path.join(project_dir, project['result'])
 
     print(basin_file,precipitation_file,evapotranspiration_file,
-        discharge_file, statistics_file, result
+        discharge_file, statistics_file, result_file
     )
 
+    
     basin = read_basin_file(basin_file)
     precipitation, dt_pr = read_ts_file(precipitation_file)
     evapotranspiration, dt_et = read_ts_file(evapotranspiration_file)
+    del_t = project['interval']
 
 
+    computation_result = compute_project(basin, precipitation, evapotranspiration, del_t)
 
-    compute_project(basin, precipitation, evapotranspiration)
-
+    write_ts_file(computation_result,result_file)
     
     # always calculate statistics based on the availablity of data in discharge file!!
+
+@cli.command()
+@click.option('-pf', '--project-file', help="project file")
+def plot_result(project_file):
+    
+    project_dir = os.path.dirname(os.path.abspath(project_file))
+    project = read_project_file(project_file)
+    result_file = os.path.join(project_dir, project['result'])
+
+    result,_ = read_ts_file(result_file)
+
+    import pandas as pd
+    dis = pd.read_csv('/Users/nzahasan/Development/tank-model/tmp_dir/discharge.csv',
+    parse_dates=True,index_col=['Time'])
+
+    print(dis.index)
+    print(result.index)
+
+    import pylab as pl
+    pl.plot(result.index,result['BAHADURABAD'],label='Bahadurabad')
+    pl.plot(dis.index, dis['Discharge'],label='observed')
+    pl.legend()
+    pl.show()
+
+    
 
 @cli.command()
 @click.option('-pf', '--project-file', help="project file")

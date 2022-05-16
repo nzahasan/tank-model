@@ -43,7 +43,8 @@ def write_ts_file(df:pd.DataFrame,file_path:str)->int:
         file_path,
         float_format=FLOAT_FMT,
         date_format=DATE_FMT,
-        index=False
+        index=True,
+        index_label='Time'
     )
 
     return status

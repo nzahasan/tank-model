@@ -1,6 +1,6 @@
-from tank_core import global_config as gc
+from . import global_config as gc
 
-def tank_param_list_to_dict(parameters:list)->dict:
+def tank_param_list2dict(parameters:list)->dict:
 
 
     return {
@@ -29,7 +29,7 @@ def tank_param_list_to_dict(parameters:list)->dict:
         "t3_soc"    : parameters[15],
     }
 
-def tank_param_list_to_dict(parameters:dict)->list:
+def tank_param_dict2list(parameters:dict)->list:
 
     return [
         # [Tank-0]
@@ -58,13 +58,25 @@ def tank_param_list_to_dict(parameters:dict)->list:
     ]
 
 
+def muskingum_param_list2dict(parameters:list)->dict:
 
+    return {
+        "k" : parameters[0],
+        "x" : parameters[1],
+    }
+
+def muskingum_param_dict2list(parameters:dict)->list:
+
+    return [
+        parameters["k"], 
+        parameters["x"], 
+    ]
 
 
 # converts hec-hms basin to tank basin defination
 def hms_basin_to_tank_basin(hms_basin_def:str):
 
-    basin_default = 0.5 * (gc.tank_lb + gc.tank_ub)
+    basin_default = gc.tank_lb
     channel_default = 0.5 * (gc.muskingum_lb + gc.muskingum_ub)
     parsed_node = dict()
     
@@ -89,10 +101,10 @@ def hms_basin_to_tank_basin(hms_basin_def:str):
             node_dict['type'] = node_type.strip()
             
             if node_type=='Reach':
-                node_dict['parameters'] = list(channel_default)
+                node_dict['parameters'] = muskingum_param_list2dict(list(channel_default))
             
             if node_type=='Subbasin':
-                node_dict['parameters'] = list(basin_default)
+                node_dict['parameters'] = tank_param_list2dict(list(basin_default))
 
             for line in node_lines[1:]:
                 

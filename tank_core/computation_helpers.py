@@ -49,49 +49,71 @@ def build_computation_stack(project:dict) -> list:
 
 # computation
 
-def compute_project(
-		basin:dict, 
-		precipitation:pd.DataFrame, 
-		evapotranspiration:pd.DataFrame
-	)->pd.DataFrame:
+def compute_project(basin:dict, precipitation:pd.DataFrame, 
+					evapotranspiration:pd.DataFrame, del_t:float)->pd.DataFrame:
 	
 	computation_stack = build_computation_stack(basin)
-	sum_basin = np.zeros(precipitation.values.shape[0])
+	
+	n_step = precipitation.index.shape[0]
+	
+	computation_result = pd.DataFrame()
+
+	computation_result.index = precipitation.index
+
 	while len(computation_stack) > 0:
 
 		# pop node from top of the node
-		node_name = computation_stack.pop()
+		curr_node_name = computation_stack.pop()
 
 
-		node_compute = basin['basin_def'][node_name]
+		curr_node_def = basin['basin_def'][curr_node_name]
 
-		if node_compute['type'] == 'Subbasin':
+		if curr_node_def['type'] == 'Subbasin':
 			
-			print("compute tank for basin", node_name)
+			print(curr_node_def['type'],"compute tank for basin", curr_node_name)
 			 
-			dis = tank_discharge(
-				precipitation[node_name].values,
-				evapotranspiration[node_name].values, 
-				24,
-				node_compute['area'],
-				* node_compute['parameters']
+			computation_result[curr_node_name] = tank_discharge(
+				precipitation = precipitation[curr_node_name].values,
+				evapotranspiration = evapotranspiration[curr_node_name].values, 
+				del_t = del_t,
+				area = curr_node_def['area'],
+				** curr_node_def['parameters']
 			)
-			sum_basin += dis
+			
 
-			# print(dis)
+		elif curr_node_def['type'] == 'Reach':
+			print('RC','route upstream flow then sum', curr_node_def['upstream'])
 
-		if node_compute['type'] == 'Reach':
-			print('route flow then sum', node_compute['upstream'])
+			sum_node = np.zeros(n_step, dtype=np.float64)
+			
+			for us_node_name in curr_node_def['upstream']:
+				sum_node += muskingum( 
+					in_flow= computation_result[us_node_name].values,
+					del_t=del_t,
+					** curr_node_def['parameters']
+				)
 
-		if node_compute['type'] in ['Sink','Junction']:
+			
+			computation_result[curr_node_name] = sum_node
+			
 
-			print('>> sum flow', node_compute['upstream'])
+		elif curr_node_def['type'] in ['Sink','Junction']:
+
+			print(curr_node_def['type'],'>> sum flow', curr_node_def['upstream'])
+
+			sum_node = np.zeros(n_step, dtype=np.float64)
+			
+			for us_node_name in curr_node_def['upstream']:
+				sum_node += computation_result[us_node_name].values
+			
+			computation_result[curr_node_name] = sum_node
 
 
-	import pylab as pl
-	pl.plot(sum_basin)
-	pl.show()
-	return pd.DataFrame()
+	
+
+	return computation_result
+	
+	
 
 
 def compute_statistics():

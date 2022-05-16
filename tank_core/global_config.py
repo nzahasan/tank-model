@@ -39,146 +39,108 @@ t3 (2)
 
 # TANK
 
-class TankParamBounds:
+tank_param_bounds = {
+    # tank-0
+    "t0_is":      {"min" : 0.01, "max" : 100},
+    "t0_boc":     {"min" : 0.1,  "max" : 0.5},
+    "t0_soc_uo":  {"min" : 0.1,  "max" : 0.5},
+    "t0_soc_lo":  {"min" : 0.1,  "max" : 0.5},
+    "t0_soh_uo" : {"min" : 25,   "max" : 50 },
+    "t0_soh_lo":  {"min" : 0,    "max" : 20 },
 
-    class t0:
-        class _is:
-            _min = 0.01
-            _max = 100
-        class _boc:
-            _min = 0.1
-            _max = 0.5
-        class _soc: 
-            class _uo:
-                _min = 0.1 
-                _max = 0.5 
-            class _lo: 
-                _min = 0.1 
-                _max = 0.5 
-        class _soh: 
-            class _uo:
-                _min = 25
-                _max = 50 
-            class _lo:
-                _min = 0 
-                _max = 20 
+    #tank-1
+    "t1_is":  {"min" : 0.01, "max" : 100},
+    "t1_boc": {"min" : 0.01, "max" : 0.5},
+    "t1_soc": {"min" : 0.01, "max" : 0.5},
+    "t1_soh": {"min" : 0,    "max" : 50 },
+    
+    #tank-2
+    "t2_is":  {"min" : 0.01, "max" : 100},
+    "t2_boc": {"min" : 0.01, "max" : 0.5},
+    "t2_soc": {"min" : 0.01, "max" : 0.5},
+    "t2_soh": {"min" : 0,    "max" : 50 },
+    # tank-3
+    "t3_is":  {"min" : 0.01, "max" : 100},
+    "t3_soc": {"min" : 0.01, "max" : 0.5}
+}
 
-    class t1:
-        class _is: 
-            _min = 0.01
-            _max = 100
-        class _boc:
-            _min = 0.01
-            _max = 0.5
-        class _soc:
-            _min = 0.01
-            _max = 0.5
-        class _soh:
-            _min = 0
-            _max = 50
 
-    class t2:
-        class _is: 
-            _min = 0.01
-            _max = 100
-        class _boc:
-            _min = 0.01
-            _max = 0.5
-        class _soc:
-            _min = 0.01
-            _max = 0.5
-        class _soh:
-            _min = 0
-            _max = 50
-
-    class t3:
-        class _is:
-            _min = 0.01
-            _max = 100
-        class _soc:
-            _min = 0.01
-            _max = 0.5
 
 tank_lb = np.array([
             
-            # [Tank-0] 
-    TankParamBounds.t0._is._min,
-    TankParamBounds.t0._boc._min,
-    TankParamBounds.t0._soc._uo._min,
-    TankParamBounds.t0._soc._lo._min,
-    TankParamBounds.t0._soh._uo._min,
-    TankParamBounds.t0._soh._lo._min,
+    # [Tank-0] 
+    tank_param_bounds['t0_is']['min'],
+    tank_param_bounds['t0_boc']['min'],
+    tank_param_bounds['t0_soc_uo']['min'],
+    tank_param_bounds['t0_soc_lo']['min'],
+    tank_param_bounds['t0_soh_uo']['min'],
+    tank_param_bounds['t0_soh_lo']['min'],
             
-            # [Tank-1]
-    TankParamBounds.t1._is._min,
-    TankParamBounds.t1._boc._min,
-    TankParamBounds.t1._soc._min,
-    TankParamBounds.t1._soh._min,
+    # [Tank-1]
+    tank_param_bounds['t1_is']['min'],
+    tank_param_bounds['t1_boc']['min'],
+    tank_param_bounds['t1_soc']['min'],
+    tank_param_bounds['t1_soh']['min'],
             
-            # [Tank-2]
-    TankParamBounds.t2._is._min,
-    TankParamBounds.t2._boc._min,
-    TankParamBounds.t2._soc._min,
-    TankParamBounds.t2._soh._min,
+    # [Tank-2]
+    tank_param_bounds['t2_is']['min'],
+    tank_param_bounds['t2_boc']['min'],
+    tank_param_bounds['t2_soc']['min'],
+    tank_param_bounds['t2_soh']['min'],
             
-            # [Tank-3]
-    TankParamBounds.t3._is._min,
-    TankParamBounds.t3._soc._min,
+    # [Tank-3]
+    tank_param_bounds['t3_is']['min'],
+    tank_param_bounds['t3_soc']['min'],
 
-    ])
+])
 
 
 
 tank_ub = np.array([ 
             
-            # [Tank-0] 
-    TankParamBounds.t0._is._max,
-    TankParamBounds.t0._boc._max,
-    TankParamBounds.t0._soc._uo._max,
-    TankParamBounds.t0._soc._lo._max,
-    TankParamBounds.t0._soh._uo._max,
-    TankParamBounds.t0._soh._lo._max,
+    # [Tank-0] 
+    tank_param_bounds['t0_is']['max'],
+    tank_param_bounds['t0_boc']['max'],
+    tank_param_bounds['t0_soc_uo']['max'],
+    tank_param_bounds['t0_soc_lo']['max'],
+    tank_param_bounds['t0_soh_uo']['max'],
+    tank_param_bounds['t0_soh_lo']['max'],
             
-            # [Tank-1]
-    TankParamBounds.t1._is._max,
-    TankParamBounds.t1._boc._max,
-    TankParamBounds.t1._soc._max,
-    TankParamBounds.t1._soh._max,
+    # [Tank-1]
+    tank_param_bounds['t1_is']['max'],
+    tank_param_bounds['t1_boc']['max'],
+    tank_param_bounds['t1_soc']['max'],
+    tank_param_bounds['t1_soh']['max'],
             
-            # [Tank-2]
-    TankParamBounds.t2._is._max,
-    TankParamBounds.t2._boc._max,
-    TankParamBounds.t2._soc._max,
-    TankParamBounds.t2._soh._max,
+    # [Tank-2]
+    tank_param_bounds['t2_is']['max'],
+    tank_param_bounds['t2_boc']['max'],
+    tank_param_bounds['t2_soc']['max'],
+    tank_param_bounds['t2_soh']['max'],
             
-            # [Tank-3]
-    TankParamBounds.t3._is._max,
-    TankParamBounds.t3._soc._max,
-
+    # [Tank-3]
+    tank_param_bounds['t3_is']['max'],
+    tank_param_bounds['t3_soc']['max'],
 ])
 
 # CHANNEL - Muskingum
 
-class MuskingumParamBound:
-    class K:
-        _min = 0
-        _max = 0.5
-    
-    class X:
-        _min = 0
-        _max = 5
+muskingum_param_bound = {
+    "k" : {"min": 0, "max": 5},
+    "x" : {"min": 0, "max": 0.5}
+
+}
 
 muskingum_lb = np.array([
-    MuskingumParamBound.K._min,
-    MuskingumParamBound.K._max,
+    muskingum_param_bound["k"]["min"],
+    muskingum_param_bound["x"]["min"],
 ])
 
 
 muskingum_ub = np.array([
-    MuskingumParamBound.K._max,
-    MuskingumParamBound.K._min,
+    muskingum_param_bound["k"]["max"],
+    muskingum_param_bound["x"]["max"],
 ])
-
 
 
 DATE_FMT = '%Y-%m-%dT%H:%M:%S.%fZ'
