@@ -87,13 +87,12 @@ class autoARIMA(object):
         return self
 
     def saveModel(self,fileName):
-    	with open(fileName,'wb') as outModelFile:
-    		pickle.dump(self,outModelFile,pickle.HIGHEST_PROTOCOL)
-
+        with open(fileName,'wb') as outModelFile:
+            pickle.dump(self,outModelFile,pickle.HIGHEST_PROTOCOL)
 
     def loadModel(self,fileName):
-    	with open(fileName,'rb') as inModelFile:
-    		self = pickle.load(inModelFile)
+        with open(fileName,'rb') as inModelFile:
+            self = pickle.load(inModelFile)
 
 
     

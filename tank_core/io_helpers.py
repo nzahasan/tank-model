@@ -7,7 +7,7 @@ from datetime import datetime as dt
 from tank_core.global_config import FLOAT_FMT,DATE_FMT
 
 
-def read_ts_file(file_path:str)-> tuple:
+def read_ts_file(file_path:str, check_time_diff=True)-> tuple:
     '''
         reads model input/output timeseries files (precip, et, discharge, result etc.)
         returns tuple(dataframe, del_time[seconds])
@@ -24,12 +24,12 @@ def read_ts_file(file_path:str)-> tuple:
     df.sort_index(inplace=True)
 
     # check if missing date
-    t_diff = np.diff(df.index.values, n=1)
+    t_diff = np.diff(df.index.values, n=1).astype('timedelta64[h]')
 
-    if not np.all(t_diff==t_diff[0]):
+    if check_time_diff and not np.all(t_diff==t_diff[0]):
         raise Exception('Time difference is not equal, possible missing values')
 
-    return (df , t_diff[0]/np.timedelta64(1,'s') )
+    return (df , t_diff[0] ) if check_time_diff else (df, np.nan)
 
 
 def write_ts_file(df:pd.DataFrame,file_path:str)->int:

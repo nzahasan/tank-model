@@ -3,10 +3,13 @@ import numpy as np
 
 '''
 This file contains parameter bounds &
-necessary parameter defination 
-and variables
+necessary parameter defination  and variables
+'''
 
 
+# Basin - TANK
+
+'''
 Parameter order & description of vertical tanks:
 
 t0 (6)
@@ -33,11 +36,7 @@ t2 (4)
 t3 (2)
     - is  : initial storage
     - soc : side outlet coefficient [1]
-
 '''
-
-
-# TANK
 
 tank_param_bounds = {
     # tank-0
@@ -48,26 +47,26 @@ tank_param_bounds = {
     "t0_soh_uo" : {"min" : 25,   "max" : 50 },
     "t0_soh_lo":  {"min" : 0,    "max" : 20 },
 
-    #tank-1
-    "t1_is":  {"min" : 0.01, "max" : 100},
-    "t1_boc": {"min" : 0.01, "max" : 0.5},
-    "t1_soc": {"min" : 0.01, "max" : 0.5},
-    "t1_soh": {"min" : 0,    "max" : 50 },
+    # tank-1
+    "t1_is":      {"min" : 0.01, "max" : 100},
+    "t1_boc":     {"min" : 0.01, "max" : 0.5},
+    "t1_soc":     {"min" : 0.01, "max" : 0.5},
+    "t1_soh":     {"min" : 0,    "max" : 50 },
     
-    #tank-2
-    "t2_is":  {"min" : 0.01, "max" : 100},
-    "t2_boc": {"min" : 0.01, "max" : 0.5},
-    "t2_soc": {"min" : 0.01, "max" : 0.5},
-    "t2_soh": {"min" : 0,    "max" : 50 },
+    # tank-2
+    "t2_is":      {"min" : 0.01, "max" : 100},
+    "t2_boc":     {"min" : 0.01, "max" : 0.5},
+    "t2_soc":     {"min" : 0.01, "max" : 0.5},
+    "t2_soh":     {"min" : 0,    "max" : 50 },
+    
     # tank-3
-    "t3_is":  {"min" : 0.01, "max" : 100},
-    "t3_soc": {"min" : 0.01, "max" : 0.5}
+    "t3_is":      {"min" : 0.01, "max" : 100},
+    "t3_soc":     {"min" : 0.01, "max" : 0.5}
 }
 
 
 
 tank_lb = np.array([
-            
     # [Tank-0] 
     tank_param_bounds['t0_is']['min'],
     tank_param_bounds['t0_boc']['min'],
@@ -97,7 +96,6 @@ tank_lb = np.array([
 
 
 tank_ub = np.array([ 
-            
     # [Tank-0] 
     tank_param_bounds['t0_is']['max'],
     tank_param_bounds['t0_boc']['max'],
@@ -123,7 +121,7 @@ tank_ub = np.array([
     tank_param_bounds['t3_soc']['max'],
 ])
 
-# CHANNEL - Muskingum
+# Chanel - MUSKINGUM
 
 muskingum_param_bound = {
     "k" : {"min": 0, "max": 5},
@@ -142,6 +140,7 @@ muskingum_ub = np.array([
     muskingum_param_bound["x"]["max"],
 ])
 
+# Other Configs
 
 DATE_FMT = '%Y-%m-%dT%H:%M:%S.%fZ'
 FLOAT_FMT = '%.3f'

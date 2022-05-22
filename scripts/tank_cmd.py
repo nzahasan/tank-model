@@ -93,10 +93,14 @@ def compute(project_file):
     basin = read_basin_file(basin_file)
     precipitation, dt_pr = read_ts_file(precipitation_file)
     evapotranspiration, dt_et = read_ts_file(evapotranspiration_file)
+    discharge, _ = read_ts_file(discharge_file,check_time_diff=False)
     del_t = project['interval']
 
 
     computation_result = compute_project(basin, precipitation, evapotranspiration, del_t)
+    statistics = compute_statistics(basin=basin, result=computation_result, discharge=discharge)
+
+    print(statistics)
 
     write_ts_file(computation_result,result_file)
     
@@ -129,7 +133,7 @@ def plot_result(project_file):
 
 @cli.command()
 @click.option('-pf', '--project-file', help="project file")
-def optimize_project(project_file):
+def optimize(project_file):
     
     project = read_project_file(project_file)
     compute_project(project)

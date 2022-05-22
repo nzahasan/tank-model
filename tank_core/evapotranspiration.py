@@ -48,14 +48,14 @@ def ext_ra(date:datetime,lat:float):
 
     _f = (2*pi*jul_day) / 365
     
-    dr      = 1 + 0.033 * cos( _f )                  # inv. rel. distance Earth-Sun
+    dr      = 1 + 0.033 * cos( _f )                   # inv. rel. distance Earth-Sun
 
-    sda     = 0.409 * sin( _f - 1.39 )               # solar declination angle (δ)
+    sda     = 0.409 * sin( _f - 1.39 )                # solar declination angle (δ)
 
     # can return undefined 
-    sha     = acos( -1*tan(lat_r) * tan(sda) )         # sunset hour angle (ωs)
+    sha     = acos( -1*tan(lat_r) * tan(sda) )        # sunset hour angle (ωs)
 
-    ext_ra  = (1440/pi) * gsc * dr * (               # extraterrestial radiation daily
+    ext_ra  = (1440/pi) * gsc * dr * (                # extraterrestial radiation daily
                 sha * sin(lat_r) * sin(sda) 
                 + 
                 sin(sha) * cos(lat_r) * cos(sda) 

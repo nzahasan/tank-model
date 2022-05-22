@@ -5,3 +5,5 @@ fiona
 shapely
 pyscissor
 click
+dash
+plotly

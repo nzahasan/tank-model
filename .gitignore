@@ -26,3 +26,5 @@ env/
 data/*.csv
 tmp_dir
 
+#notebooks
+.ipynb_checkpoints/

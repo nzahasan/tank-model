@@ -4,3 +4,4 @@
 *.pyc binary
 *.T linguist-vendored
 *.sh linguist-vendored
+*.ipynb linguist-vendored
