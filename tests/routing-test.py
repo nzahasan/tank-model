@@ -1,9 +1,5 @@
-
-import sys
-sys.path.append('..')
-
 import numpy as np
-import src.channel_routing as cr
+import tank_core.channel_routing as cr
 
 def main():
 

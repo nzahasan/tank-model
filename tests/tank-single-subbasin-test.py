@@ -1,9 +1,7 @@
-import sys
-sys.path.append('../')
-import TankModel as TM
+
+from tank_core import tank_basin as TM
 import pylab as pl
 import pandas as pd 
-pl.style.use('seaborn')
 import numpy as np
 
 def main():

@@ -4,11 +4,9 @@
 '''
 
 import numpy as np
+from .utils import shape_alike
 
 
-def shape_alike(x:np.ndarray,y:np.ndarray) -> bool:
-    # checks if x,y numpy array are of same shape
-    return True if x.shape == y.shape else False
         
 
 def tank_discharge(

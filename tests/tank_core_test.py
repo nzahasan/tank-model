@@ -1,10 +1,8 @@
-import sys
-import os
-sys.path.append('../')
 
-import src.tank_core as tc
 
-import src.global_parameters as gp
+import tank_core as tc
+
+import tank_core.global_config as gp
 
 
 import pandas as pd

@@ -140,7 +140,15 @@ muskingum_ub = np.array([
     muskingum_param_bound["x"]["max"],
 ])
 
-# Other Configs
+
+TANK_PARAMETER_ORDER = [
+    't0_is', 't0_boc', 't0_soc_uo', 't0_soc_lo', 't0_soh_uo', 't0_soh_lo', 
+    't1_is', 't1_boc', 't1_soc', 't1_soh', 
+    't2_is', 't2_boc', 't2_soc', 't2_soh', 
+    't3_is', 't3_soc'
+]
+
+MUSKINGUM_PARAMETER_ORDER = ['k', 'x']
 
 DATE_FMT = '%Y-%m-%dT%H:%M:%S.%fZ'
 FLOAT_FMT = '%.3f'

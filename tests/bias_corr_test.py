@@ -1,6 +1,6 @@
 import sys
-sys.path.append('../')
-from BiasCorrection import GQM
+
+from tank_core.bias_correction import GQM
 
 import pandas as pd 
 

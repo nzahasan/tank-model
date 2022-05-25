@@ -1,76 +1,8 @@
 from . import global_config as gc
-
-def tank_param_list2dict(parameters:list)->dict:
-
-
-    return {
-        # [Tank-0]
-        "t0_is"     : parameters[0],
-        "t0_boc"    : parameters[1],
-        "t0_soc_uo" : parameters[2],
-        "t0_soc_lo" : parameters[3], 
-        "t0_soh_uo" : parameters[4],
-        "t0_soh_lo" : parameters[5],
-            
-        # [Tank-1]
-        "t1_is"     : parameters[6],
-        "t1_boc"    : parameters[7],
-        "t1_soc"    : parameters[8],
-        "t1_soh"    : parameters[9],
-                
-        # [Tank-2]
-        "t2_is"     : parameters[10],
-        "t2_boc"    : parameters[11],
-        "t2_soc"    : parameters[12],
-        "t2_soh"    : parameters[13],
-                
-        # [Tank-3]
-        "t3_is"     : parameters[14],
-        "t3_soc"    : parameters[15],
-    }
-
-def tank_param_dict2list(parameters:dict)->list:
-
-    return [
-        # [Tank-0]
-        parameters["t0_is"],    
-        parameters["t0_boc"],   
-        parameters["t0_soc_uo"],
-        parameters["t0_soc_lo"],
-        parameters["t0_soh_uo"],
-        parameters["t0_soh_lo"],
-            
-        # [Tank-1]
-        parameters["t1_is"],    
-        parameters["t1_boc"],   
-        parameters["t1_soc"],   
-        parameters["t1_soh"],   
-                
-        # [Tank-2]
-        parameters["t2_is"],    
-        parameters["t2_boc"],   
-        parameters["t2_soc"],   
-        parameters["t2_soh"],   
-                
-        # [Tank-3]
-        parameters["t3_is"],    
-        parameters["t3_soc"],   
-    ]
-
-
-def muskingum_param_list2dict(parameters:list)->dict:
-
-    return {
-        "k" : parameters[0],
-        "x" : parameters[1],
-    }
-
-def muskingum_param_dict2list(parameters:dict)->list:
-
-    return [
-        parameters["k"], 
-        parameters["x"], 
-    ]
+from .utils import (
+    muskingum_param_list2dict,
+    tank_param_list2dict,
+)
 
 
 # converts hec-hms basin to tank basin defination

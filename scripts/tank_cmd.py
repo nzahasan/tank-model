@@ -5,12 +5,17 @@ Command line utility for model operation
 
 import json, os, click
 from click.decorators import option
-from tank_core.computation_helpers import compute_project, compute_statistics
-from tank_core.io_helpers import (read_project_file, 
-                                read_basin_file, 
-                                read_ts_file, 
-                                write_ts_file
-                            )
+from tank_core.computation_helpers import (
+    compute_project,
+    compute_statistics,
+    optimize_project
+)
+from tank_core.io_helpers import (
+    read_project_file, 
+    read_basin_file, 
+    read_ts_file, 
+    write_ts_file
+)
 from tank_core.project_helpers import hms_basin_to_tank_basin
 import tank_core.global_config as gc
 
@@ -102,7 +107,10 @@ def compute(project_file):
 
     print(statistics)
 
-    write_ts_file(computation_result,result_file)
+    with open(statistics_file,'w') as sfwb:
+        json.dump(statistics, sfwb, indent=2)
+    
+        
     
     # always calculate statistics based on the availablity of data in discharge file!!
 
@@ -135,8 +143,21 @@ def plot_result(project_file):
 @click.option('-pf', '--project-file', help="project file")
 def optimize(project_file):
     
+    project_dir = os.path.dirname(os.path.abspath(project_file))
+    
+
     project = read_project_file(project_file)
-    compute_project(project)
+    
+    basin_file = os.path.join(project_dir, project['basin'])
+    precipitation_file = os.path.join(project_dir, project['precipitation'])
+    evapotranspiration_file = os.path.join(project_dir, project['evapotranspiration'])
+    discharge_file = os.path.join(project_dir, project['discharge'])
+    statistics_file = os.path.join(project_dir, project['statistics'])
+    result_file = os.path.join(project_dir, project['result'])
+
+    basin = read_basin_file(basin_file)
+
+    optimize_project(basin)
 
 
 if __name__ == '__main__':

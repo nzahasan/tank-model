@@ -1,9 +1,15 @@
 from queue import Queue
 import pandas as pd
-from tank_core.tank_basin import tank_discharge
-from tank_core.channel_routing import muskingum
+from .tank_basin import tank_discharge
+from .channel_routing import muskingum
 
-from tank_core.cost_functions import R2, RMSE, NSE
+from .utils import (
+    tank_param_dict2list,
+    tank_param_list2dict, 
+    muskingum_param_dict2list,
+    muskingum_param_list2dict
+)
+from .cost_functions import R2, RMSE, NSE
 import numpy as np
 
 def check_input_consistancey():
@@ -72,8 +78,8 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
             print(curr_node_def['type'],"compute tank for basin", curr_node_name)
              
             computation_result[curr_node_name] = tank_discharge(
-                precipitation = precipitation[curr_node_name].values,
-                evapotranspiration = evapotranspiration[curr_node_name].values, 
+                precipitation = precipitation[curr_node_name].to_numpy(),
+                evapotranspiration = evapotranspiration[curr_node_name].to_numpy(), 
                 del_t = del_t,
                 area = curr_node_def['area'],
                 ** curr_node_def['parameters']
@@ -87,7 +93,7 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
             
             for us_node_name in curr_node_def['upstream']:
                 sum_node += muskingum( 
-                    in_flow= computation_result[us_node_name].values,
+                    in_flow= computation_result[us_node_name].to_numpy(),
                     del_t=del_t,
                     ** curr_node_def['parameters']
                 )
@@ -103,7 +109,7 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
             sum_node = np.zeros(n_step, dtype=np.float64)
             
             for us_node_name in curr_node_def['upstream']:
-                sum_node += computation_result[us_node_name].values
+                sum_node += computation_result[us_node_name].to_numpy()
             
             computation_result[curr_node_name] = sum_node
 
@@ -115,7 +121,7 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
     
 
 
-def compute_statistics(basin:dict,result:pd.DataFrame, discharge:pd.DataFrame)->dict:
+def compute_statistics(basin:dict, result:pd.DataFrame, discharge:pd.DataFrame)->dict:
 
     # merge using index
     merged = pd.merge(
@@ -136,9 +142,9 @@ def compute_statistics(basin:dict,result:pd.DataFrame, discharge:pd.DataFrame)->
 
         if obs_key in merged_keys and sim_key in merged_keys:
             statistics[node]={
-                "RMSE": RMSE(merged[obs_key].values,merged[sim_key].values),
-                "NSE": NSE(merged[sim_key].values,merged[obs_key].values ),
-                "R2": R2(merged[sim_key].values,merged[obs_key].values )
+                "RMSE": RMSE(merged[obs_key].to_numpy(), merged[sim_key].to_numpy()),
+                "NSE" : NSE(merged[sim_key].to_numpy(), merged[obs_key].to_numpy() ),
+                "R2"  : R2(merged[sim_key].to_numpy(), merged[obs_key].to_numpy() )
             }
 
     return statistics
@@ -146,15 +152,60 @@ def compute_statistics(basin:dict,result:pd.DataFrame, discharge:pd.DataFrame)->
 
 # optimization
 
-def stack_parameter(basin:dict):
+def stack_parameter(basin:dict)->tuple:
 
-    pass 
+    node_order = []
+    parameters = []
+    basin_def = basin['basin_def']
 
-def update_basin_parameter(basin:dict):
+    for node in basin_def.keys():
+
+        node_type = basin_def[node]['type']
+        
+        if node_type in ['Subbasin', 'Reach']:
+        
+            node_order.append(node)
+            
+            if node_type == 'Subbasin':
+                parameters = [
+                    *parameters, 
+                    *tank_param_dict2list(basin_def[node]['parameters'])
+                ]
+            
+            elif node_type == 'Reach':
+                parameters = [
+                    *parameters, 
+                    *muskingum_param_dict2list(basin_def[node]['parameters'])
+                ]
+                
+    # node order, parameters
+    return (node_order, parameters) 
+
+def update_basin_parameter(basin:dict, stacked_parameter:tuple)->dict:
+    
+    node_order, parameters = stacked_parameter
+
     pass
+
+
+
+
+def model_stat_by_parameter(
+        stacked_parameter:list, basin:dict,
+        rainfall:pd.DataFrame, evapotranspipraton:pd.DataFrame, 
+        discharge:pd.DataFrame, objective_function:str)->float:
+    
+
+    
+    
+    pass
+
+
 
 def optimize_project(basin:dict):
 
+    r = stack_parameter(basin)
+    print(r)
     # stacked_parameters = 
     pass
 
