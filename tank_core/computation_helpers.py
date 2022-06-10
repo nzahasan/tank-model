@@ -1,4 +1,10 @@
+# -*- coding: utf-8 -*-
+'''
+Helper functions for computation
+'''
+from inspect import stack
 from queue import Queue
+from turtle import update
 import pandas as pd
 from .tank_basin import tank_discharge
 from .channel_routing import muskingum
@@ -10,7 +16,14 @@ from .utils import (
     muskingum_param_list2dict
 )
 from .cost_functions import R2, RMSE, NSE
+from .global_config  import (
+    NUM_PARAMETER, 
+    tank_ub, tank_lb,
+    muskingum_ub, muskingum_lb
+)
 import numpy as np
+
+from scipy.optimize import minimize, shgo,dual_annealing
 
 def check_input_consistancey():
 
@@ -150,12 +163,12 @@ def compute_statistics(basin:dict, result:pd.DataFrame, discharge:pd.DataFrame)-
     return statistics
 
 
-# optimization
 
-def stack_parameter(basin:dict)->tuple:
+# creates a single list of parameter stacking each nodes parameter
+def parameter_stack(basin:dict)->tuple:
 
-    node_order = []
-    parameters = []
+    node_order_type = []
+    stacked_parameter = []
     basin_def = basin['basin_def']
 
     for node in basin_def.keys():
@@ -163,49 +176,140 @@ def stack_parameter(basin:dict)->tuple:
         node_type = basin_def[node]['type']
         
         if node_type in ['Subbasin', 'Reach']:
-        
-            node_order.append(node)
             
             if node_type == 'Subbasin':
-                parameters = [
-                    *parameters, 
-                    *tank_param_dict2list(basin_def[node]['parameters'])
-                ]
+                stacked_parameter.extend(
+                    tank_param_dict2list(basin_def[node]['parameters'])
+                )
             
             elif node_type == 'Reach':
-                parameters = [
-                    *parameters, 
-                    *muskingum_param_dict2list(basin_def[node]['parameters'])
-                ]
+                stacked_parameter.extend(
+                    muskingum_param_dict2list(basin_def[node]['parameters'])
+                )
+            # append to node order
+            node_order_type.append((node, node_type ))
+            
                 
-    # node order, parameters
-    return (node_order, parameters) 
+    # node order, stacked_parameter
+    return (node_order_type, stacked_parameter) 
 
-def update_basin_parameter(basin:dict, stacked_parameter:tuple)->dict:
+# Unstacks parameters stacked by parameter_stack function 
+def parameter_unstack(node_order_type:list, stacked_parameter:list)->dict:
     
-    node_order, parameters = stacked_parameter
+    unstacked_parameter = dict()
+    
+    # later have to change this if other routhing method is added
+    conv_fn = {
+        'Subbasin': tank_param_list2dict,
+        'Reach': muskingum_param_list2dict
+    }
+    offset = 0
+    for node, node_type  in node_order_type:
 
-    pass
+        num_parameter = NUM_PARAMETER[node_type]
+        unstacked_parameter[node] = conv_fn[node_type](stacked_parameter[offset:offset+num_parameter])
+        offset += num_parameter 
+
+        
+    return unstacked_parameter
+
+def update_basin_with_unstacked_parameter(basin:dict, unstacked_parameter:dict)->dict:
+    print(unstacked_parameter)
+    for node in unstacked_parameter.keys():
+        
+        basin['basin_def'][node]['parameters'] = unstacked_parameter[node]
 
 
+    return basin
 
+def update_basin_with_stacked_parameter(basin:dict, node_order_type:list, stacked_parameter:dict)->dict:
+    
+    conv_fn = {
+        'Subbasin': tank_param_list2dict,
+        'Reach': muskingum_param_list2dict
+    }
+    offset = 0
+    for node, node_type  in node_order_type:
 
-def model_stat_by_parameter(
-        stacked_parameter:list, basin:dict,
-        rainfall:pd.DataFrame, evapotranspipraton:pd.DataFrame, 
-        discharge:pd.DataFrame, objective_function:str)->float:
+        num_parameter = NUM_PARAMETER[node_type]
+        basin['basin_def'][node]['parameters'] = conv_fn[node_type](stacked_parameter[offset:offset+num_parameter])
+        offset += num_parameter
     
 
+    return basin
+
+
+
+def stat_by_stacked_parameter(
+        stacked_parameter:list, node_order_type:list, basin:dict,
+        rainfall:pd.DataFrame, evapotranspiration:pd.DataFrame, 
+        discharge:pd.DataFrame, )->float:
     
+    updated_basin = update_basin_with_stacked_parameter(basin, node_order_type, stacked_parameter)
+    # updated_basin = basin
     
-    pass
+    result = compute_project(updated_basin,rainfall,evapotranspiration,24.0)
+
+    # merge using index
+    merged = pd.merge(
+        result,discharge, 
+        how='inner', 
+        left_index=True, 
+        right_index=True, 
+        suffixes=('_sim', '_obs')
+    )
+
+    return 1-NSE(merged['BAHADURABAD_sim'].to_numpy(),merged['BAHADURABAD_obs'].to_numpy())
 
 
 
-def optimize_project(basin:dict):
+def optimize_project(basin:dict, precipitation, evapotranspiration, discharge):
 
-    r = stack_parameter(basin)
-    print(r)
-    # stacked_parameters = 
-    pass
 
+    node_order_type, stacked_parameter = parameter_stack(basin)
+    
+    upper_bound_stacked = list()
+    lower_bound_stacked = list()
+    
+    for _, node_type in node_order_type:
+
+        if node_type == 'Subbasin':
+            
+            upper_bound_stacked.extend(tank_ub.tolist())
+            lower_bound_stacked.extend(tank_lb.tolist())
+
+        if node_type == 'Reach':
+            upper_bound_stacked.extend(muskingum_ub.tolist())
+            lower_bound_stacked.extend(muskingum_lb.tolist())
+    
+    initialGuess = np.array(stacked_parameter)
+    
+
+    paramBounds = np.column_stack((lower_bound_stacked,upper_bound_stacked))
+    print(initialGuess.shape, paramBounds.shape)
+    print('optimizing')
+    # optimizer = minimize(stat_by_stacked_parameter, initialGuess,
+    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
+    #         method='L-BFGS-B',
+    #         bounds=paramBounds
+    #     )
+
+    # optimizer = minimize(stat_by_stacked_parameter, initialGuess,
+    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
+    #         method='powell',
+    #     )
+
+    optimizer = dual_annealing(stat_by_stacked_parameter, bounds=paramBounds,
+            args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
+            
+        )
+
+    
+    return update_basin_with_stacked_parameter(basin, node_order_type, optimizer.x)
+
+    # print(
+    #     stat_by_stacked_parameter(
+    #         stacked_parameter, node_order_type, basin,
+    #         precipitation, evapotranspiration, discharge
+    #         )
+    # )

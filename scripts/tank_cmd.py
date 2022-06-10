@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 '''
 Command line utility for model operation
+Supports:
+    - Generation of new project
+    - Compute project
+    - Optimize basin paramemeters
+    - Plot project results
 '''
 
 import json, os, click
@@ -21,9 +26,7 @@ import tank_core.global_config as gc
 
 
 @click.group()
-def cli(): 
-    """Utility tool for tank-model"""
-    pass
+def cli(): pass
     
 
 # -- Project Generation -- #
@@ -49,13 +52,13 @@ def new_project(project_name):
     """creates a project directory generates a json formatted project file"""
 
     project  = {
-        "interval": 24.0, # time interval in hour :float
-        "basin": f'{project_name}.basin.json', #basin path :JSON
-        "precipitation": f'{project_name}.pr.csv', #precipitation path :CSV
-        "evapotranspiration": f'{project_name}.et.csv', #evapotranspiration path :CSV
-        "discharge": f'{project_name}.q.csv', # observered discharge path :CSV
-        "result": f'{project_name}.result.csv', # output file for discharge :CSV
-        "statistics": f'{project_name}.stats.json' # statistics calculated form observed discharge :JSON
+        "interval"           : 24.0,                         # time interval in hour :float
+        "basin"              : f'{project_name}.basin.json', #basin path :JSON
+        "precipitation"      : f'{project_name}.pr.csv',     #precipitation path :CSV
+        "evapotranspiration" : f'{project_name}.et.csv',     #evapotranspiration path :CSV
+        "discharge"          : f'{project_name}.q.csv',      # observered discharge path :CSV
+        "result"             : f'{project_name}.result.csv', # output file for discharge :CSV
+        "statistics"         : f'{project_name}.stats.json'  # statistics calculated form observed discharge :JSON
     }
     
     if not os.path.exists(project_name):
@@ -121,19 +124,23 @@ def plot_result(project_file):
     project_dir = os.path.dirname(os.path.abspath(project_file))
     project = read_project_file(project_file)
     result_file = os.path.join(project_dir, project['result'])
+    discharge_file = os.path.join(project_dir, project['discharge'])
 
     result,_ = read_ts_file(result_file)
 
     import pandas as pd
-    dis = pd.read_csv('/Users/nzahasan/Development/tank-model/tmp_dir/discharge.csv',
+    dis = pd.read_csv(discharge_file,
     parse_dates=True,index_col=['Time'])
 
-    print(dis.index)
-    print(result.index)
+    # print(dis.index)
+    # print(result.index)
 
     import pylab as pl
+    pl.style.use('bmh')
+    pl.tight_layout()
+    pl.figure(figsize=(15,6))
     pl.plot(result.index,result['BAHADURABAD'],label='Bahadurabad')
-    pl.plot(dis.index, dis['Discharge'],label='observed')
+    pl.plot(dis.index, dis['BAHADURABAD'],label='observed')
     pl.legend()
     pl.show()
 
@@ -155,9 +162,18 @@ def optimize(project_file):
     statistics_file = os.path.join(project_dir, project['statistics'])
     result_file = os.path.join(project_dir, project['result'])
 
+    precipitation, dt_pr = read_ts_file(precipitation_file)
+    evapotranspiration, dt_et = read_ts_file(evapotranspiration_file)
+    discharge, _ = read_ts_file(discharge_file,check_time_diff=False)
+
     basin = read_basin_file(basin_file)
 
-    optimize_project(basin)
+
+
+    optimized_basin = optimize_project(basin, precipitation, evapotranspiration, discharge )
+
+    with open(basin_file,'w') as wf:
+        json.dump(optimized_basin, wf)
 
 
 if __name__ == '__main__':

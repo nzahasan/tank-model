@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+'''
+Healpers function for file i/o required by model
+'''
 import numpy as np
 import pandas as pd 
 import json

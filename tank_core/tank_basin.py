@@ -1,13 +1,17 @@
+# -*- coding: utf-8 -*-
 '''
  Core computation module for Tank Hydrologic model
  proposed by Sugawara and Funiyuki (1956)
+
+ References:
+ - A conceptual rainfall-runoff model considering seasonal variation
+    (Kyungrock Paik, Joong H. Kim, Hung S. Kim and Dong R. Lee)
 '''
 
 import numpy as np
 from .utils import shape_alike
 
 
-        
 
 def tank_discharge(
     # time series information [should be of regular interval]
@@ -47,16 +51,15 @@ def tank_discharge(
     
     # calculate timestep length
     
-    if shape_alike(precipitation, evapotranspiration):
-        time_step = precipitation.shape[0]
-    else:
-        print('ERROR 1001: length mismatch between precipitation and evapotranspiration data')
-        return -1
-
+    if not shape_alike(precipitation, evapotranspiration):
+    
+        raise ValueError('ERROR 1001: length mismatch between precipitation and evapotranspiration data')    
+    
+    time_step = precipitation.shape[0]
 
     # check for parameter: for Tank-0
     if t0_soh_uo < t0_soh_lo:
-        print('WARNING 5001: Parameter error upper outlet height is less than lower outlet height (Tank 0)')
+        print('WARNING 5001: Invalid parameter upper outlet height is less than lower outlet height (Tank 0)')
 
     tank_storage       = np.zeros((time_step,4),dtype=np.float64)
     side_outlet_flow   = np.zeros((time_step,4),dtype=np.float64) 
@@ -164,7 +167,7 @@ def tank_discharge(
             side_outlet_flow[t,2] = 0
             
         
-        # [TANK 3 : baseflow] 
+        # TANK 3 : baseflow 
         
         '''
         Side outlet height = 0

@@ -1,6 +1,6 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 from scipy.stats import gamma
-
 
 class gqm(object):
     
@@ -38,7 +38,7 @@ class gqm(object):
         
         return self
 
-    def set_params(self,obs_param_arr,sim_param_arr):
+    def set_params(self,obs_param_arr:np.ndarray,sim_param_arr:np.ndarray)->object:
 
         self.obs_param['a'] = obs_param_arr[0]
         self.obs_param['b'] = obs_param_arr[1]
@@ -50,7 +50,7 @@ class gqm(object):
 
         return self
 
-    def correct(self,simVal):
+    def correct(self,simVal:float)->float:
         
         delC = self.sim_param['c']-self.obs_param['c']
         simValCDF = gamma.cdf(simVal,a=self.sim_param['a'],scale=self.sim_param['b'],loc=0)

@@ -1,11 +1,10 @@
-import numpy as np
-
-
+# -*- coding: utf-8 -*-
 '''
 This file contains parameter bounds &
 necessary parameter defination  and variables
 '''
 
+import numpy as np
 
 # Basin - TANK
 
@@ -142,13 +141,22 @@ muskingum_ub = np.array([
 
 
 TANK_PARAMETER_ORDER = [
+    # T-0
     't0_is', 't0_boc', 't0_soc_uo', 't0_soc_lo', 't0_soh_uo', 't0_soh_lo', 
+    #T-1
     't1_is', 't1_boc', 't1_soc', 't1_soh', 
+    #T-2
     't2_is', 't2_boc', 't2_soc', 't2_soh', 
+    #T-3
     't3_is', 't3_soc'
 ]
 
 MUSKINGUM_PARAMETER_ORDER = ['k', 'x']
+
+NUM_PARAMETER = {
+    'Subbasin': len(TANK_PARAMETER_ORDER),
+    'Reach': len(MUSKINGUM_PARAMETER_ORDER)
+}
 
 DATE_FMT = '%Y-%m-%dT%H:%M:%S.%fZ'
 FLOAT_FMT = '%.3f'

@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+'''
+Helper functions for project creation
+'''
 from . import global_config as gc
 from .utils import (
     muskingum_param_list2dict,

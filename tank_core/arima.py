@@ -1,13 +1,4 @@
-#! /usr/bin/env python3
-
-import pickle
-import warnings
-import numpy as np
-from statsmodels.tsa.arima_model import ARIMA
-from statsmodels.tsa.stattools import adfuller
-warnings.filterwarnings("ignore") 
-
-
+# -*- coding: utf-8 -*-
 '''
 Time series error Correction Module for model
 ---------------------------------------------
@@ -17,6 +8,13 @@ ARIMA(p,d,q)
     q - moving average part
 
 '''
+import pickle
+import warnings
+import numpy as np
+from statsmodels.tsa.arima_model import ARIMA
+from statsmodels.tsa.stattools import adfuller
+warnings.filterwarnings("ignore") 
+
 
 class autoARIMA(object):
 

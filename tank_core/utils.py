@@ -1,4 +1,7 @@
-'''Collection of some utility function'''
+# -*- coding: utf-8 -*-
+'''
+Collection of some utility function
+'''
 
 import numpy as np
 from .global_config import TANK_PARAMETER_ORDER

@@ -10,7 +10,16 @@
     3. https://www.sciencedirect.com/topics/engineering/solar-hour-angle#tp-snippet-chp-title-B9780080253886500490
 '''
 
-from math import sqrt,pi,radians,sin,cos,tan,acos,atan,sqrt
+from math import (
+    sqrt,
+    pi,
+    radians,
+    sin,
+    cos,
+    tan,
+    acos,
+    sqrt
+)
 from datetime import datetime
 
 def days_in_year(year:int):

@@ -1,6 +1,4 @@
-import numpy as np
-from .tank_basin import shape_alike
-
+# -*- coding: utf-8 -*-
 '''
 Necessary cost function for model calibration and validation
     R2:
@@ -23,6 +21,9 @@ Necessary cost function for model calibration and validation
         squared root of MSE
         Lower is better
 '''
+
+import numpy as np
+from .utils import shape_alike
 
 def R2(x:np.ndarray, y:np.ndarray)->float:
     '''
