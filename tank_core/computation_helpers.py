@@ -83,12 +83,10 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
         # pop node from top of the node
         curr_node_name = computation_stack.pop()
 
-
         curr_node_def = basin['basin_def'][curr_node_name]
 
         if curr_node_def['type'] == 'Subbasin':
             
-            print(curr_node_def['type'],"compute tank for basin", curr_node_name)
              
             computation_result[curr_node_name] = tank_discharge(
                 precipitation = precipitation[curr_node_name].to_numpy(),
@@ -98,9 +96,7 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
                 ** curr_node_def['parameters']
             )
             
-
         elif curr_node_def['type'] == 'Reach':
-            print('RC','route upstream flow then sum', curr_node_def['upstream'])
 
             sum_node = np.zeros(n_step, dtype=np.float64)
             
@@ -117,7 +113,7 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
 
         elif curr_node_def['type'] in ['Sink','Junction']:
 
-            print(curr_node_def['type'],'>> sum flow', curr_node_def['upstream'])
+            
 
             sum_node = np.zeros(n_step, dtype=np.float64)
             
@@ -214,7 +210,7 @@ def parameter_unstack(node_order_type:list, stacked_parameter:list)->dict:
     return unstacked_parameter
 
 def update_basin_with_unstacked_parameter(basin:dict, unstacked_parameter:dict)->dict:
-    print(unstacked_parameter)
+    
     for node in unstacked_parameter.keys():
         
         basin['basin_def'][node]['parameters'] = unstacked_parameter[node]
@@ -239,14 +235,12 @@ def update_basin_with_stacked_parameter(basin:dict, node_order_type:list, stacke
     return basin
 
 
-
 def stat_by_stacked_parameter(
         stacked_parameter:list, node_order_type:list, basin:dict,
         rainfall:pd.DataFrame, evapotranspiration:pd.DataFrame, 
         discharge:pd.DataFrame, )->float:
     
     updated_basin = update_basin_with_stacked_parameter(basin, node_order_type, stacked_parameter)
-    # updated_basin = basin
     
     result = compute_project(updated_basin,rainfall,evapotranspiration,24.0)
 
@@ -282,34 +276,28 @@ def optimize_project(basin:dict, precipitation, evapotranspiration, discharge):
             upper_bound_stacked.extend(muskingum_ub.tolist())
             lower_bound_stacked.extend(muskingum_lb.tolist())
     
-    initialGuess = np.array(stacked_parameter)
+    initial_guess = np.array(stacked_parameter)
     
 
-    paramBounds = np.column_stack((lower_bound_stacked,upper_bound_stacked))
-    print(initialGuess.shape, paramBounds.shape)
-    print('optimizing')
-    # optimizer = minimize(stat_by_stacked_parameter, initialGuess,
-    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
-    #         method='L-BFGS-B',
-    #         bounds=paramBounds
-    #     )
+    param_bounds = np.column_stack((lower_bound_stacked,upper_bound_stacked))
+    
+    optimizer = minimize(stat_by_stacked_parameter, initial_guess,
+            args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
+            method='L-BFGS-B',
+            bounds=param_bounds
+        )
 
     # optimizer = minimize(stat_by_stacked_parameter, initialGuess,
     #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
     #         method='powell',
     #     )
 
-    optimizer = dual_annealing(stat_by_stacked_parameter, bounds=paramBounds,
-            args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
+    # optimizer = dual_annealing(stat_by_stacked_parameter, bounds=paramBounds,
+    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
             
-        )
+    #     )
 
     
-    return update_basin_with_stacked_parameter(basin, node_order_type, optimizer.x)
+    return update_basin_with_stacked_parameter(basin, node_order_type, optimizer.xl)
 
-    # print(
-    #     stat_by_stacked_parameter(
-    #         stacked_parameter, node_order_type, basin,
-    #         precipitation, evapotranspiration, discharge
-    #         )
-    # )
+    
