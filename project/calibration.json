@@ -1,8 +1,0 @@
-{
-    "basin": "full_project_path",
-    "precipitation_obs": "",
-    "evapotranspiration_obs": "",
-    "calculate_stat" : true,
-    "discharge_obs": "",
-    "result": ""
-}

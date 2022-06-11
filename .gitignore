@@ -25,6 +25,7 @@ env/
 # temporary data/directory
 data/*.csv
 tmp_dir
+project/
 
 #notebooks
 .ipynb_checkpoints/
