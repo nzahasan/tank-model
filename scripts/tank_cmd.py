@@ -93,10 +93,6 @@ def compute(project_file):
     statistics_file = os.path.join(project_dir, project['statistics'])
     result_file = os.path.join(project_dir, project['result'])
 
-    print(basin_file,precipitation_file,evapotranspiration_file,
-        discharge_file, statistics_file, result_file
-    )
-
     
     basin = read_basin_file(basin_file)
     precipitation, dt_pr = read_ts_file(precipitation_file)
@@ -108,10 +104,22 @@ def compute(project_file):
     computation_result = compute_project(basin, precipitation, evapotranspiration, del_t)
     statistics = compute_statistics(basin=basin, result=computation_result, discharge=discharge)
 
+    # import pandas  as pd
+    # merged = pd.merge(
+    #     computation_result,discharge, 
+    #     how='inner', 
+    #     left_index=True, 
+    #     right_index=True, 
+    #     suffixes=('_sim', '_obs')
+    # )
+    # merged.to_csv('nada.csv')
+
     print(statistics)
 
-    with open(statistics_file,'w') as sfwb:
-        json.dump(statistics, sfwb, indent=2)
+    write_ts_file(computation_result,result_file)
+
+    with open(statistics_file,'w') as stat_file_write_buffer:
+        json.dump(statistics, stat_file_write_buffer, indent=2)
     
         
     
@@ -137,7 +145,6 @@ def plot_result(project_file):
 
     import pylab as pl
     pl.style.use('bmh')
-    pl.tight_layout()
     pl.figure(figsize=(15,6))
     pl.plot(result.index,result['BAHADURABAD'],label='Bahadurabad')
     pl.plot(dis.index, dis['BAHADURABAD'],label='observed')
@@ -173,7 +180,7 @@ def optimize(project_file):
     optimized_basin = optimize_project(basin, precipitation, evapotranspiration, discharge )
 
     with open(basin_file,'w') as wf:
-        json.dump(optimized_basin, wf)
+        json.dump(optimized_basin, wf,indent=2)
 
 
 if __name__ == '__main__':

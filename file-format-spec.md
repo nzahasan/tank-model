@@ -1,6 +1,6 @@
 # File format guide  
 
-- Input files may contain precipitation and evapotranspiration data in seperate file and should be mentioned in project json file.
+- Input files may contain precipitation and evapotranspiration data in seperate file and should linked in JSON formatted project file.
 - Unit of precipitation and evapotranspiration should be in milimeters(mm). 
 - All input files should be in `CSV` format. 
 - CSV files should contain header row in uppercase characters. First column should be end-time (e.g. precipitaiton accumulation end time for a day) followed by data for each basin.

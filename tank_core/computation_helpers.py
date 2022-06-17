@@ -15,7 +15,7 @@ from .utils import (
     muskingum_param_dict2list,
     muskingum_param_list2dict
 )
-from .cost_functions import R2, RMSE, NSE
+from .cost_functions import R2, RMSE, NSE, MSE
 from .global_config  import (
     NUM_PARAMETER, 
     tank_ub, tank_lb,
@@ -23,7 +23,7 @@ from .global_config  import (
 )
 import numpy as np
 
-from scipy.optimize import minimize, shgo,dual_annealing
+from scipy.optimize import minimize, shgo,dual_annealing, differential_evolution
 
 def check_input_consistancey():
 
@@ -147,7 +147,7 @@ def compute_statistics(basin:dict, result:pd.DataFrame, discharge:pd.DataFrame)-
     
     for node in basin['basin_def'].keys():
 
-        obs_key, sim_key = f'{node}_sim', f'{node}_obs'
+        obs_key, sim_key = f'{node}_obs', f'{node}_sim'
 
         if obs_key in merged_keys and sim_key in merged_keys:
             statistics[node]={
@@ -218,8 +218,8 @@ def update_basin_with_unstacked_parameter(basin:dict, unstacked_parameter:dict)-
 
     return basin
 
-def update_basin_with_stacked_parameter(basin:dict, node_order_type:list, stacked_parameter:dict)->dict:
-    
+def update_basin_with_stacked_parameter(basin:dict, node_order_type:list, stacked_parameter:list)->dict:
+    # check if stacked parameter length is okay
     conv_fn = {
         'Subbasin': tank_param_list2dict,
         'Reach': muskingum_param_list2dict
@@ -238,8 +238,8 @@ def update_basin_with_stacked_parameter(basin:dict, node_order_type:list, stacke
 def stat_by_stacked_parameter(
         stacked_parameter:list, node_order_type:list, basin:dict,
         rainfall:pd.DataFrame, evapotranspiration:pd.DataFrame, 
-        discharge:pd.DataFrame, )->float:
-    
+        discharge:pd.DataFrame)->float:
+
     updated_basin = update_basin_with_stacked_parameter(basin, node_order_type, stacked_parameter)
     
     result = compute_project(updated_basin,rainfall,evapotranspiration,24.0)
@@ -276,28 +276,45 @@ def optimize_project(basin:dict, precipitation, evapotranspiration, discharge):
             upper_bound_stacked.extend(muskingum_ub.tolist())
             lower_bound_stacked.extend(muskingum_lb.tolist())
     
-    initial_guess = np.array(stacked_parameter)
+    # initial_guess = 0.6 * (np.array(lower_bound_stacked) + np.array(upper_bound_stacked) )
     
+    initial_guess = np.array(stacked_parameter)
 
     param_bounds = np.column_stack((lower_bound_stacked,upper_bound_stacked))
     
+
+    # optimizer = minimize(stat_by_stacked_parameter, initial_guess,
+    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
+    #         method='L-BFGS-B',
+    #         bounds=param_bounds
+    #     )
+
+    # optimizer = minimize(stat_by_stacked_parameter, initial_guess,
+    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
+    #         method='Nelder-Mead',
+    #         bounds=param_bounds
+    #     )
+
+    # optimizer = differential_evolution(stat_by_stacked_parameter, 
+    #         bounds=param_bounds,
+    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
+    #         maxiter=100
+    #     )
+    
+
     optimizer = minimize(stat_by_stacked_parameter, initial_guess,
             args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
-            method='L-BFGS-B',
+            method='powell',
             bounds=param_bounds
         )
 
-    # optimizer = minimize(stat_by_stacked_parameter, initialGuess,
+    # optimizer = dual_annealing(stat_by_stacked_parameter, bounds=param_bounds,
     #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
-    #         method='powell',
-    #     )
-
-    # optimizer = dual_annealing(stat_by_stacked_parameter, bounds=paramBounds,
-    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
+    #         maxiter=1000
             
     #     )
 
     
-    return update_basin_with_stacked_parameter(basin, node_order_type, optimizer.xl)
+    return update_basin_with_stacked_parameter(basin, node_order_type, optimizer.x)
 
     

@@ -83,9 +83,9 @@ def tank_discharge(
     
            
         '''
-        Tank Storage Calculation
-        ----------------------------
-        storage  =  inflow - outflow
+        Current step tank storage calculation
+        -------------------------------------
+        storage(t)  =  inflow(t) - outflow (t-1)
         
         '''
         
@@ -137,46 +137,25 @@ def tank_discharge(
         then there is no flow from upper outlet
         '''
         
-        # Check if storage height > Lower Outlet
-        if tank_storage[t,0] >  t0_soh_lo:
-            
-            side_outlet_flow[t,0] = t0_soc_lo * ( tank_storage[t,0] - t0_soh_lo )
-            
-            # Lower outlet is filled check for upper outlet
-            if tank_storage[t,0] >  t0_soh_uo:
-                side_outlet_flow[t,0] += t0_soc_uo * ( tank_storage[t,0] - t0_soh_uo )
+        side_outlet_flow[t,0] = t0_soc_lo * max( tank_storage[t,0] - t0_soh_lo, 0 ) \
+                            + t0_soc_uo * max( tank_storage[t,0] - t0_soh_uo, 0 )
         
-        else:
-            side_outlet_flow[t,0] = 0
-
 
         # TANK 1 : intermediate runoff
+        side_outlet_flow[t,1]  = t1_soc * max( tank_storage[t,1] - t1_soh, 0 )
         
-        if tank_storage[t,1] > t1_soh:
-            side_outlet_flow[t,1]  = t1_soc * ( tank_storage[t,1] - t1_soh )
-        
-        else:
-            side_outlet_flow[t,1] = 0
 
         # TANK 2 : sub-base runoff
+        side_outlet_flow[t,2]  = t2_soc * max( tank_storage[t,2] - t2_soh, 0 )
         
-        if tank_storage[t,2] > t2_soh:
-            side_outlet_flow[t,2]  = t2_soc * ( tank_storage[t,2] - t2_soh )
-    
-        else:
-            side_outlet_flow[t,2] = 0
-            
         
         # TANK 3 : baseflow 
         
         '''
         Side outlet height = 0
         '''
-        if tank_storage[t,3] >=0:
-            side_outlet_flow[t,3]  = t3_soc * ( tank_storage[t,3] )
+        side_outlet_flow[t,3]  = t3_soc * ( tank_storage[t,3] )
 
-        else:
-            side_outlet_flow[t,3]
         
         
         '''

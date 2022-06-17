@@ -50,7 +50,9 @@ def NSE(sim:np.ndarray, obs:np.ndarray)->float:
     if not shape_alike(sim,obs):
         raise Exception('shape mismatch between x and y')
 
-    return 1 - ( ((sim - obs)**2).sum() / ((obs-obs.mean())**2).sum() )
+    obs_mean = obs.mean()
+
+    return 1 - (  np.square( obs - sim).sum() / np.square(obs-obs_mean).sum() )
 
 def MSE(x:np.ndarray, y:np.ndarray)->float:
     '''
