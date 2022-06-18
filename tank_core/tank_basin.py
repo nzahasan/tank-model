@@ -127,8 +127,6 @@ def tank_discharge(
         bottom_outlet_flow[t,2] = t2_boc * tank_storage[t,2]
 
         # N.B. tank 3 has no bottom outlet
-
-
         # Tank storage calculation of next time step
         if t< time_step -1:
             tank_storage[t+1,0] = ( tank_storage[t,0] + del_rf_et[t+1] ) - ( side_outlet_flow[t,0] + bottom_outlet_flow[t,0] )
@@ -139,9 +137,6 @@ def tank_discharge(
 
             tank_storage[t+1,3] = ( tank_storage[t,3] + bottom_outlet_flow[t,2] ) - ( side_outlet_flow[t,3]  ) 
             
-            # N.B. evapotranspiration rate can be more than precipitation rate
-            # in that case tank storage can be negetive value
-            # Handling negetive tank storage: 
             # Set tank storage = 0 if tank storage is negetive
             
             tank_storage[t+1,0] = max(tank_storage[t+1,0],0)
