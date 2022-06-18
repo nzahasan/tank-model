@@ -283,11 +283,11 @@ def optimize_project(basin:dict, precipitation, evapotranspiration, discharge):
     param_bounds = np.column_stack((lower_bound_stacked,upper_bound_stacked))
     
 
-    # optimizer = minimize(stat_by_stacked_parameter, initial_guess,
-    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
-    #         method='L-BFGS-B',
-    #         bounds=param_bounds
-    #     )
+    optimizer = minimize(stat_by_stacked_parameter, initial_guess,
+            args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
+            method='L-BFGS-B',
+            bounds=param_bounds
+        )
 
     # optimizer = minimize(stat_by_stacked_parameter, initial_guess,
     #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
@@ -302,11 +302,11 @@ def optimize_project(basin:dict, precipitation, evapotranspiration, discharge):
     #     )
     
 
-    optimizer = minimize(stat_by_stacked_parameter, initial_guess,
-            args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
-            method='powell',
-            bounds=param_bounds
-        )
+    # optimizer = minimize(stat_by_stacked_parameter, initial_guess,
+    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
+    #         method='powell',
+    #         bounds=param_bounds
+    #     )
 
     # optimizer = dual_annealing(stat_by_stacked_parameter, bounds=param_bounds,
     #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),

@@ -77,66 +77,23 @@ def tank_discharge(
     tank_storage[0,2] = t2_is
     tank_storage[0,3] = t3_is
 
+    
+
     # Loop through the timeseries 
     
-    for t in np.arange(1,time_step):
+    for t in np.arange(time_step):
     
-           
-        '''
-        Current step tank storage calculation
-        -------------------------------------
-        storage(t)  =  inflow(t) - outflow (t-1)
-        
-        '''
-        
-        tank_storage[t,0] = ( tank_storage[t-1,0] + del_rf_et[t] ) - ( side_outlet_flow[t-1,0] + bottom_outlet_flow[t-1,0] )
-    
-        tank_storage[t,1] = ( tank_storage[t-1,1] + bottom_outlet_flow[t-1,0] ) - ( side_outlet_flow[t-1,1] + bottom_outlet_flow[t-1,1] ) 
-        
-        tank_storage[t,2] = ( tank_storage[t-1,2] + bottom_outlet_flow[t-1,1] ) - ( side_outlet_flow[t-1,2] + bottom_outlet_flow[t-1,2] ) 
-
-        tank_storage[t,3] = ( tank_storage[t-1,3] + bottom_outlet_flow[t-1,2] ) - ( side_outlet_flow[t-1,3]  ) 
-            
-        
-
-        '''
-        Handling negetive tank storage:
-        -------------------------------
-        Set tank storage = 0 if tank storage is negetive
-        
-        N.B. evapotranspiration rate can be more than precipitation rate
-        in that case tank storage can be negetive value
-        '''
-        
-        tank_storage[t,0] = max(tank_storage[t,0],0)
-        tank_storage[t,1] = max(tank_storage[t,1],0)
-        tank_storage[t,2] = max(tank_storage[t,2],0)
-        tank_storage[t,3] = max(tank_storage[t,3],0)
-
-        '''
-        If tank outflow becmes greater than  current storage(previous storage + inflow) the storage will be negetive
-        which is incorrect. Side outlet flow + bottom outlet flow must not be greater than current storage.
-        
-        As example if the bottom outlet storage coefficient is 1 and side outlet height 0 and coefficient is 1
-        the output flow will be greater than what in storage which is impossible. 
-        '''
-        
-
         '''
         Side Outlet Flow :
         ------------------
-        side outlet flow = f(tank_storage,outletHeight)
+        side outlet flow = f(storage_above_outlet_height)
         
         There will be zero flow if tank storage less than outlet height
-        '''
-
-        # TANK 0 : surface runoff
-        
-        '''
         Note: If Tank-0's storage is not greater than lower outlet
         then there is no flow from upper outlet
         '''
-        
+
+        # TANK 0 : surface runoff
         side_outlet_flow[t,0] = t0_soc_lo * max( tank_storage[t,0] - t0_soh_lo, 0 ) \
                             + t0_soc_uo * max( tank_storage[t,0] - t0_soh_uo, 0 )
         
@@ -149,12 +106,8 @@ def tank_discharge(
         side_outlet_flow[t,2]  = t2_soc * max( tank_storage[t,2] - t2_soh, 0 )
         
         
-        # TANK 3 : baseflow 
-        
-        '''
-        Side outlet height = 0
-        '''
-        side_outlet_flow[t,3]  = t3_soc * ( tank_storage[t,3] )
+        # TANK 3 : baseflow | Side outlet height = 0
+        side_outlet_flow[t,3]  = t3_soc *  tank_storage[t,3]
 
         
         
@@ -175,7 +128,40 @@ def tank_discharge(
 
         # N.B. tank 3 has no bottom outlet
 
+
         '''
+        Next step tank storage calculation
+        -------------------------------------
+        storage(t)  =  inflow(t) - outflow (t-1)
+        
+        '''
+        if t< time_step -1:
+            tank_storage[t+1,0] = ( tank_storage[t,0] + del_rf_et[t+1] ) - ( side_outlet_flow[t,0] + bottom_outlet_flow[t,0] )
+        
+            tank_storage[t+1,1] = ( tank_storage[t,1] + bottom_outlet_flow[t,0] ) - ( side_outlet_flow[t,1] + bottom_outlet_flow[t,1] ) 
+            
+            tank_storage[t+1,2] = ( tank_storage[t,2] + bottom_outlet_flow[t,1] ) - ( side_outlet_flow[t,2] + bottom_outlet_flow[t,2] ) 
+
+            tank_storage[t+1,3] = ( tank_storage[t,3] + bottom_outlet_flow[t,2] ) - ( side_outlet_flow[t,3]  ) 
+            
+            # Handling negetive tank storage: 
+            # Set tank storage = 0 if tank storage is negetive
+            
+            tank_storage[t+1,0] = max(tank_storage[t+1,0],0)
+            tank_storage[t+1,1] = max(tank_storage[t+1,1],0)
+            tank_storage[t+1,2] = max(tank_storage[t+1,2],0)
+            tank_storage[t+1,3] = max(tank_storage[t+1,3],0)
+
+            # N.B. evapotranspiration rate can be more than precipitation rate
+            # in that case tank storage can be negetive value
+            
+        '''
+        If tank outflow becmes greater than  current storage(previous storage + inflow) the storage will be negetive
+        which is incorrect. Side outlet flow + bottom outlet flow must not be greater than current storage.
+        
+        As example if the bottom outlet storage coefficient is 1 and side outlet height 0 and coefficient is 1
+        the output flow will be greater than what in storage which is impossible. 
+        
         Check for parameter error (parameter debugging)
         -----------------------------------------------
         Check that enough water was availble in the tank 
