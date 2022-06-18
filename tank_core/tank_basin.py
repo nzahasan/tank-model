@@ -129,12 +129,7 @@ def tank_discharge(
         # N.B. tank 3 has no bottom outlet
 
 
-        '''
-        Next step tank storage calculation
-        -------------------------------------
-        storage(t)  =  inflow(t) - outflow (t-1)
-        
-        '''
+        # Tank storage calculation of next time step
         if t< time_step -1:
             tank_storage[t+1,0] = ( tank_storage[t,0] + del_rf_et[t+1] ) - ( side_outlet_flow[t,0] + bottom_outlet_flow[t,0] )
         
@@ -144,6 +139,8 @@ def tank_discharge(
 
             tank_storage[t+1,3] = ( tank_storage[t,3] + bottom_outlet_flow[t,2] ) - ( side_outlet_flow[t,3]  ) 
             
+            # N.B. evapotranspiration rate can be more than precipitation rate
+            # in that case tank storage can be negetive value
             # Handling negetive tank storage: 
             # Set tank storage = 0 if tank storage is negetive
             
@@ -152,20 +149,13 @@ def tank_discharge(
             tank_storage[t+1,2] = max(tank_storage[t+1,2],0)
             tank_storage[t+1,3] = max(tank_storage[t+1,3],0)
 
-            # N.B. evapotranspiration rate can be more than precipitation rate
-            # in that case tank storage can be negetive value
             
         '''
-        If tank outflow becmes greater than  current storage(previous storage + inflow) the storage will be negetive
-        which is incorrect. Side outlet flow + bottom outlet flow must not be greater than current storage.
+        If tank outflow becmes greater than  current storage(previous storage + inflow) 
+        the storage will be negetive. Side outlet flow + bottom outlet flow must not be 
+        greater than current storage. 
         
-        As example if the bottom outlet storage coefficient is 1 and side outlet height 0 and coefficient is 1
-        the output flow will be greater than what in storage which is impossible. 
-        
-        Check for parameter error (parameter debugging)
-        -----------------------------------------------
-        Check that enough water was availble in the tank 
-        to satisfy side and bottom outlet flow.
+        The following sections checks for such error
         '''
 
         for i in range(4):
@@ -176,16 +166,13 @@ def tank_discharge(
                 # again no bottom outlet in Tank-3
                 if tank_storage[t,i] < side_outlet_flow[t,i]:
                     print('WARNING 5003: Side outlet flow exceeded tank storage for tank ',i)
-    
 
     '''
-        unit conversion coefficent for m^3/s
+    unit conversion coefficent for m^3/s
 
-            MM x KM^2     10^-3 x 10^6                1000
-        :: ----------- = --------------- [m^3/2]  = -------- [m^3/2]
-                Hr            60x60                   3600
-
-
+        MM x KM^2     10^-3 x 10^6                1000
+    :: ----------- = --------------- [m^3/2]  = -------- [m^3/2]
+            Hr            60x60                   3600
     '''
 
     UNIT_CONV_COEFF = (area * 1000)/(del_t * 3600)
