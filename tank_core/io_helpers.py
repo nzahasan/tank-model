@@ -8,7 +8,8 @@ import json
 import os
 from datetime import datetime as dt
 
-from .global_config import FLOAT_FMT,DATE_FMT
+from . import global_config as gc
+# import FLOAT_FMT,DATE_FMT
 
 
 def read_ts_file(file_path:str, check_time_diff=True)-> tuple:
@@ -45,8 +46,8 @@ def write_ts_file(df:pd.DataFrame,file_path:str)->int:
 
     status  = df.to_csv(
         file_path,
-        float_format=FLOAT_FMT,
-        date_format=DATE_FMT,
+        float_format=gc.FLOAT_FMT,
+        date_format=gc.DATE_FMT,
         index=True,
         index_label='Time'
     )

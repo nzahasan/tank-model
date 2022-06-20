@@ -2,28 +2,17 @@
 '''
 Helper functions for computation
 '''
-from inspect import stack
-from queue import Queue
-from turtle import update
+import numpy as np
 import pandas as pd
+from queue import Queue
+from scipy.optimize import minimize, shgo,dual_annealing, differential_evolution
 from .tank_basin import tank_discharge
 from .channel_routing import muskingum
-
-from .utils import (
-    tank_param_dict2list,
-    tank_param_list2dict, 
-    muskingum_param_dict2list,
-    muskingum_param_list2dict
-)
+from . import utils
 from .cost_functions import R2, RMSE, NSE, MSE
-from .global_config  import (
-    NUM_PARAMETER, 
-    tank_ub, tank_lb,
-    muskingum_ub, muskingum_lb
-)
-import numpy as np
+from . import global_config as gc
 
-from scipy.optimize import minimize, shgo,dual_annealing, differential_evolution
+
 
 def check_input_consistancey():
 
@@ -175,12 +164,12 @@ def parameter_stack(basin:dict)->tuple:
             
             if node_type == 'Subbasin':
                 stacked_parameter.extend(
-                    tank_param_dict2list(basin_def[node]['parameters'])
+                    utils.tank_param_dict2list(basin_def[node]['parameters'])
                 )
             
             elif node_type == 'Reach':
                 stacked_parameter.extend(
-                    muskingum_param_dict2list(basin_def[node]['parameters'])
+                    utils.muskingum_param_dict2list(basin_def[node]['parameters'])
                 )
             # append to node order
             node_order_type.append((node, node_type ))
@@ -196,13 +185,13 @@ def parameter_unstack(node_order_type:list, stacked_parameter:list)->dict:
     
     # later have to change this if other routhing method is added
     conv_fn = {
-        'Subbasin': tank_param_list2dict,
-        'Reach': muskingum_param_list2dict
+        'Subbasin': utils.tank_param_list2dict,
+        'Reach': utils.muskingum_param_list2dict
     }
     offset = 0
     for node, node_type  in node_order_type:
 
-        num_parameter = NUM_PARAMETER[node_type]
+        num_parameter = gc.NUM_PARAMETER[node_type]
         unstacked_parameter[node] = conv_fn[node_type](stacked_parameter[offset:offset+num_parameter])
         offset += num_parameter 
 
@@ -221,13 +210,13 @@ def update_basin_with_unstacked_parameter(basin:dict, unstacked_parameter:dict)-
 def update_basin_with_stacked_parameter(basin:dict, node_order_type:list, stacked_parameter:list)->dict:
     # check if stacked parameter length is okay
     conv_fn = {
-        'Subbasin': tank_param_list2dict,
-        'Reach': muskingum_param_list2dict
+        'Subbasin': utils.tank_param_list2dict,
+        'Reach': utils.muskingum_param_list2dict
     }
     offset = 0
     for node, node_type  in node_order_type:
 
-        num_parameter = NUM_PARAMETER[node_type]
+        num_parameter = gc.NUM_PARAMETER[node_type]
         basin['basin_def'][node]['parameters'] = conv_fn[node_type](stacked_parameter[offset:offset+num_parameter])
         offset += num_parameter
     
@@ -269,12 +258,12 @@ def optimize_project(basin:dict, precipitation, evapotranspiration, discharge):
 
         if node_type == 'Subbasin':
             
-            upper_bound_stacked.extend(tank_ub.tolist())
-            lower_bound_stacked.extend(tank_lb.tolist())
+            upper_bound_stacked.extend(gc.tank_ub.tolist())
+            lower_bound_stacked.extend(gc.tank_lb.tolist())
 
         if node_type == 'Reach':
-            upper_bound_stacked.extend(muskingum_ub.tolist())
-            lower_bound_stacked.extend(muskingum_lb.tolist())
+            upper_bound_stacked.extend(gc.muskingum_ub.tolist())
+            lower_bound_stacked.extend(gc.muskingum_lb.tolist())
     
     # initial_guess = 0.6 * (np.array(lower_bound_stacked) + np.array(upper_bound_stacked) )
     

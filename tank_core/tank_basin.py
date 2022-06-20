@@ -9,7 +9,7 @@
 '''
 
 import numpy as np
-from .utils import shape_alike
+from . import utils
 
 
 
@@ -51,7 +51,7 @@ def tank_discharge(
     
     # calculate timestep length
     
-    if not shape_alike(precipitation, evapotranspiration):
+    if not utils.shape_alike(precipitation, evapotranspiration):
     
         raise ValueError('ERROR 1001: length mismatch between precipitation and evapotranspiration data')    
     
@@ -86,7 +86,7 @@ def tank_discharge(
         '''
         Side Outlet Flow :
         ------------------
-        side outlet flow = f(storage_above_outlet_height)
+        side outlet flow = fn(storage_above_outlet_height)
         
         There will be zero flow if tank storage less than outlet height
         Note: If Tank-0's storage is not greater than lower outlet
@@ -97,7 +97,6 @@ def tank_discharge(
         side_outlet_flow[t,0] = t0_soc_lo * max( tank_storage[t,0] - t0_soh_lo, 0 ) \
                             + t0_soc_uo * max( tank_storage[t,0] - t0_soh_uo, 0 )
         
-
         # TANK 1 : intermediate runoff
         side_outlet_flow[t,1]  = t1_soc * max( tank_storage[t,1] - t1_soh, 0 )
         
@@ -108,26 +107,28 @@ def tank_discharge(
         
         # TANK 3 : baseflow | Side outlet height = 0
         side_outlet_flow[t,3]  = t3_soc *  tank_storage[t,3]
-
-        
         
         '''
         Bottom outlet flow :
         --------------------
-        bottom outlet flow = f(tank_storage)
+        bottom outlet flow = fn(tank_storage)
         
         No need apply condition here, 
         because theoritacilly tank_storage will never be negetive
         '''
 
         bottom_outlet_flow[t,0] = t0_boc * tank_storage[t,0]
-
         bottom_outlet_flow[t,1] = t1_boc * tank_storage[t,1]
-        
         bottom_outlet_flow[t,2] = t2_boc * tank_storage[t,2]
 
         # N.B. tank 3 has no bottom outlet
         # Tank storage calculation of next time step
+
+        '''
+        Tank storage:
+        -------------
+        tank_storage[t+1] = tank_storage[t] - (side_outlet_flow[t] + bottom_outlet_flow[t]) + (precip[t+1] - evap[t+1])
+        '''
         if t< time_step -1:
             tank_storage[t+1,0] = ( tank_storage[t,0] + del_rf_et[t+1] ) - ( side_outlet_flow[t,0] + bottom_outlet_flow[t,0] )
         
