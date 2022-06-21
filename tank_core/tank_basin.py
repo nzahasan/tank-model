@@ -35,17 +35,17 @@ def tank_discharge(
     t3_is:float, t3_soc:float) -> np.ndarray:
     
     '''
-        ________________________________________________
-        |                UNITS:                        |
-        |______________________________________________|
-        |    area                 |       KM^2         |
-        |    del_t                |       HR           |
-        |    discharge            |       M^3/s        |
-        |    precipitation        |       MM           |
-        |    evapotranspiration   |       MM           |
-        |_________________________|____________________|
+    ________________________________________________
+    |                UNITS:                        |
+    |______________________________________________|
+    |    area                 |       KM^2         |
+    |    del_t                |       HR           |
+    |    discharge            |       M^3/s        |
+    |    precipitation        |       MM           |
+    |    evapotranspiration   |       MM           |
+    |_________________________|____________________|
 
-        :: returns a time-series of simulated discharge
+    :: returns a time-series of simulated discharge
     '''
 
     
@@ -70,16 +70,14 @@ def tank_discharge(
     del_rf_et = precipitation - evapotranspiration
     
     
-    # set initial tank storages
+    # set initial tank storages | set to 0 if negetive value
 
-    tank_storage[0,0] = t0_is
-    tank_storage[0,1] = t1_is
-    tank_storage[0,2] = t2_is
-    tank_storage[0,3] = t3_is
+    tank_storage[0,0] = max(t0_is, 0)
+    tank_storage[0,1] = max(t1_is, 0)
+    tank_storage[0,2] = max(t2_is, 0)
+    tank_storage[0,3] = max(t3_is, 0)
 
-    
-
-    # Loop through the timeseries 
+    # main time loop 
     
     for t in np.arange(time_step):
     
@@ -112,9 +110,6 @@ def tank_discharge(
         Bottom outlet flow :
         --------------------
         bottom outlet flow = fn(tank_storage)
-        
-        No need apply condition here, 
-        because theoritacilly tank_storage will never be negetive
         '''
 
         bottom_outlet_flow[t,0] = t0_boc * tank_storage[t,0]
@@ -150,6 +145,8 @@ def tank_discharge(
 
             
         '''
+        Outlet flow check
+        -----------------
         If tank outflow becmes greater than  current storage(previous storage + inflow) 
         the storage will be negetive. Side outlet flow + bottom outlet flow must not be 
         greater than current storage. 
@@ -158,13 +155,12 @@ def tank_discharge(
         '''
 
         for i in range(4):
-            if i <=2:
-                if tank_storage[t,i] < bottom_outlet_flow[t,i] + side_outlet_flow[t,i]:
-                    print('WARNING 5002: Total outlet flow exceeded tank storage for tank ',i)
-            if i==3:
-                # again no bottom outlet in Tank-3
-                if tank_storage[t,i] < side_outlet_flow[t,i]:
-                    print('WARNING 5003: Side outlet flow exceeded tank storage for tank ',i)
+
+            total_tank_outflow = bottom_outlet_flow[t,i] + side_outlet_flow[t,i]  if i<=2 else side_outlet_flow[t,i]
+            
+            if total_tank_outflow > tank_storage[t,i]:
+                print('WARNING 5002: Total outlet flow exceeded tank storage for tank ',i)
+            
 
     '''
     unit conversion coefficent for m^3/s
