@@ -8,21 +8,17 @@ Supports:
     - Plot project results
 '''
 
+from email import header
 import json, os, click
-from click.decorators import option
-from tank_core.computation_helpers import (
-    compute_project,
-    compute_statistics,
-    optimize_project
-)
-from tank_core.io_helpers import (
-    read_project_file, 
-    read_basin_file, 
-    read_ts_file, 
-    write_ts_file
-)
+from tank_core import computation_helpers as ch
+from tank_core import io_helpers as ioh
 from tank_core.project_helpers import hms_basin_to_tank_basin
-import tank_core.global_config as gc
+from tabulate import tabulate
+from matplotlib import pyplot as pl, rcParams
+from matplotlib.gridspec import GridSpec
+import seaborn
+import pandas as pd
+rcParams['font.family'] = 'monospace'
 
 
 @click.group()
@@ -84,7 +80,7 @@ def compute(project_file):
     project_dir = os.path.dirname(os.path.abspath(project_file))
     
 
-    project = read_project_file(project_file)
+    project = ioh.read_project_file(project_file)
     
     basin_file = os.path.join(project_dir, project['basin'])
     precipitation_file = os.path.join(project_dir, project['precipitation'])
@@ -94,62 +90,84 @@ def compute(project_file):
     result_file = os.path.join(project_dir, project['result'])
 
     
-    basin = read_basin_file(basin_file)
-    precipitation, dt_pr = read_ts_file(precipitation_file)
-    evapotranspiration, dt_et = read_ts_file(evapotranspiration_file)
-    discharge, _ = read_ts_file(discharge_file,check_time_diff=False)
+    basin = ioh.read_basin_file(basin_file)
+    precipitation, dt_pr = ioh.read_ts_file(precipitation_file)
+    evapotranspiration, dt_et = ioh.read_ts_file(evapotranspiration_file)
+    discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
     del_t = project['interval']
 
 
-    computation_result = compute_project(basin, precipitation, evapotranspiration, del_t)
-    statistics = compute_statistics(basin=basin, result=computation_result, discharge=discharge)
+    computation_result = ch.compute_project(basin, precipitation, evapotranspiration, del_t)
+    statistics = ch.compute_statistics(basin=basin, result=computation_result, discharge=discharge)
 
-    # import pandas  as pd
-    # merged = pd.merge(
-    #     computation_result,discharge, 
-    #     how='inner', 
-    #     left_index=True, 
-    #     right_index=True, 
-    #     suffixes=('_sim', '_obs')
-    # )
-    # merged.to_csv('nada.csv')
-
-    print(statistics)
-
-    write_ts_file(computation_result,result_file)
+    ioh.write_ts_file(computation_result,result_file)
+     
+    print( 
+        tabulate(
+            [
+                ('NSE', statistics['BAHADURABAD']['NSE']),
+                ('RMSE', statistics['BAHADURABAD']['RMSE']),
+                ('R2', statistics['BAHADURABAD']['R2']),
+                ('PBIAS', statistics['BAHADURABAD']['PBIAS']),
+            ],
+            headers=['Statistics', 'BAHADURABAD'], tablefmt='psql'
+        ) 
+    )
 
     with open(statistics_file,'w') as stat_file_write_buffer:
         json.dump(statistics, stat_file_write_buffer, indent=2)
     
-        
-    
-    # always calculate statistics based on the availablity of data in discharge file!!
+    # N.B. always calculate statistics based on the availablity of data 
+    # in discharge file!!
 
 @cli.command()
 @click.option('-pf', '--project-file', help="project file")
 def plot_result(project_file):
     
     project_dir = os.path.dirname(os.path.abspath(project_file))
-    project = read_project_file(project_file)
+    project = ioh.read_project_file(project_file)
     result_file = os.path.join(project_dir, project['result'])
     discharge_file = os.path.join(project_dir, project['discharge'])
+    
+    result,_ = ioh.read_ts_file(result_file)
 
-    result,_ = read_ts_file(result_file)
+    discharge = pd.read_csv(discharge_file,parse_dates=True,index_col=['Time'])
 
-    import pandas as pd
-    dis = pd.read_csv(discharge_file,
-    parse_dates=True,index_col=['Time'])
+    basin_file = os.path.join(project_dir, project['basin'])
+    basin = ioh.read_basin_file(basin_file)
+    
+    root_node = basin['root_node'][0]
+    sim_key, obs_key = f'{root_node}_sim', f'{root_node}_obs'
+    
+    
+    merged = pd.merge(
+        result, discharge, 
+        how='inner', 
+        left_index=True, 
+        right_index=True, 
+        suffixes=('_sim', '_obs')
+    )
+    
+    fig = pl.figure(constrained_layout=True, figsize=(10,10), dpi=600)
+    
+    gs = GridSpec(2,2, figure=fig)
+    ax1 = fig.add_subplot(gs[0,:])
+    ax2 = fig.add_subplot(gs[1,0])
+    ax3 = fig.add_subplot(gs[1,1])
 
-    # print(dis.index)
-    # print(result.index)
-
-    import pylab as pl
-    pl.style.use('bmh')
-    pl.figure(figsize=(15,6))
-    pl.plot(result.index,result['BAHADURABAD'],label='Bahadurabad')
-    pl.plot(dis.index, dis['BAHADURABAD'],label='observed')
-    pl.legend()
-    pl.show()
+    
+    ax1.plot(result.index,result[root_node],label='Simulated',color='gray', linewidth=1, linestyle='dashdot')
+    ax1.plot(discharge.index, discharge[root_node],label='Observed', linewidth=1.5,color='black')
+    ax1.title.set_text(f'Observed vs Simulated Discharge at {root_node}')
+    ax1.legend()
+    
+    seaborn.regplot(x=merged[obs_key], y=merged[sim_key], ax=ax2, color='k' )
+    seaborn.kdeplot(x=discharge[root_node],  color='gray', ax=ax3,label='Obs')
+    seaborn.kdeplot(x=result[root_node],  color='black', ax=ax3, label='Sim')
+    ax3.legend()
+    
+    # pl.show()
+    pl.savefig(os.path.join(project_dir,'model_output.png'))
 
     
 
@@ -159,8 +177,7 @@ def optimize(project_file):
     
     project_dir = os.path.dirname(os.path.abspath(project_file))
     
-
-    project = read_project_file(project_file)
+    project = ioh.read_project_file(project_file)
     
     basin_file = os.path.join(project_dir, project['basin'])
     precipitation_file = os.path.join(project_dir, project['precipitation'])
@@ -169,15 +186,13 @@ def optimize(project_file):
     statistics_file = os.path.join(project_dir, project['statistics'])
     result_file = os.path.join(project_dir, project['result'])
 
-    precipitation, dt_pr = read_ts_file(precipitation_file)
-    evapotranspiration, dt_et = read_ts_file(evapotranspiration_file)
-    discharge, _ = read_ts_file(discharge_file,check_time_diff=False)
+    precipitation, dt_pr = ioh.read_ts_file(precipitation_file)
+    evapotranspiration, dt_et = ioh.read_ts_file(evapotranspiration_file)
+    discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
 
-    basin = read_basin_file(basin_file)
+    basin = ioh.read_basin_file(basin_file)
 
-
-
-    optimized_basin = optimize_project(basin, precipitation, evapotranspiration, discharge )
+    optimized_basin = ch.optimize_project(basin, precipitation, evapotranspiration, discharge )
 
     with open(basin_file,'w') as wf:
         json.dump(optimized_basin, wf,indent=2)

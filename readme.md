@@ -17,15 +17,21 @@ $ python3 setup.py install
 ```
 
 
-### Model Setup Guide:
+### Setting up a new model:
 
 New project can be created using the following command. This creates a folder with a project defination inside it.
 ```bash
 $ tank_cmd.py new_project project_name
 ```
 
+### Converting HEC-HMS basin to tank model basin
 
+```bash
+$ tank_cmd.py hms2tank -bf hechms_basin_file -of output_tank_basin_file_path
+```
 
 ### References:  
     1. Paik K., Kim J. H., Kim H. S., Lee D. R. (2005) A conceptual rainfall-runoff model considering seasonal variation.
-    3. Aguilar C., Polo M. J. (2011) Generating reference evapotranspiration surfaces from the Hargreaves equation at watershed scale.
+    2. Aguilar C., Polo M. J. (2011) Generating reference evapotranspiration surfaces from the Hargreaves equation at watershed scale.
+    3. Taib A. T. M., Tahir W., Ramli S., Mohtar I. S. A. (2022) Hydro-Meteorological Flood Forecasting Using Tank Model With Satellite-Based Rainfall Input For Kemaman River Catchment.
+    4. D. N. Moriasi, J. G. Arnold, M. W. Van Liew, R. L. Bingner, R. D. Harmel, T. L. Veith (2007) Model Evaluation Guidelines For Systematic Quantification Of Accuracy In Watershed Simulations.

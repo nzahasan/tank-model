@@ -7,3 +7,4 @@ pyscissor
 click
 dash
 plotly
+matplotlib

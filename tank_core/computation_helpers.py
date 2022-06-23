@@ -9,7 +9,7 @@ from scipy.optimize import minimize, shgo,dual_annealing, differential_evolution
 from .tank_basin import tank_discharge
 from .channel_routing import muskingum
 from . import utils
-from .cost_functions import R2, RMSE, NSE, MSE
+from .cost_functions import PBIAS, R2, RMSE, NSE, MSE, PBIAS
 from . import global_config as gc
 
 
@@ -142,7 +142,8 @@ def compute_statistics(basin:dict, result:pd.DataFrame, discharge:pd.DataFrame)-
             statistics[node]={
                 "RMSE": RMSE(merged[obs_key].to_numpy(), merged[sim_key].to_numpy()),
                 "NSE" : NSE(merged[sim_key].to_numpy(), merged[obs_key].to_numpy() ),
-                "R2"  : R2(merged[sim_key].to_numpy(), merged[obs_key].to_numpy() )
+                "R2"  : R2(merged[sim_key].to_numpy(), merged[obs_key].to_numpy() ),
+                "PBIAS"  : PBIAS(sim=merged[sim_key].to_numpy(),obs=merged[obs_key].to_numpy() )
             }
 
     return statistics
@@ -233,7 +234,7 @@ def stat_by_stacked_parameter(
     
     result = compute_project(updated_basin,rainfall,evapotranspiration,24.0)
 
-    # merge using index
+    # merge dataframes using index(time)
     merged = pd.merge(
         result,discharge, 
         how='inner', 
@@ -242,7 +243,12 @@ def stat_by_stacked_parameter(
         suffixes=('_sim', '_obs')
     )
 
-    return 1-NSE(merged['BAHADURABAD_sim'].to_numpy(),merged['BAHADURABAD_obs'].to_numpy())
+    root_node = updated_basin['root_node'][0]
+    sim_key, obs_key = f'{root_node}_sim', f'{root_node}_obs' 
+    _nse = NSE(merged[sim_key].to_numpy(),merged[obs_key].to_numpy())
+    
+
+    return 1 - _nse
 
 
 

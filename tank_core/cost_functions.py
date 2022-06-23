@@ -20,6 +20,12 @@ Necessary cost function for model calibration and validation
         Root Mean Squared Error
         squared root of MSE
         Lower is better
+    
+    PBIAS:
+        Percent bias
+        Lower is better 
+        +ve values indicate underestimation
+        -ve values indicate model overestimation
 '''
 
 import numpy as np
@@ -27,7 +33,7 @@ from .utils import shape_alike
 
 def R2(x:np.ndarray, y:np.ndarray)->float:
     '''
-        Pearson correlation coefficient (R^2)
+    Pearson correlation coefficient (R^2)
     '''
     # check & calculate sample shape
     if shape_alike(x,y):
@@ -43,7 +49,7 @@ def R2(x:np.ndarray, y:np.ndarray)->float:
 
 def NSE(sim:np.ndarray, obs:np.ndarray)->float:
     '''
-        Nash Schutliff Efficiency (NSE) coefficient
+    Nash Schutliff Efficiency (NSE) coefficient
     '''
     # N.B. sim and obs is not interchangeable for NSE
 
@@ -56,7 +62,7 @@ def NSE(sim:np.ndarray, obs:np.ndarray)->float:
 
 def MSE(x:np.ndarray, y:np.ndarray)->float:
     '''
-        Mean squared error
+    Mean squared error
     '''
     if not shape_alike(x,y): 
         raise Exception('shape mismatch between x and y')
@@ -65,10 +71,18 @@ def MSE(x:np.ndarray, y:np.ndarray)->float:
 
 def RMSE(x:np.ndarray, y:np.ndarray)->float:
     '''
-        Root mean squared error = sqrt(mse)
+    Root mean squared error = sqrt(mse)
     '''
-
     if not shape_alike(x,y):
         raise Exception('shape mismatch between x and y')
 
     return np.sqrt(MSE(x,y))
+
+def PBIAS(obs:np.ndarray, sim:np.ndarray)->float:
+    '''
+    Percentage Bias
+    '''
+    if not shape_alike(sim,obs):
+        raise Exception('shape mismatch between x and y')
+    
+    return (obs-sim).sum() * 100 / obs.sum()

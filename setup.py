@@ -17,10 +17,10 @@ REQUIRED_PACKAGES = [
     'numpy',
     'scipy',
     'pandas',
-    'fiona',
-    'shapely',
     'pyscissor',
-    'click'
+    'click',
+    'matplotlib',
+    'tabulate'
 ]
 
 KEYWORDS = [

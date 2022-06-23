@@ -43,20 +43,20 @@ tank_param_bounds = {
     "t0_boc":     {"min" : 0.1,  "max" : 0.5},
     "t0_soc_uo":  {"min" : 0.1,  "max" : 0.5},
     "t0_soc_lo":  {"min" : 0.1,  "max" : 0.5},
-    "t0_soh_uo" : {"min" : 25,   "max" : 50 },
-    "t0_soh_lo":  {"min" : 0,    "max" : 20 },
+    "t0_soh_uo" : {"min" : 75,   "max" : 100 },
+    "t0_soh_lo":  {"min" : 0,    "max" : 50 },
 
     # tank-1
     "t1_is":      {"min" : 0.01, "max" : 100},
     "t1_boc":     {"min" : 0.01, "max" : 0.5},
     "t1_soc":     {"min" : 0.01, "max" : 0.5},
-    "t1_soh":     {"min" : 0,    "max" : 50 },
+    "t1_soh":     {"min" : 0,    "max" : 100 },
     
     # tank-2
     "t2_is":      {"min" : 0.01, "max" : 100},
     "t2_boc":     {"min" : 0.01, "max" : 0.5},
     "t2_soc":     {"min" : 0.01, "max" : 0.5},
-    "t2_soh":     {"min" : 0,    "max" : 50 },
+    "t2_soh":     {"min" : 0,    "max" : 100 },
     
     # tank-3
     "t3_is":      {"min" : 0.01, "max" : 100},

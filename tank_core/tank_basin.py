@@ -53,13 +53,13 @@ def tank_discharge(
     
     if not utils.shape_alike(precipitation, evapotranspiration):
     
-        raise ValueError('ERROR 1001: length mismatch between precipitation and evapotranspiration data')    
+        raise ValueError('ERROR-TANK-01: length mismatch between precipitation and evapotranspiration data')    
     
     time_step = precipitation.shape[0]
 
     # check for parameter: for Tank-0
     if t0_soh_uo < t0_soh_lo:
-        print('WARNING 5001: Invalid parameter upper outlet height is less than lower outlet height (Tank 0)')
+        print('WARNING-TANK-01: Invalid parameter upper outlet height is less than lower outlet height (Tank 0)')
 
     tank_storage       = np.zeros((time_step,4),dtype=np.float64)
     side_outlet_flow   = np.zeros((time_step,4),dtype=np.float64) 
@@ -159,7 +159,7 @@ def tank_discharge(
             total_tank_outflow = bottom_outlet_flow[t,i] + side_outlet_flow[t,i]  if i<=2 else side_outlet_flow[t,i]
             
             if total_tank_outflow > tank_storage[t,i]:
-                print('WARNING 5002: Total outlet flow exceeded tank storage for tank ',i)
+                print(f'WARNING-TANK-02: Total outlet flow exceeded tank storage for tank {i} at timestep {t}')
             
 
     '''
