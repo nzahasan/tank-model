@@ -121,14 +121,7 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
 
 def compute_statistics(basin:dict, result:pd.DataFrame, discharge:pd.DataFrame)->dict:
 
-    # merge using index
-    merged = pd.merge(
-        result,discharge, 
-        how='inner', 
-        left_index=True, 
-        right_index=True, 
-        suffixes=('_sim', '_obs')
-    )
+    merged = merge_obs_sim(observed=discharge, simulated=result)
 
     merged_keys = merged.keys()
     
@@ -224,6 +217,16 @@ def update_basin_with_stacked_parameter(basin:dict, node_order_type:list, stacke
 
     return basin
 
+def merge_obs_sim(observed:pd.DataFrame, simulated:pd.DataFrame)-> pd.DataFrame:
+    # merge dataframes using index(time)
+    return pd.merge(
+        simulated,observed, 
+        how='inner', 
+        left_index=True, 
+        right_index=True, 
+        suffixes=('_sim', '_obs')
+    )
+    
 
 def stat_by_stacked_parameter(
         stacked_parameter:list, node_order_type:list, basin:dict,
@@ -234,15 +237,8 @@ def stat_by_stacked_parameter(
     
     result = compute_project(updated_basin,rainfall,evapotranspiration,24.0)
 
-    # merge dataframes using index(time)
-    merged = pd.merge(
-        result,discharge, 
-        how='inner', 
-        left_index=True, 
-        right_index=True, 
-        suffixes=('_sim', '_obs')
-    )
-
+    merged = merge_obs_sim(observed=discharge, simulated=result)
+    
     root_node = updated_basin['root_node'][0]
     sim_key, obs_key = f'{root_node}_sim', f'{root_node}_obs' 
     _nse = NSE(merged[sim_key].to_numpy(),merged[obs_key].to_numpy())

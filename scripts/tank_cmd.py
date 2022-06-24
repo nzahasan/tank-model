@@ -7,8 +7,6 @@ Supports:
     - Optimize basin paramemeters
     - Plot project results
 '''
-
-from email import header
 import json, os, click
 from tank_core import computation_helpers as ch
 from tank_core import io_helpers as ioh
@@ -17,7 +15,6 @@ from tabulate import tabulate
 from matplotlib import pyplot as pl, rcParams
 from matplotlib.gridspec import GridSpec
 import seaborn
-import pandas as pd
 rcParams['font.family'] = 'monospace'
 
 
@@ -75,7 +72,7 @@ def new_project(project_name):
 @cli.command()
 @click.option('-pf', '--project-file', type=click.Path(exists=True), help="project file", required=True)
 def compute(project_file):
-    
+    '''Computes tank model for given project file'''
     # get project root directory
     project_dir = os.path.dirname(os.path.abspath(project_file))
     
@@ -96,6 +93,7 @@ def compute(project_file):
     discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
     del_t = project['interval']
 
+    
 
     computation_result = ch.compute_project(basin, precipitation, evapotranspiration, del_t)
     statistics = ch.compute_statistics(basin=basin, result=computation_result, discharge=discharge)
@@ -123,6 +121,7 @@ def compute(project_file):
 @cli.command()
 @click.option('-pf', '--project-file', help="project file")
 def plot_result(project_file):
+    '''Generets plots of model simuation results in project directory'''
     
     project_dir = os.path.dirname(os.path.abspath(project_file))
     project = ioh.read_project_file(project_file)
@@ -131,7 +130,7 @@ def plot_result(project_file):
     
     result,_ = ioh.read_ts_file(result_file)
 
-    discharge = pd.read_csv(discharge_file,parse_dates=True,index_col=['Time'])
+    discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
 
     basin_file = os.path.join(project_dir, project['basin'])
     basin = ioh.read_basin_file(basin_file)
@@ -140,13 +139,7 @@ def plot_result(project_file):
     sim_key, obs_key = f'{root_node}_sim', f'{root_node}_obs'
     
     
-    merged = pd.merge(
-        result, discharge, 
-        how='inner', 
-        left_index=True, 
-        right_index=True, 
-        suffixes=('_sim', '_obs')
-    )
+    merged = ch.merge_obs_sim(observed=discharge,simulated=result)
     
     fig = pl.figure(constrained_layout=True, figsize=(10,10), dpi=600)
     
@@ -161,7 +154,7 @@ def plot_result(project_file):
     ax1.title.set_text(f'Observed vs Simulated Discharge at {root_node}')
     ax1.legend()
     
-    seaborn.regplot(x=merged[obs_key], y=merged[sim_key], ax=ax2, color='k' )
+    seaborn.regplot(x=merged[obs_key], y=merged[sim_key], ax=ax2, color='k',scatter_kws={'color':'gray'} )
     seaborn.kdeplot(x=discharge[root_node],  color='gray', ax=ax3,label='Obs')
     seaborn.kdeplot(x=result[root_node],  color='black', ax=ax3, label='Sim')
     ax3.legend()
@@ -174,7 +167,7 @@ def plot_result(project_file):
 @cli.command()
 @click.option('-pf', '--project-file', help="project file")
 def optimize(project_file):
-    
+    '''Automatically optimizes tank basin parameters for a given projects'''
     project_dir = os.path.dirname(os.path.abspath(project_file))
     
     project = ioh.read_project_file(project_file)
