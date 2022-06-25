@@ -192,53 +192,6 @@ def optimize(project_file):
     with open(basin_file,'w') as wf:
         json.dump(optimized_basin, wf,indent=2)
 
-@cli.command()
-@click.option('-nens', '--num-ens', type=int, help="number of ensemble", required=True)
-@click.option('-pf', '--project-file', type=click.Path(exists=True), help="project file", required=True)
-def compute_ens(num_ens,project_file):
-    '''Computes tank model for ensemble data'''
-    # get project root directory
-    project_dir = os.path.dirname(os.path.abspath(project_file))
-    
-    project = ioh.read_project_file(project_file)
-    
-    basin_file = os.path.join(project_dir, project['basin'])
-    precipitation_file = os.path.join(project_dir, project['precipitation'])
-    evapotranspiration_file = os.path.join(project_dir, project['evapotranspiration'])
-    discharge_file = os.path.join(project_dir, project['discharge'])
-    statistics_file = os.path.join(project_dir, project['statistics'])
-    result_file = os.path.join(project_dir, project['result'])
-
-    
-    basin = ioh.read_basin_file(basin_file)
-    precipitation, dt_pr = ioh.read_ts_file(precipitation_file)
-    evapotranspiration, dt_et = ioh.read_ts_file(evapotranspiration_file)
-    discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
-    del_t = project['interval']
-
-    for en_no in range(num_ens):
-        pass
-    
-    computation_result = ch.compute_project(basin, precipitation, evapotranspiration, del_t)
-    statistics = ch.compute_statistics(basin=basin, result=computation_result, discharge=discharge)
-
-    ioh.write_ts_file(computation_result,result_file)
-     
-    print( 
-        tabulate(
-            [
-                ('NSE', statistics['BAHADURABAD']['NSE']),
-                ('RMSE', statistics['BAHADURABAD']['RMSE']),
-                ('R2', statistics['BAHADURABAD']['R2']),
-                ('PBIAS', statistics['BAHADURABAD']['PBIAS']),
-            ],
-            headers=['Statistics', 'BAHADURABAD'], tablefmt='psql'
-        ) 
-    )
-
-    with open(statistics_file,'w') as stat_file_write_buffer:
-        json.dump(statistics, stat_file_write_buffer, indent=2)
-
 
 if __name__ == '__main__':
     cli()
