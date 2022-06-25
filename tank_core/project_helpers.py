@@ -66,7 +66,8 @@ def hms_basin_to_tank_basin(hms_basin_def:str):
         ds = basin['basin_def'][node].get('downstream',None)
         
         if ds is None:
-            #  this is root node
+            #  this is root node || needs to be changed
+            # no basin will have multiple root node
             if basin.get('root_node',None) is None:
                 basin['root_node'] = [node]
             else:

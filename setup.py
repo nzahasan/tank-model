@@ -20,14 +20,15 @@ REQUIRED_PACKAGES = [
     'pyscissor',
     'click',
     'matplotlib',
-    'tabulate'
+    'tabulate',
+    'pathlib',
 ]
 
 KEYWORDS = [
     'hydrologic-model', 
     'tank-model',
     'rainfall-runoff'
-    ]
+]
 
 setup(
     name='tank_hydrological_model',

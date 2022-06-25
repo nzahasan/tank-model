@@ -8,9 +8,10 @@ Supports:
     - Plot project results
 '''
 import json, os, click
+from pathlib import Path
 from tank_core import computation_helpers as ch
 from tank_core import io_helpers as ioh
-from tank_core.project_helpers import hms_basin_to_tank_basin
+from tank_core import project_helpers as ph
 from tabulate import tabulate
 from matplotlib import pyplot as pl, rcParams
 from matplotlib.gridspec import GridSpec
@@ -32,7 +33,7 @@ def hms2tank(hms_basin_file, output_file):
     
     hms_basin_file_content = hms_basin_file.read()
 
-    basin_def = hms_basin_to_tank_basin(hms_basin_file_content)
+    basin_def = ph.hms_basin_to_tank_basin(hms_basin_file_content)
 
     output_file.write(json.dumps(basin_def,indent=2))
 
@@ -74,17 +75,15 @@ def new_project(project_name):
 def compute(project_file):
     '''Computes tank model for given project file'''
     # get project root directory
-    project_dir = os.path.dirname(os.path.abspath(project_file))
+    project_dir = Path(project_file).resolve().parent
     
-
     project = ioh.read_project_file(project_file)
-    
-    basin_file = os.path.join(project_dir, project['basin'])
-    precipitation_file = os.path.join(project_dir, project['precipitation'])
-    evapotranspiration_file = os.path.join(project_dir, project['evapotranspiration'])
-    discharge_file = os.path.join(project_dir, project['discharge'])
-    statistics_file = os.path.join(project_dir, project['statistics'])
-    result_file = os.path.join(project_dir, project['result'])
+    basin_file = project_dir / project['basin']
+    precipitation_file = project_dir / project['precipitation']
+    evapotranspiration_file = project_dir / project['evapotranspiration']
+    discharge_file = project_dir / project['discharge']
+    statistics_file = project_dir / project['statistics']
+    result_file =project_dir / project['result']
 
     
     basin = ioh.read_basin_file(basin_file)
@@ -123,21 +122,21 @@ def compute(project_file):
 def plot_result(project_file):
     '''Generets plots of model simuation results in project directory'''
     
-    project_dir = os.path.dirname(os.path.abspath(project_file))
+    project_dir = Path(project_file).resolve().parent
     project = ioh.read_project_file(project_file)
-    result_file = os.path.join(project_dir, project['result'])
-    discharge_file = os.path.join(project_dir, project['discharge'])
+    
+    result_file = project_dir / project['result']
+    discharge_file = project_dir / project['discharge']
     
     result,_ = ioh.read_ts_file(result_file)
 
     discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
 
-    basin_file = os.path.join(project_dir, project['basin'])
+    basin_file = project_dir / project['basin']
     basin = ioh.read_basin_file(basin_file)
     
     root_node = basin['root_node'][0]
     sim_key, obs_key = f'{root_node}_sim', f'{root_node}_obs'
-    
     
     merged = ch.merge_obs_sim(observed=discharge,simulated=result)
     
@@ -154,10 +153,13 @@ def plot_result(project_file):
     ax1.title.set_text(f'Observed vs Simulated Discharge at {root_node}')
     ax1.legend()
     
-    seaborn.regplot(x=merged[obs_key], y=merged[sim_key], ax=ax2, color='k',scatter_kws={'color':'gray'} )
+    seaborn.regplot(x=merged[obs_key], y=merged[sim_key], ax=ax2, color='black',scatter_kws={'color':'#e9e9e9'} )
+    ax2.title.set_text(f'Correlation R^2 ')
+
     seaborn.kdeplot(x=discharge[root_node],  color='gray', ax=ax3,label='Obs')
     seaborn.kdeplot(x=result[root_node],  color='black', ax=ax3, label='Sim')
     ax3.legend()
+    ax3.title.set_text('KDE Plot')
     
     # pl.show()
     pl.savefig(os.path.join(project_dir,'model_output.png'))
@@ -189,6 +191,53 @@ def optimize(project_file):
 
     with open(basin_file,'w') as wf:
         json.dump(optimized_basin, wf,indent=2)
+
+@cli.command()
+@click.option('-nens', '--num-ens', type=int, help="number of ensemble", required=True)
+@click.option('-pf', '--project-file', type=click.Path(exists=True), help="project file", required=True)
+def compute_ens(num_ens,project_file):
+    '''Computes tank model for ensemble data'''
+    # get project root directory
+    project_dir = os.path.dirname(os.path.abspath(project_file))
+    
+    project = ioh.read_project_file(project_file)
+    
+    basin_file = os.path.join(project_dir, project['basin'])
+    precipitation_file = os.path.join(project_dir, project['precipitation'])
+    evapotranspiration_file = os.path.join(project_dir, project['evapotranspiration'])
+    discharge_file = os.path.join(project_dir, project['discharge'])
+    statistics_file = os.path.join(project_dir, project['statistics'])
+    result_file = os.path.join(project_dir, project['result'])
+
+    
+    basin = ioh.read_basin_file(basin_file)
+    precipitation, dt_pr = ioh.read_ts_file(precipitation_file)
+    evapotranspiration, dt_et = ioh.read_ts_file(evapotranspiration_file)
+    discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
+    del_t = project['interval']
+
+    for en_no in range(num_ens):
+        pass
+    
+    computation_result = ch.compute_project(basin, precipitation, evapotranspiration, del_t)
+    statistics = ch.compute_statistics(basin=basin, result=computation_result, discharge=discharge)
+
+    ioh.write_ts_file(computation_result,result_file)
+     
+    print( 
+        tabulate(
+            [
+                ('NSE', statistics['BAHADURABAD']['NSE']),
+                ('RMSE', statistics['BAHADURABAD']['RMSE']),
+                ('R2', statistics['BAHADURABAD']['R2']),
+                ('PBIAS', statistics['BAHADURABAD']['PBIAS']),
+            ],
+            headers=['Statistics', 'BAHADURABAD'], tablefmt='psql'
+        ) 
+    )
+
+    with open(statistics_file,'w') as stat_file_write_buffer:
+        json.dump(statistics, stat_file_write_buffer, indent=2)
 
 
 if __name__ == '__main__':

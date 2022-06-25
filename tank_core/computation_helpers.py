@@ -5,7 +5,7 @@ Helper functions for computation
 import numpy as np
 import pandas as pd
 from queue import Queue
-from scipy.optimize import minimize, shgo,dual_annealing, differential_evolution
+from scipy.optimize import minimize
 from .tank_basin import tank_discharge
 from .channel_routing import muskingum
 from . import utils
@@ -96,7 +96,6 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
                     ** curr_node_def['parameters']
                 )
 
-            
             computation_result[curr_node_name] = sum_node
             
 
@@ -110,9 +109,6 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
                 sum_node += computation_result[us_node_name].to_numpy()
             
             computation_result[curr_node_name] = sum_node
-
-
-    
 
     return computation_result
     
@@ -145,7 +141,9 @@ def compute_statistics(basin:dict, result:pd.DataFrame, discharge:pd.DataFrame)-
 
 # creates a single list of parameter stacking each nodes parameter
 def parameter_stack(basin:dict)->tuple:
-
+    '''
+    Stackes all parameters into a list of a given basin
+    '''
     node_order_type = []
     stacked_parameter = []
     basin_def = basin['basin_def']
@@ -174,7 +172,9 @@ def parameter_stack(basin:dict)->tuple:
 
 # Unstacks parameters stacked by parameter_stack function 
 def parameter_unstack(node_order_type:list, stacked_parameter:list)->dict:
-    
+    '''
+    returns unstacked parameters of a basin for provided unstacked parameters
+    '''
     unstacked_parameter = dict()
     
     # later have to change this if other routhing method is added
@@ -193,7 +193,9 @@ def parameter_unstack(node_order_type:list, stacked_parameter:list)->dict:
     return unstacked_parameter
 
 def update_basin_with_unstacked_parameter(basin:dict, unstacked_parameter:dict)->dict:
-    
+    '''
+    returns updatated basin for provided unstacked parameters
+    '''
     for node in unstacked_parameter.keys():
         
         basin['basin_def'][node]['parameters'] = unstacked_parameter[node]
@@ -202,6 +204,9 @@ def update_basin_with_unstacked_parameter(basin:dict, unstacked_parameter:dict)-
     return basin
 
 def update_basin_with_stacked_parameter(basin:dict, node_order_type:list, stacked_parameter:list)->dict:
+    '''
+    returns updatated basin for provided stacked parameters
+    '''
     # check if stacked parameter length is okay
     conv_fn = {
         'Subbasin': utils.tank_param_list2dict,
@@ -218,7 +223,9 @@ def update_basin_with_stacked_parameter(basin:dict, node_order_type:list, stacke
     return basin
 
 def merge_obs_sim(observed:pd.DataFrame, simulated:pd.DataFrame)-> pd.DataFrame:
-    # merge dataframes using index(time)
+    ''' 
+    Inner joins observed and simulated output with their indexe (time) 
+    '''
     return pd.merge(
         simulated,observed, 
         how='inner', 
@@ -232,7 +239,9 @@ def stat_by_stacked_parameter(
         stacked_parameter:list, node_order_type:list, basin:dict,
         rainfall:pd.DataFrame, evapotranspiration:pd.DataFrame, 
         discharge:pd.DataFrame)->float:
-
+    '''
+    Returns model performance statistics for stacked parameters
+    '''
     updated_basin = update_basin_with_stacked_parameter(basin, node_order_type, stacked_parameter)
     
     result = compute_project(updated_basin,rainfall,evapotranspiration,24.0)
@@ -248,8 +257,12 @@ def stat_by_stacked_parameter(
 
 
 
-def optimize_project(basin:dict, precipitation, evapotranspiration, discharge):
-
+def optimize_project(basin:dict, 
+    precipitation:pd.DataFrame, evapotranspiration:pd.DataFrame, 
+    discharge:pd.DataFrame)->dict:
+    '''
+    Optimizes parameters of a basin and returns updated basin file
+    '''
 
     node_order_type, stacked_parameter = parameter_stack(basin)
     
@@ -267,8 +280,6 @@ def optimize_project(basin:dict, precipitation, evapotranspiration, discharge):
             upper_bound_stacked.extend(gc.muskingum_ub.tolist())
             lower_bound_stacked.extend(gc.muskingum_lb.tolist())
     
-    # initial_guess = 0.6 * (np.array(lower_bound_stacked) + np.array(upper_bound_stacked) )
-    
     initial_guess = np.array(stacked_parameter)
 
     param_bounds = np.column_stack((lower_bound_stacked,upper_bound_stacked))
@@ -279,32 +290,6 @@ def optimize_project(basin:dict, precipitation, evapotranspiration, discharge):
             method='L-BFGS-B',
             bounds=param_bounds
         )
-
-    # optimizer = minimize(stat_by_stacked_parameter, initial_guess,
-    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
-    #         method='Nelder-Mead',
-    #         bounds=param_bounds
-    #     )
-
-    # optimizer = differential_evolution(stat_by_stacked_parameter, 
-    #         bounds=param_bounds,
-    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
-    #         maxiter=100
-    #     )
-    
-
-    # optimizer = minimize(stat_by_stacked_parameter, initial_guess,
-    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
-    #         method='powell',
-    #         bounds=param_bounds
-    #     )
-
-    # optimizer = dual_annealing(stat_by_stacked_parameter, bounds=param_bounds,
-    #         args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
-    #         maxiter=1000
-            
-    #     )
-
     
     return update_basin_with_stacked_parameter(basin, node_order_type, optimizer.x)
 
