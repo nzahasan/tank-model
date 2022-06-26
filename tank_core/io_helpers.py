@@ -9,8 +9,6 @@ import os
 from datetime import datetime as dt
 
 from . import global_config as gc
-# import FLOAT_FMT,DATE_FMT
-
 
 def read_ts_file(file_path:str, check_time_diff=True)-> tuple:
     '''
@@ -32,7 +30,7 @@ def read_ts_file(file_path:str, check_time_diff=True)-> tuple:
     t_diff = np.diff(df.index.to_numpy(), n=1).astype('timedelta64[h]')
 
     if check_time_diff and not np.all(t_diff==t_diff[0]):
-        raise Exception('Time difference is not equal, possible missing values')
+        raise Exception('Time difference is not equal, possible missing/irregular dates')
 
     return (df , t_diff[0] ) if check_time_diff else (df, np.nan)
 
@@ -81,8 +79,7 @@ def read_basin_file(basin_file:str)->dict:
         
         basin = json.load(basin_file_rd_buffer)
 
-        # check if basin file is  okay [later]
-
+        # check if basin file is  okay [will work on it later]
 
         return basin 
 

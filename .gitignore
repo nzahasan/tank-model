@@ -29,3 +29,8 @@ project/
 
 #notebooks
 .ipynb_checkpoints/
+
+#build files 
+*.egg-info/
+build/
+dist/
