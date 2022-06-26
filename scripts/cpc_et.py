@@ -89,7 +89,7 @@ def main(tmax_nc, tmin_nc, outfile):
         time_var.standard_name = tmax_nc.variables['time'].standard_name
         time_var.axis          = tmax_nc.variables['time'].axis
         time_var.units         = tmax_nc.variables['time'].units
-        time_var.delta_t       = tmax_nc.variables['time'].delta_t
+        # time_var.delta_t       = tmax_nc.variables['time'].delta_t
 
 
         lat_var = ncwf.createVariable('lat','f4',dimensions=('lat'))

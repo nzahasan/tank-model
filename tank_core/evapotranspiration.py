@@ -100,9 +100,10 @@ def hargreaves(tmin:float,tmax:float,date:datetime,lat:float)->float:
     lhv = 2.45 
     # λ: the latent heat of vaporization MJ·kg−1 
     # converts to mm/day (1/2.45) = 0.408
-
-    et0 = 0.0023 * (ra/lhv) * sqrt(tmax-tmin)*(tmean+17.8) 
-
+    
+    # tmax-tmin is set to 0 if -ve, sometimes -ve like -9.3e-36 arises
+    et0 = 0.0023 * (ra/lhv) * sqrt(max(tmax-tmin, 0))*(tmean+17.8) 
+    # return ra
     
     # et0 cannot be -ve
     return max(et0, 0.0)
