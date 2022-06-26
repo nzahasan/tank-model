@@ -22,6 +22,7 @@ REQUIRED_PACKAGES = [
     'matplotlib',
     'tabulate',
     'pathlib',
+    'pytest',
 ]
 
 KEYWORDS = [

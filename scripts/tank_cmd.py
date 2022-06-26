@@ -148,8 +148,8 @@ def plot_result(project_file):
     ax3 = fig.add_subplot(gs[1,1])
 
     
-    ax1.plot(result.index,result[root_node],label='Simulated',color='gray', linewidth=1, linestyle='dashdot')
-    ax1.plot(discharge.index, discharge[root_node],label='Observed', linewidth=1.5,color='black')
+    ax1.plot(result.index,result[root_node],label='Simulated',color='black', linewidth=1.5)
+    ax1.plot(discharge.index, discharge[root_node],label='Observed', color='gray', linewidth=1, linestyle='dashdot')
     ax1.title.set_text(f'Observed vs Simulated Discharge at {root_node}')
     ax1.legend()
     
