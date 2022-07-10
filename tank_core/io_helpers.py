@@ -22,12 +22,12 @@ def read_ts_file(file_path:str, check_time_diff=True)-> tuple:
         index_col=['Time'],
         parse_dates= True  # will parse index for datetime
     )
-
+    
     # sort by time
-    df.sort_index(inplace=True)
-
+    df = df.sort_index()
+    
     # check if missing date
-    t_diff = np.diff(df.index.to_numpy(), n=1).astype('timedelta64[h]')
+    t_diff = np.diff(df.index.to_numpy(), n=1)
 
     if check_time_diff and not np.all(t_diff==t_diff[0]):
         raise Exception('Time difference is not equal, possible missing/irregular dates')

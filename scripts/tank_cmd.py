@@ -92,7 +92,7 @@ def compute(project_file):
     discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
     del_t = project['interval']
 
-    
+    # check for project time interval with pr and et time interval
 
     computation_result = ch.compute_project(basin, precipitation, evapotranspiration, del_t)
     statistics = ch.compute_statistics(basin=basin, result=computation_result, discharge=discharge)

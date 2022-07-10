@@ -158,5 +158,8 @@ NUM_PARAMETER = {
     'Reach': len(MUSKINGUM_PARAMETER_ORDER)
 }
 
+# better use %Y-%m-%dT%H:%M:%S.%f%z
+# should not care which timezone is
+# being used in input file
 DATE_FMT = '%Y-%m-%dT%H:%M:%S.%fZ'
 FLOAT_FMT = '%.3f'

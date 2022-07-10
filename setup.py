@@ -23,6 +23,7 @@ REQUIRED_PACKAGES = [
     'tabulate',
     'pathlib',
     'pytest',
+    'python-dateutil'
 ]
 
 KEYWORDS = [
