@@ -14,7 +14,11 @@ from . import global_config as gc
 
 
 
-def check_input_consistancey():
+def check_input_consistancy(precipitation, evapotranspiration, del_t, start_time, end_time):
+
+    '''
+    Check input data consistancy
+    '''
 
     pass
 
@@ -59,9 +63,16 @@ def build_computation_stack(project:dict) -> list:
 def compute_project(basin:dict, precipitation:pd.DataFrame, 
                     evapotranspiration:pd.DataFrame, del_t:float)->pd.DataFrame:
     
+    '''
+    Computes project for provided precipitation and evapotranspiration data
+    
+    Caveats: 
+        - assumes all kind of timestep check has been completed
+        - and contains no null data or missing data
+    '''
     computation_stack = build_computation_stack(basin)
     
-    n_step = precipitation.index.shape[0]
+    n_step = len(precipitation.index)
     
     computation_result = pd.DataFrame()
 

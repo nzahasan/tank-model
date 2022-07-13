@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 '''
-Healpers function for file i/o required by model
+Necessary file i/o helper functions 
+- for reading files
+- checking time consistancy of input files
 '''
 import numpy as np
 import pandas as pd 
@@ -32,7 +34,7 @@ def read_ts_file(file_path:str, check_time_diff=True)-> tuple:
     if check_time_diff and not np.all(t_diff==t_diff[0]):
         raise Exception('Time difference is not equal, possible missing/irregular dates')
 
-    return (df , t_diff[0] ) if check_time_diff else (df, np.nan)
+    return (df , t_diff[0] ) if check_time_diff else (df, None)
 
 
 def write_ts_file(df:pd.DataFrame,file_path:str)->int:

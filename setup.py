@@ -23,13 +23,16 @@ REQUIRED_PACKAGES = [
     'tabulate',
     'pathlib',
     'pytest',
-    'python-dateutil'
+    'python-dateutil',
+    'pytz'
 ]
 
 KEYWORDS = [
-    'hydrologic-model', 
-    'tank-model',
-    'rainfall-runoff'
+    'hydrology', 
+    'rainfall-runoff-model',
+    'hydrologic-model'
+    'tank-model', 
+    'tank-hydrologic-model',
 ]
 
 setup(

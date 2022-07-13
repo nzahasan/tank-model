@@ -44,7 +44,7 @@ def hms2tank(hms_basin_file, output_file):
 def new_project(project_name):
 
     """creates a project directory generates a json formatted project file"""
-
+    # hours 0.25, 0.5, 1.0 - 2.0 - 3.0 - - - - n
     project  = {
         "interval"           : 24.0,                         # time interval in hour :float
         "basin"              : f'{project_name}.basin.json', #basin path :JSON
@@ -93,6 +93,15 @@ def compute(project_file):
     del_t = project['interval']
 
     # check for project time interval with pr and et time interval
+    if dt_pr != dt_et:
+        print('ERROR: Interval mismatch between pr and et input files, aborting!')
+        return None
+    
+    if del_t != dt_et.total_seconds() / 3600 or del_t != dt_pr.total_seconds() / 3600:
+
+        print('WARNING: Project interval doesnt match with timeseries interval, computing with timeseries interval')
+
+        del_t = dt_pr.total_seconds() / 3600
 
     computation_result = ch.compute_project(basin, precipitation, evapotranspiration, del_t)
     statistics = ch.compute_statistics(basin=basin, result=computation_result, discharge=discharge)
