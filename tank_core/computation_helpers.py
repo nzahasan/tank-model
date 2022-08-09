@@ -249,13 +249,14 @@ def merge_obs_sim(observed:pd.DataFrame, simulated:pd.DataFrame)-> pd.DataFrame:
 def stat_by_stacked_parameter(
         stacked_parameter:list, node_order_type:list, basin:dict,
         rainfall:pd.DataFrame, evapotranspiration:pd.DataFrame, 
-        discharge:pd.DataFrame)->float:
+        discharge:pd.DataFrame, del_t:float)->float:
     '''
     Returns model performance statistics for stacked parameters
+    (right now set to nse only)
     '''
     updated_basin = update_basin_with_stacked_parameter(basin, node_order_type, stacked_parameter)
     
-    result = compute_project(updated_basin,rainfall,evapotranspiration,24.0)
+    result = compute_project(updated_basin, rainfall, evapotranspiration, del_t)
 
     merged = merge_obs_sim(observed=discharge, simulated=result)
     
@@ -270,7 +271,7 @@ def stat_by_stacked_parameter(
 
 def optimize_project(basin:dict, 
     precipitation:pd.DataFrame, evapotranspiration:pd.DataFrame, 
-    discharge:pd.DataFrame)->dict:
+    discharge:pd.DataFrame, del_t:float)->dict:
     '''
     Optimizes parameters of a basin and returns updated basin file
     '''
@@ -295,11 +296,13 @@ def optimize_project(basin:dict,
 
     param_bounds = np.column_stack((lower_bound_stacked,upper_bound_stacked))
     
-
-    optimizer = minimize(stat_by_stacked_parameter, initial_guess,
-            args=(node_order_type, basin,precipitation,evapotranspiration,discharge),
-            method='L-BFGS-B',
-            bounds=param_bounds
+    optim_func_static_args = (node_order_type, basin,precipitation,evapotranspiration, discharge, del_t)
+    optimizer = minimize(
+            fun =stat_by_stacked_parameter, 
+            x0 = initial_guess,
+            args = optim_func_static_args,
+            method ='L-BFGS-B',
+            bounds =param_bounds
         )
     
     return update_basin_with_stacked_parameter(basin, node_order_type, optimizer.x)

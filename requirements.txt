@@ -8,3 +8,5 @@ click
 dash
 plotly
 matplotlib
+scikit-learn
+seaborn

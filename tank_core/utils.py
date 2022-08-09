@@ -47,3 +47,18 @@ def muskingum_param_dict2list(parameters:dict)->list:
         parameters["k"], 
         parameters["x"], 
     ]
+
+def check_input_delt(dt_pr, dt_et)->float:
+    # check for project time interval with pr and et time interval
+    # returns del_t in hours
+    if dt_pr != dt_et:
+        print('ERROR: Interval mismatch between pr and et input files, aborting!')
+        return None
+    
+    if del_t != dt_et.total_seconds() / 3600 or del_t != dt_pr.total_seconds() / 3600:
+
+        print('WARNING: Project interval doesnt match with timeseries interval, computing with timeseries interval')
+
+        del_t = dt_pr.total_seconds() / 3600
+    
+    return del_t

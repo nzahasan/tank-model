@@ -16,6 +16,7 @@ from tabulate import tabulate
 from matplotlib import pyplot as pl, rcParams
 from matplotlib.gridspec import GridSpec
 import seaborn
+from tank_core.utils import check_input_delt
 rcParams['font.family'] = 'monospace'
 
 
@@ -44,7 +45,7 @@ def hms2tank(hms_basin_file, output_file):
 def new_project(project_name):
 
     """creates a project directory generates a json formatted project file"""
-    # hours 0.25, 0.5, 1.0 - 2.0 - 3.0 - - - - n
+    # hours [ 0.25, 0.5, 1.0, 2.0, 3.0 . . . . N ]
     project  = {
         "interval"           : 24.0,                         # time interval in hour :float
         "basin"              : f'{project_name}.basin.json', #basin path :JSON
@@ -92,16 +93,7 @@ def compute(project_file):
     discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
     del_t = project['interval']
 
-    # check for project time interval with pr and et time interval
-    if dt_pr != dt_et:
-        print('ERROR: Interval mismatch between pr and et input files, aborting!')
-        return None
-    
-    if del_t != dt_et.total_seconds() / 3600 or del_t != dt_pr.total_seconds() / 3600:
-
-        print('WARNING: Project interval doesnt match with timeseries interval, computing with timeseries interval')
-
-        del_t = dt_pr.total_seconds() / 3600
+    del_t = check_input_delt(dt_pr, dt_et)
 
     computation_result = ch.compute_project(basin, precipitation, evapotranspiration, del_t)
     statistics = ch.compute_statistics(basin=basin, result=computation_result, discharge=discharge)
@@ -194,9 +186,11 @@ def optimize(project_file):
     evapotranspiration, dt_et = ioh.read_ts_file(evapotranspiration_file)
     discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
 
+    del_t = check_input_delt(dt_pr, dt_et)
+
     basin = ioh.read_basin_file(basin_file)
 
-    optimized_basin = ch.optimize_project(basin, precipitation, evapotranspiration, discharge )
+    optimized_basin = ch.optimize_project(basin, precipitation, evapotranspiration, discharge, del_t )
 
     with open(basin_file,'w') as wf:
         json.dump(optimized_basin, wf,indent=2)
