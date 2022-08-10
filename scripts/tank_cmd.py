@@ -16,7 +16,9 @@ from tabulate import tabulate
 from matplotlib import pyplot as pl, rcParams
 from matplotlib.gridspec import GridSpec
 import seaborn
-from tank_core.utils import check_input_delt
+from tank_core import utils 
+
+# plot config
 rcParams['font.family'] = 'monospace'
 
 
@@ -91,9 +93,10 @@ def compute(project_file):
     precipitation, dt_pr = ioh.read_ts_file(precipitation_file)
     evapotranspiration, dt_et = ioh.read_ts_file(evapotranspiration_file)
     discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
-    del_t = project['interval']
+    
+    del_t_proj = project['interval']
 
-    del_t = check_input_delt(dt_pr, dt_et)
+    del_t = utils.check_time_delta(dt_pr, dt_et, del_t_proj)
 
     computation_result = ch.compute_project(basin, precipitation, evapotranspiration, del_t)
     statistics = ch.compute_statistics(basin=basin, result=computation_result, discharge=discharge)
@@ -163,7 +166,7 @@ def plot_result(project_file):
     ax3.title.set_text('KDE Plot')
     
     # pl.show()
-    pl.savefig(os.path.join(project_dir,'model_output.png'))
+    pl.savefig(project_dir / 'model_output.png')
 
     
 
@@ -186,7 +189,7 @@ def optimize(project_file):
     evapotranspiration, dt_et = ioh.read_ts_file(evapotranspiration_file)
     discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
 
-    del_t = check_input_delt(dt_pr, dt_et)
+    del_t = utils.check_time_delta(dt_pr, dt_et)
 
     basin = ioh.read_basin_file(basin_file)
 
