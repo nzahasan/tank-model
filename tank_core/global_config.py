@@ -160,6 +160,5 @@ NUM_PARAMETER = {
 
 # better use %Y-%m-%dT%H:%M:%S.%f%z
 # should not care which timezone is
-# being used in input file
-DATE_FMT = '%Y-%m-%dT%H:%M:%S.%fZ'
+DATE_FMT = '%Y-%m-%dT%H:%M:%S.%f%z'
 FLOAT_FMT = '%.3f'

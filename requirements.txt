@@ -1,12 +1,8 @@
 numpy
 scipy
 pandas
-fiona
-shapely
 pyscissor
 click
-dash
-plotly
 matplotlib
-scikit-learn
 seaborn
+tabulate
