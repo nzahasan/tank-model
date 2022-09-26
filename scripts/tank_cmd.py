@@ -50,12 +50,12 @@ def new_project(project_name):
     # hours [ 0.25, 0.5, 1.0, 2.0, 3.0 . . . . N ]
     project  = {
         "interval"           : 24.0,                         # time interval in hour :float
-        "basin"              : f'{project_name}.basin.json', #basin path :JSON
-        "precipitation"      : f'{project_name}.pr.csv',     #precipitation path :CSV
-        "evapotranspiration" : f'{project_name}.et.csv',     #evapotranspiration path :CSV
-        "discharge"          : f'{project_name}.q.csv',      # observered discharge path :CSV
-        "result"             : f'{project_name}.result.csv', # output file for discharge :CSV
-        "statistics"         : f'{project_name}.stats.json'  # statistics calculated form observed discharge :JSON
+        "basin"              : f'{project_name}.basin.json', # basin path - json-file
+        "precipitation"      : f'{project_name}.pr.csv',     # precipitation path - csv file
+        "evapotranspiration" : f'{project_name}.et.csv',     # evapotranspiration path - csv file
+        "discharge"          : f'{project_name}.q.csv',      # observered discharge path - csv file
+        "result"             : f'{project_name}.result.csv', # output file for discharge - csv file
+        "statistics"         : f'{project_name}.stats.json'  # statistics calculated form observed discharge - json-file
     }
     
     if not os.path.exists(project_name):

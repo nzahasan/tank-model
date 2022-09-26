@@ -39,32 +39,32 @@ t3 (2)
 
 tank_param_bounds = {
     # tank-0
-    "t0_is":      {"min" : 0.01, "max" : 100},
-    "t0_boc":     {"min" : 0.1,  "max" : 0.5},
-    "t0_soc_uo":  {"min" : 0.1,  "max" : 0.5},
-    "t0_soc_lo":  {"min" : 0.1,  "max" : 0.5},
-    "t0_soh_uo" : {"min" : 75,   "max" : 100 },
-    "t0_soh_lo":  {"min" : 0,    "max" : 50 },
+    "t0_is":     {"min" : 0.01, "max" : 100},
+    "t0_boc":    {"min" : 0.1,  "max" : 0.5},
+    "t0_soc_uo": {"min" : 0.1,  "max" : 0.5},
+    "t0_soc_lo": {"min" : 0.1,  "max" : 0.5},
+    "t0_soh_uo": {"min" : 75,   "max" : 100},
+    "t0_soh_lo": {"min" : 0,    "max" : 50},
 
     # tank-1
-    "t1_is":      {"min" : 0.01, "max" : 100},
-    "t1_boc":     {"min" : 0.01, "max" : 0.5},
-    "t1_soc":     {"min" : 0.01, "max" : 0.5},
-    "t1_soh":     {"min" : 0,    "max" : 100 },
+    "t1_is":  {"min" : 0.01, "max" : 100},
+    "t1_boc": {"min" : 0.01, "max" : 0.5},
+    "t1_soc": {"min" : 0.01, "max" : 0.5},
+    "t1_soh": {"min" : 0,    "max" : 100},
     
     # tank-2
-    "t2_is":      {"min" : 0.01, "max" : 100},
-    "t2_boc":     {"min" : 0.01, "max" : 0.5},
-    "t2_soc":     {"min" : 0.01, "max" : 0.5},
-    "t2_soh":     {"min" : 0,    "max" : 100 },
+    "t2_is":  {"min" : 0.01, "max" : 100},
+    "t2_boc": {"min" : 0.01, "max" : 0.5},
+    "t2_soc": {"min" : 0.01, "max" : 0.5},
+    "t2_soh": {"min" : 0,    "max" : 100},
     
     # tank-3
-    "t3_is":      {"min" : 0.01, "max" : 100},
-    "t3_soc":     {"min" : 0.01, "max" : 0.5}
+    "t3_is":  {"min" : 0.01, "max" : 100},
+    "t3_soc": {"min" : 0.01, "max" : 0.5}
 }
 
 
-
+# tank parameter lower bounds
 tank_lb = np.array([
     # [Tank-0] 
     tank_param_bounds['t0_is']['min'],
@@ -93,7 +93,7 @@ tank_lb = np.array([
 ])
 
 
-
+# tank parameter upper bounds
 tank_ub = np.array([ 
     # [Tank-0] 
     tank_param_bounds['t0_is']['max'],
@@ -128,37 +128,41 @@ muskingum_param_bound = {
 
 }
 
+# muskingum parameter lower bounds
 muskingum_lb = np.array([
     muskingum_param_bound["k"]["min"],
     muskingum_param_bound["x"]["min"],
 ])
 
-
+# muskingum parameter upper bounds
 muskingum_ub = np.array([
     muskingum_param_bound["k"]["max"],
     muskingum_param_bound["x"]["max"],
 ])
 
-
+# order of tank parameter in parameter-array
 TANK_PARAMETER_ORDER = [
     # T-0
     't0_is', 't0_boc', 't0_soc_uo', 't0_soc_lo', 't0_soh_uo', 't0_soh_lo', 
-    #T-1
+    # T-1
     't1_is', 't1_boc', 't1_soc', 't1_soh', 
-    #T-2
+    # T-2
     't2_is', 't2_boc', 't2_soc', 't2_soh', 
-    #T-3
+    # T-3
     't3_is', 't3_soc'
 ]
 
+# order of muskingum parameter in parameter-array
 MUSKINGUM_PARAMETER_ORDER = ['k', 'x']
 
+# total number fo parameter for basin & channel nodes
 NUM_PARAMETER = {
     'Subbasin': len(TANK_PARAMETER_ORDER),
     'Reach': len(MUSKINGUM_PARAMETER_ORDER)
 }
 
-# better use %Y-%m-%dT%H:%M:%S.%f%z
-# should not care which timezone is
+# project file io time format
 DATE_FMT = '%Y-%m-%dT%H:%M:%S.%f%z'
+
+# project file io float format
 FLOAT_FMT = '%.3f'
