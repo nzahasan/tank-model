@@ -3,7 +3,7 @@ Python implementation of Tank Hydrologic Model, a conceptual rainfall-runoff mod
 
 
 <p align="center">
-<img align="center" height="450px"  src="https://raw.githubusercontent.com/nzahasan/tank-model/master/assets/tank-model-schamatic.svg" >
+<img align="center" height="450px"  src="https://raw.githubusercontent.com/nzahasan/tank-model/master/assets/ModelDiagram.svg" >
 </p>
 
 ### Installation
