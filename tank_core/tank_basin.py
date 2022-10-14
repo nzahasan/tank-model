@@ -32,7 +32,7 @@ def tank_discharge(
     t2_is:float, t2_boc:float, t2_soc:float, t2_soh:float,
     
     # tank 3
-    t3_is:float, t3_soc:float) -> np.ndarray:
+    t3_is:float, t3_soc:float) -> tuple:
     
     '''
     ________________________________________________
@@ -174,6 +174,11 @@ def tank_discharge(
 
     discharge = UNIT_CONV_COEFF * side_outlet_flow.sum(axis=1)
 
+    states = dict(
+        tank_storage = tank_storage,
+        side_outlet_flow =  side_outlet_flow, 
+        bottom_outlet_flow = bottom_outlet_flow
+    )
 
-    # time series of discharge
-    return discharge
+    # returns - time series of discharge & states
+    return discharge, states

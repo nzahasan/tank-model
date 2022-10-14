@@ -88,7 +88,7 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
         if curr_node_def['type'] == 'Subbasin':
             
              
-            computation_result[curr_node_name] = tank_discharge(
+            computation_result[curr_node_name], basin_states = tank_discharge(
                 precipitation = precipitation[curr_node_name].to_numpy(),
                 evapotranspiration = evapotranspiration[curr_node_name].to_numpy(), 
                 del_t = del_t,

@@ -186,12 +186,13 @@ def optimize(project_file):
     discharge_file = os.path.join(project_dir, project['discharge'])
     statistics_file = os.path.join(project_dir, project['statistics'])
     result_file = os.path.join(project_dir, project['result'])
+    delt_proj = project['interval']
 
-    precipitation, dt_pr = ioh.read_ts_file(precipitation_file)
-    evapotranspiration, dt_et = ioh.read_ts_file(evapotranspiration_file)
+    precipitation, delt_pr = ioh.read_ts_file(precipitation_file)
+    evapotranspiration, delt_et = ioh.read_ts_file(evapotranspiration_file)
     discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
 
-    del_t = utils.check_time_delta(dt_pr, dt_et)
+    del_t = utils.check_time_delta(delt_pr, delt_et, delt_proj)
 
     basin = ioh.read_basin_file(basin_file)
 
