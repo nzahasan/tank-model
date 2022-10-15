@@ -36,7 +36,7 @@ KEYWORDS = [
 ]
 
 setup(
-    name='tank-hydro',
+    name='tank-hydrological-model',
     version= __version__,
     author= __author__,
     packages= PACKAGES,
