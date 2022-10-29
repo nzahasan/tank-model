@@ -35,7 +35,7 @@ def build_computation_stack(project:dict) -> list:
     '''
     computation_stack = []
 
-    node_qeue = Queue()
+    node_qeue:Queue[str] = Queue()
 
     # enque root note
     for root_node in project['root_node']:

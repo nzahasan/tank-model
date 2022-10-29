@@ -32,7 +32,7 @@ def tank_discharge(
     t2_is:float, t2_boc:float, t2_soc:float, t2_soh:float,
     
     # tank 3
-    t3_is:float, t3_soc:float) -> tuple:
+    t3_is:float, t3_soc:float) -> tuple[np.ndarray, dict[str, np.ndarray]]:
     
     '''
     ________________________________________________

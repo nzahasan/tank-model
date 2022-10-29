@@ -1,15 +1,19 @@
 # python
 __pycache__
 *.py[cod]
-
 # binary blobs
 *.nc
 *.nc4
 *.grib
 *.grib2
+*.h5
+*.hdf
+*.hdf5
 
 # mypy
 .mypy_cache/
+
+# vscode
 .vscode
 
 # os

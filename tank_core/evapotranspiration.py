@@ -22,7 +22,7 @@ from math import (
 )
 from datetime import datetime
 
-def days_in_year(year:int):
+def days_in_year(year:int) -> int:
     '''
         calculate number of days in a year
         considering leap years
@@ -32,7 +32,7 @@ def days_in_year(year:int):
     else: return 365
 
 
-def ext_ra(date:datetime,lat:float):
+def ext_ra(date:datetime,lat:float) -> float:
 
     '''
     Daily extra-terrestrial radiation 
@@ -74,7 +74,7 @@ def ext_ra(date:datetime,lat:float):
 
 
 # NB. this can only be applied to calculate daily et0
-def hargreaves(tmin:float,tmax:float,date:datetime,lat:float)->float:
+def hargreaves(tmin:float,tmax:float,date:datetime,lat:float) -> float:
     '''
     Daily Evapotranspiration calculation (Hargreaves and Samani, 1982)
     ------------------------------------------------------------------

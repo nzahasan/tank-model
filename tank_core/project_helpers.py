@@ -10,7 +10,7 @@ from .utils import (
 
 
 # converts hec-hms basin to tank basin defination
-def hms_basin_to_tank_basin(hms_basin_def:str):
+def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
 
     basin_default = gc.tank_lb
     channel_default = 0.5 * (gc.muskingum_lb + gc.muskingum_ub)
@@ -59,7 +59,7 @@ def hms_basin_to_tank_basin(hms_basin_def:str):
                     if key in numeric_props: val=float(val)
                     node_dict[key.lower().replace(' ','_')]=val
 
-    basin = {"basin_def":parsed_node}
+    basin:dict = {"basin_def":parsed_node}
 
     # add add downsteram/child nodes, root node information
     for node in basin['basin_def']:

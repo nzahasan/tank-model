@@ -12,7 +12,7 @@ from datetime import datetime as dt
 
 from . import global_config as gc
 
-def read_ts_file(file_path:str, check_time_diff=True)-> tuple:
+def read_ts_file(file_path:str, check_time_diff:bool=True)-> tuple:
     '''
         reads model input/output timeseries files (precip, et, discharge, result etc.)
         returns tuple(dataframe, del_time[seconds])

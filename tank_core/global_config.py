@@ -37,7 +37,7 @@ t3 (2)
     - soc : side outlet coefficient [1]
 '''
 
-tank_param_bounds = {
+tank_param_bounds:dict = {
     # tank-0
     "t0_is":     {"min" : 0.01, "max" : 100},
     "t0_boc":    {"min" : 0.1,  "max" : 0.5},
@@ -65,7 +65,7 @@ tank_param_bounds = {
 
 
 # tank parameter lower bounds
-tank_lb = np.array([
+tank_lb:np.ndarray = np.array([
     # [Tank-0] 
     tank_param_bounds['t0_is']['min'],
     tank_param_bounds['t0_boc']['min'],
@@ -94,7 +94,7 @@ tank_lb = np.array([
 
 
 # tank parameter upper bounds
-tank_ub = np.array([ 
+tank_ub:np.ndarray = np.array([ 
     # [Tank-0] 
     tank_param_bounds['t0_is']['max'],
     tank_param_bounds['t0_boc']['max'],
@@ -122,26 +122,26 @@ tank_ub = np.array([
 
 # Chanel - MUSKINGUM
 
-muskingum_param_bound = {
+muskingum_param_bound:dict = {
     "k" : {"min": 0, "max": 5},
     "x" : {"min": 0, "max": 0.5}
 
 }
 
 # muskingum parameter lower bounds
-muskingum_lb = np.array([
+muskingum_lb:np.ndarray = np.array([
     muskingum_param_bound["k"]["min"],
     muskingum_param_bound["x"]["min"],
 ])
 
 # muskingum parameter upper bounds
-muskingum_ub = np.array([
+muskingum_ub:np.ndarray = np.array([
     muskingum_param_bound["k"]["max"],
     muskingum_param_bound["x"]["max"],
 ])
 
 # order of tank parameter in parameter-array
-TANK_PARAMETER_ORDER = [
+TANK_PARAMETER_ORDER:list = [
     # T-0
     't0_is', 't0_boc', 't0_soc_uo', 't0_soc_lo', 't0_soh_uo', 't0_soh_lo', 
     # T-1
@@ -153,16 +153,16 @@ TANK_PARAMETER_ORDER = [
 ]
 
 # order of muskingum parameter in parameter-array
-MUSKINGUM_PARAMETER_ORDER = ['k', 'x']
+MUSKINGUM_PARAMETER_ORDER:list = ['k', 'x']
 
 # total number fo parameter for basin & channel nodes
-NUM_PARAMETER = {
+NUM_PARAMETER:dict = {
     'Subbasin': len(TANK_PARAMETER_ORDER),
     'Reach': len(MUSKINGUM_PARAMETER_ORDER)
 }
 
 # project file io time format
-DATE_FMT = '%Y-%m-%dT%H:%M:%S.%f%z'
+DATE_FMT:str = '%Y-%m-%dT%H:%M:%S.%f%z'
 
 # project file io float format
-FLOAT_FMT = '%.3f'
+FLOAT_FMT:str = '%.3f'

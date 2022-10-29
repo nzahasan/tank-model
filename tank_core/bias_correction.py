@@ -2,7 +2,7 @@
 import numpy as np
 from scipy.stats import gamma
 
-class gqm(object):
+class gqm():
     
     '''
     Gamma Quantile Mapping (Piani et.el. 2009)
@@ -21,8 +21,8 @@ class gqm(object):
     '''
     def __init__(self):
 
-        self.obs_param = {'a':None,'b':None,'c':None}
-        self.sim_param = {'a':None,'b':None,'c':None}
+        self.obs_param = dict(a = None, b = None, c = None)
+        self.sim_param = dict(a = None, b = None, c = None)
      
     def fit(self,obs_data,sim_data):
 
