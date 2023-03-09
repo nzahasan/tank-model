@@ -25,6 +25,7 @@ REQUIRED_PACKAGES = [
     'pytest',
     'python-dateutil',
     'pytz'
+    'pathlib'
 ]
 
 KEYWORDS = [
@@ -41,6 +42,7 @@ setup(
     author= __author__,
     packages= PACKAGES,
     scripts = SCRIPTS,
+    test_suite = 'tests',
     license = 'MIT',
     python_requires = '>=3.6',
     description= 'Python implementation of Tank Hydrologic Model, a conceptual rainfall-runoff model proposed by Sugawara and Funiyuki (1956)',

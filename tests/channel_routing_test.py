@@ -1,9 +1,7 @@
 import numpy as np
 import tank_core.channel_routing as cr
 
-def main():
-
-	# subramanya example
+def test_muskingum():
 
 	inflowDat = np.array([10,20,50,60,55,45,35,27,20,15])
 
@@ -11,10 +9,5 @@ def main():
 	K = 12
 	X = 0.2
 
-
 	a = cr.muskingum(inflowDat,delT,K,X)
-	print(a)
 
-
-if __name__ == '__main__':
-	main()

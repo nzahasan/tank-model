@@ -1,10 +1,10 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+message: "If you use this software, kindly cite it as below."
 authors:
 - family-names: "Shawn"
   given-names: "Nazmul Ahasan"
   orcid: "https://orcid.org/0000-0002-5520-6407"
 title: "tank-hydrological-model"
-version: 0.1.7
+version: 0.2.0
 date-released: 2022-10-15
 url: "https://github.com/nzahasan/tank-model"

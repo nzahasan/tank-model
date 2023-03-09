@@ -7,3 +7,5 @@ matplotlib
 seaborn
 tabulate
 statsmodels
+pytest
+pathlib
