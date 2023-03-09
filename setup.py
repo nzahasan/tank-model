@@ -25,7 +25,6 @@ REQUIRED_PACKAGES = [
     'pytest',
     'python-dateutil',
     'pytz'
-    'pathlib'
 ]
 
 KEYWORDS = [
