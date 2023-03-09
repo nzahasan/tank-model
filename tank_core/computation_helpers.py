@@ -74,9 +74,7 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
     
     n_step = len(precipitation.index)
     
-    computation_result = pd.DataFrame()
-
-    computation_result.index = precipitation.index
+    computation_result = pd.DataFrame(index=precipitation.index)
 
     while len(computation_stack) > 0:
 

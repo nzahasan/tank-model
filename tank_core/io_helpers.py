@@ -21,7 +21,7 @@ def read_ts_file(file_path:str, check_time_diff:bool=True)-> tuple:
     # read file as pandas dataframe
     df = pd.read_csv(
         file_path,
-        index_col=['Time'],
+        index_col='Time',
         parse_dates= True  # will parse index for datetime
     )
     
