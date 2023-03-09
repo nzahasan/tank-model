@@ -6,4 +6,4 @@ click
 matplotlib
 seaborn
 tabulate
-joblib
+statsmodels

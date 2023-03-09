@@ -25,7 +25,7 @@ rcParams['font.family'] = 'monospace'
 @click.group()
 def cli(): 
     """### Tank-Model Command Line Utility ###"""
-    pass
+    return
     
 
 # -- Project Generation -- #

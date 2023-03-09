@@ -11,9 +11,7 @@ Python implementation of Tank Hydrologic Model, a conceptual rainfall-runoff mod
 Tank-Model can be installed as a python package using the following commands
 
 ```bash
-$ git clone https://github.com/nzahasan/tank-model.git
-$ cd tank-model
-$ python3 setup.py install
+$ pip install https://github.com/nzahasan/tank-model/zipball/master
 ```
 
 
@@ -28,6 +26,18 @@ $ tank_cmd.py new_project project_name
 
 ```bash
 $ tank_cmd.py hms2tank -bf hechms_basin_file -of output_tank_basin_file_path
+```
+
+### Computing tank model
+
+```bash
+$ tank_cmd.py compute -pf project_name.project.json
+```
+
+### Automatic optimization of tank model
+
+```bash
+$ tank_cmd.py optimize -pf project_name.project.json
 ```
 
 ### References:  
