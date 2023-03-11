@@ -50,15 +50,15 @@ def new_project(project_name):
 
     """creates a project directory generates a json formatted project file"""
     # hours [ 0.25, 0.5, 1.0, 2.0, 3.0 . . . . N ]
-    project  = {
-        "interval"           : 24.0,                         # time interval in hour :float
-        "basin"              : f'{project_name}.basin.json', # basin path - json-file
-        "precipitation"      : f'{project_name}.pr.csv',     # precipitation path - csv file
-        "evapotranspiration" : f'{project_name}.et.csv',     # evapotranspiration path - csv file
-        "discharge"          : f'{project_name}.q.csv',      # observered discharge path - csv file
-        "result"             : f'{project_name}.result.csv', # output file for discharge - csv file
-        "statistics"         : f'{project_name}.stats.json'  # statistics calculated form observed discharge - json-file
-    }
+    project  = dict(
+        interval           = 24.0,                         # time interval in hour : float
+        basin              = f'{project_name}.basin.json', # basin path - json-file
+        precipitation      = f'{project_name}.pr.csv',     # precipitation path - csv file
+        evapotranspiration = f'{project_name}.et.csv',     # evapotranspiration path - csv file
+        discharge          = f'{project_name}.q.csv',      # observered discharge path - csv file
+        result             = f'{project_name}.result.csv', # output file for discharge - csv file
+        statistics         = f'{project_name}.stats.json'  # statistics calculated form observed discharge - json-file
+    )
     
     if not os.path.exists(project_name):
         os.makedirs(project_name)
@@ -97,7 +97,8 @@ def compute(project_file):
     discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
     
     del_t_proj = project['interval']
-
+    
+    # check time difference consistancy
     del_t = utils.check_time_delta(dt_pr, dt_et, del_t_proj)
 
     computation_result = ch.compute_project(basin, precipitation, evapotranspiration, del_t)
@@ -124,7 +125,7 @@ def compute(project_file):
     # in discharge file!!
 
 @cli.command()
-@click.option('-pf', '--project-file', help="project file")
+@click.option('-pf', '--project-file', help="project file", required=True)
 def plot_result(project_file):
     '''Generets plots of model simuation results in project directory'''
     
@@ -173,7 +174,7 @@ def plot_result(project_file):
     
 
 @cli.command()
-@click.option('-pf', '--project-file', help="project file")
+@click.option('-pf', '--project-file', help="project file", required=True)
 def optimize(project_file):
     '''Automatically optimizes tank basin parameters for a given projects'''
     project_dir = os.path.dirname(os.path.abspath(project_file))
