@@ -9,7 +9,14 @@ from scipy.optimize import minimize
 from .tank_basin import tank_discharge
 from .channel_routing import muskingum
 from . import utils
-from .cost_functions import PBIAS, R2, RMSE, NSE, MSE, PBIAS
+from .cost_functions import (
+    PBIAS, 
+    R2, 
+    RMSE, 
+    NSE, 
+    MSE, 
+    PBIAS
+)
 from . import global_config as gc
 
 
@@ -58,24 +65,29 @@ def build_computation_stack(project:dict) -> list:
 
     return computation_stack
 
-# computation
 
-def compute_project(basin:dict, precipitation:pd.DataFrame, 
-                    evapotranspiration:pd.DataFrame, del_t:float)->pd.DataFrame:
+def compute_project(
+        basin:dict, 
+        precipitation:pd.DataFrame, 
+        evapotranspiration:pd.DataFrame, 
+        del_t:float
+    )->pd.DataFrame:
     
     '''
     Computes project for provided precipitation and evapotranspiration data
     
-    Caveats: 
+    Note: 
         - assumes all kind of timestep check has been completed
-        - and contains no null data or missing data
+        - and contains no null / missing data
     '''
     computation_stack = build_computation_stack(basin)
     
     n_step = len(precipitation.index)
     
     computation_result = pd.DataFrame(index=precipitation.index)
-    basin_states = dict()
+    basin_states = dict(
+        time = precipitation.index.to_numpy()
+    )
 
     while len(computation_stack) > 0:
 
@@ -84,9 +96,9 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
 
         curr_node_def = basin['basin_def'][curr_node_name]
 
+        # if node is subbasin return tank discharge
         if curr_node_def['type'] == 'Subbasin':
             
-             
             computation_result[curr_node_name], basin_states = tank_discharge(
                 precipitation = precipitation[curr_node_name].to_numpy(),
                 evapotranspiration = evapotranspiration[curr_node_name].to_numpy(), 
@@ -96,7 +108,8 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
             )
             
             basin_states[curr_node_name] = basin_states
-
+        
+        # if node is reach retun sum of routed flow for each upstream node
         elif curr_node_def['type'] == 'Reach':
 
             sum_node = np.zeros(n_step, dtype=np.float64)
@@ -109,11 +122,9 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
                 )
 
             computation_result[curr_node_name] = sum_node
-            
-
+        
+        # if node is sink/junction return sum each upstream nodes
         elif curr_node_def['type'] in ['Sink','Junction']:
-
-            
 
             sum_node = np.zeros(n_step, dtype=np.float64)
             
@@ -122,10 +133,7 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
             
             computation_result[curr_node_name] = sum_node
     
-    basin_states['time'] = precipitation.index
     return computation_result, basin_states
-    
-    
 
 
 def compute_statistics(basin:dict, result:pd.DataFrame, discharge:pd.DataFrame)->dict:
@@ -249,9 +257,14 @@ def merge_obs_sim(observed:pd.DataFrame, simulated:pd.DataFrame)-> pd.DataFrame:
     
 
 def stat_by_stacked_parameter(
-        stacked_parameter:list, node_order_type:list, basin:dict,
-        rainfall:pd.DataFrame, evapotranspiration:pd.DataFrame, 
-        discharge:pd.DataFrame, del_t:float)->float:
+        stacked_parameter:list, 
+        node_order_type:list, 
+        basin:dict,
+        rainfall:pd.DataFrame, 
+        evapotranspiration:pd.DataFrame, 
+        discharge:pd.DataFrame, 
+        del_t:float
+    )->float:
     '''
     Returns model performance statistics for stacked parameters
     (right now set to nse only)
@@ -271,9 +284,12 @@ def stat_by_stacked_parameter(
 
 
 
-def optimize_project(basin:dict, 
-    precipitation:pd.DataFrame, evapotranspiration:pd.DataFrame, 
-    discharge:pd.DataFrame, del_t:float)->dict:
+def optimize_project(
+        basin:dict, 
+        precipitation:pd.DataFrame, 
+        evapotranspiration:pd.DataFrame, 
+        discharge:pd.DataFrame, del_t:float
+    )->dict:
     '''
     Optimizes parameters of a basin and returns updated basin file
     '''
@@ -309,4 +325,3 @@ def optimize_project(basin:dict,
     
     return update_basin_with_stacked_parameter(basin, node_order_type, optimizer.x)
 
-    
