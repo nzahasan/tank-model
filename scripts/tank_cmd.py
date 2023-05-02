@@ -17,6 +17,7 @@ from matplotlib import pyplot as pl, rcParams
 from matplotlib.gridspec import GridSpec
 import seaborn
 from tank_core import utils 
+import pickle
 
 # plot config
 rcParams['font.family'] = 'monospace'
@@ -101,10 +102,14 @@ def compute(project_file):
     # check time difference consistancy
     del_t = utils.check_time_delta(dt_pr, dt_et, del_t_proj)
 
-    computation_result = ch.compute_project(basin, precipitation, evapotranspiration, del_t)
+    computation_result, basin_states = ch.compute_project(basin, precipitation, evapotranspiration, del_t)
     statistics = ch.compute_statistics(basin=basin, result=computation_result, discharge=discharge)
 
     ioh.write_ts_file(computation_result,result_file)
+
+    with open( project / 'basin_states.pkl', 'wb') as pkl_handler:
+        pickle.dump(basin_states, pkl_handler, protocol=pickle.HIGHEST_PROTOCOL)
+    
      
     print( 
         tabulate(

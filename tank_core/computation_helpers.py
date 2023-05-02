@@ -75,6 +75,7 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
     n_step = len(precipitation.index)
     
     computation_result = pd.DataFrame(index=precipitation.index)
+    basin_states = dict()
 
     while len(computation_stack) > 0:
 
@@ -94,6 +95,8 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
                 ** curr_node_def['parameters']
             )
             
+            basin_states[curr_node_name] = basin_states
+
         elif curr_node_def['type'] == 'Reach':
 
             sum_node = np.zeros(n_step, dtype=np.float64)
@@ -119,7 +122,7 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
             
             computation_result[curr_node_name] = sum_node
 
-    return computation_result
+    return computation_result, basin_states
     
     
 
