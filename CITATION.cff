@@ -5,6 +5,6 @@ authors:
   given-names: "Nazmul Ahasan"
   orcid: "https://orcid.org/0000-0002-5520-6407"
 title: "tank-hydrological-model"
-version: 0.2.2
+version: 0.2.3
 date-released: 2023-05-02
 url: "https://github.com/nzahasan/tank-model"

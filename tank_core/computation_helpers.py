@@ -85,7 +85,7 @@ def compute_project(
     n_step = len(precipitation.index)
     
     computation_result = pd.DataFrame(index=precipitation.index)
-    basin_states = dict(
+    model_states = dict(
         time = precipitation.index.to_numpy()
     )
 
@@ -106,8 +106,8 @@ def compute_project(
                 area = curr_node_def['area'],
                 ** curr_node_def['parameters']
             )
-            
-            basin_states[curr_node_name] = basin_states
+            # store basin states in  model states for dumping later
+            model_states[curr_node_name] = basin_states
         
         # if node is reach retun sum of routed flow for each upstream node
         elif curr_node_def['type'] == 'Reach':
@@ -133,7 +133,7 @@ def compute_project(
             
             computation_result[curr_node_name] = sum_node
     
-    return computation_result, basin_states
+    return computation_result, model_states
 
 
 def compute_statistics(basin:dict, result:pd.DataFrame, discharge:pd.DataFrame)->dict:
