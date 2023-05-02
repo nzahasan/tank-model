@@ -121,7 +121,8 @@ def compute_project(basin:dict, precipitation:pd.DataFrame,
                 sum_node += computation_result[us_node_name].to_numpy()
             
             computation_result[curr_node_name] = sum_node
-
+    
+    basin_states['time'] = precipitation.index
     return computation_result, basin_states
     
     

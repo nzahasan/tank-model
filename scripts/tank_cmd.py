@@ -107,7 +107,7 @@ def compute(project_file):
 
     ioh.write_ts_file(computation_result,result_file)
 
-    with open( project / 'basin_states.pkl', 'wb') as pkl_handler:
+    with open( project_dir / 'basin_states.pkl', 'wb') as pkl_handler:
         pickle.dump(basin_states, pkl_handler, protocol=pickle.HIGHEST_PROTOCOL)
     
      
