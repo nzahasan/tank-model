@@ -71,7 +71,7 @@ def compute_project(
         precipitation:pd.DataFrame, 
         evapotranspiration:pd.DataFrame, 
         del_t:float
-    )->pd.DataFrame:
+    )->tuple:
     
     '''
     Computes project for provided precipitation and evapotranspiration data
@@ -161,7 +161,7 @@ def compute_statistics(basin:dict, result:pd.DataFrame, discharge:pd.DataFrame)-
 
 
 # creates a single list of parameter stacking each nodes parameter
-def parameter_stack(basin:dict)->tuple:
+def parameter_stack(basin:dict) -> tuple:
     '''
     Stackes all parameters into a list of a given basin
     '''
@@ -192,7 +192,7 @@ def parameter_stack(basin:dict)->tuple:
     return (node_order_type, stacked_parameter) 
 
 # Unstacks parameters stacked by parameter_stack function 
-def parameter_unstack(node_order_type:list, stacked_parameter:list)->dict:
+def parameter_unstack(node_order_type:list, stacked_parameter:list) -> dict:
     '''
     returns unstacked parameters of a basin for provided unstacked parameters
     '''
@@ -243,12 +243,13 @@ def update_basin_with_stacked_parameter(basin:dict, node_order_type:list, stacke
 
     return basin
 
-def merge_obs_sim(observed:pd.DataFrame, simulated:pd.DataFrame)-> pd.DataFrame:
+def merge_obs_sim(observed:pd.DataFrame, simulated:pd.DataFrame) -> pd.DataFrame:
     ''' 
     Inner joins observed and simulated output with their indexe (time) 
+    ref: https://pandas.pydata.org/docs/user_guide/merging.html#database-style-dataframe-or-named-series-joining-merging
     '''
     return pd.merge(
-        simulated,observed, 
+        simulated, observed, 
         how='inner', 
         left_index=True, 
         right_index=True, 
@@ -271,7 +272,7 @@ def stat_by_stacked_parameter(
     '''
     updated_basin = update_basin_with_stacked_parameter(basin, node_order_type, stacked_parameter)
     
-    result = compute_project(updated_basin, rainfall, evapotranspiration, del_t)
+    result, _ = compute_project(updated_basin, rainfall, evapotranspiration, del_t)
 
     merged = merge_obs_sim(observed=discharge, simulated=result)
     

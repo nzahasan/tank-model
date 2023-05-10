@@ -56,8 +56,9 @@ def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
 
                     val=(':'.join(l_splits[1:])).strip()
 
-                    if key in numeric_props: val=float(val)
-                    node_dict[key.lower().replace(' ','_')]=val
+                    # if key in numeric_props: val=float(val)
+                    node_dict[key.lower().replace(' ','_')] = float(val) \
+                            if key in numeric_props else val
 
     basin:dict = {"basin_def":parsed_node}
 
