@@ -37,7 +37,7 @@ def read_ts_file(file_path:str, check_time_diff:bool=True)-> tuple:
     return (df , t_diff[0] ) if check_time_diff else (df, None)
 
 
-def write_ts_file(df:pd.DataFrame,file_path:str)->int:
+def write_ts_file(df:pd.DataFrame,file_path:str)->None:
 
     '''
     writes model input/output timeseries files (precip, et, discharge, result etc.)
