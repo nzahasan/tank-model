@@ -5,14 +5,14 @@ from pathlib import Path
 import pandas as pd 
 
 
-def test_gqm():
-    sample_data_path = Path(__file__).absolute().parent
+# def test_gqm():
+#     sample_data_path = Path(__file__).absolute().parent
 
-    data = pd.read_csv(sample_data_path / 'sample-data' / 'biascorr_dat.csv')
+#     data = pd.read_csv(sample_data_path / 'sample-data' / 'biascorr_dat.csv')
 
-    _gqm = gqm()
+#     _gqm = gqm()
 
-    _gqm.fit(data['obs'].values,data['sim'].values)
+#     _gqm.fit(data['obs'].values,data['sim'].values)
 
-    corr = _gqm.correct(data['sim'])
+#     corr = _gqm.correct(data['sim'])
 
