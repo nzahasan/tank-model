@@ -17,7 +17,7 @@ def tank_discharge(
     # time series information [should be of regular interval]
     precipitation:np.ndarray, evapotranspiration:np.ndarray, del_t:float,
     
-    # basin characterstics
+    # basin characteristics
     area:float,
     
     # tank 0 
@@ -71,7 +71,7 @@ def tank_discharge(
     del_rf_et = precipitation - evapotranspiration
     
     
-    # set initial tank storages | set to 0 if negetive value
+    # set initial tank storages | set to 0 if negative value
 
     tank_storage[0,0] = max(t0_is, 0)
     tank_storage[0,1] = max(t1_is, 0)
@@ -148,8 +148,8 @@ def tank_discharge(
         '''
         Outlet flow check
         -----------------
-        If tank outflow becmes greater than  current storage(previous storage + inflow) 
-        the storage will be negetive. Side outlet flow + bottom outlet flow must not be 
+        If tank outflow becomes greater than  current storage(previous storage + inflow) 
+        the storage will be negative. Side outlet flow + bottom outlet flow must not be 
         greater than current storage. 
         
         The following sections checks for such error
@@ -164,7 +164,7 @@ def tank_discharge(
             
 
     '''
-    unit conversion coefficent for m^3/s
+    unit conversion coefficient for m^3/s
 
         MM x KM^2     10^-3 x 10^6                1000
     :: ----------- = --------------- [m^3s^-1]  = -------- [m^3s^-1]

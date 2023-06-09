@@ -57,7 +57,7 @@ def write_ts_file(df:pd.DataFrame,file_path:str)->None:
 def read_project_file(project_file:str)->dict:
 
     if not os.path.exists(project_file):
-        raise Exception('provided project file doesnt exists')
+        raise Exception('provided project file doesn\'t exists')
 
     with open(project_file,'r') as pfrb:
         
@@ -75,7 +75,7 @@ def read_project_file(project_file:str)->dict:
 def read_basin_file(basin_file:str)->dict:
 
     if not os.path.exists(basin_file):
-        raise Exception('provided basin file doesnt exists')
+        raise Exception('provided basin file doesn\'t exists')
 
     with open(basin_file,'r') as basin_file_rd_buffer:
         

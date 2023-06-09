@@ -21,10 +21,10 @@ from . import global_config as gc
 
 
 
-def check_input_consistancy(precipitation, evapotranspiration, del_t, start_time, end_time):
+def check_input_consistency(precipitation, evapotranspiration, del_t, start_time, end_time):
 
     '''
-    Check input data consistancy
+    Check input data consistency
     '''
 
     pass
@@ -38,30 +38,30 @@ def build_computation_stack(project:dict) -> list:
         upstream node needs to be computed before computing
         a specific node, while traversing node put them in stack
 
-        N.B. Upstream is clild node.
+        N.B. Upstream is child node.
     '''
     computation_stack = []
 
-    node_qeue:Queue[str] = Queue()
+    node_queue:Queue[str] = Queue()
 
-    # enque root note
+    # en-queue root note
     for root_node in project['root_node']:
-        node_qeue.put(root_node)
+        node_queue.put(root_node)
 
-    while not node_qeue.empty():
+    while not node_queue.empty():
 
         # deque node
-        node = node_qeue.get()
+        node = node_queue.get()
 
         # add node to the top of computation stack
         computation_stack.append(node)
 
-        # get child nodes and enque child nodes
+        # get child nodes and en-queue child nodes
         if project['basin_def'][node].get('upstream',False):
-            childs = project['basin_def'][node]['upstream']
+            child_nodes = project['basin_def'][node]['upstream']
 
-            for child in childs:
-                node_qeue.put(child)
+            for child in child_nodes:
+                node_queue.put(child)
 
     return computation_stack
 
@@ -77,7 +77,7 @@ def compute_project(
     Computes project for provided precipitation and evapotranspiration data
     
     Note: 
-        - assumes all kind of timestep check has been completed
+        - assumes all kind of time-step check has been completed
         - and contains no null / missing data
     '''
     computation_stack = build_computation_stack(basin)
@@ -109,7 +109,7 @@ def compute_project(
             # store basin states in  model states for dumping later
             model_states[curr_node_name] = basin_states
         
-        # if node is reach retun sum of routed flow for each upstream node
+        # if node is reach return sum of routed flow for each upstream node
         elif curr_node_def['type'] == 'Reach':
 
             sum_node = np.zeros(n_step, dtype=np.float64)
@@ -163,7 +163,7 @@ def compute_statistics(basin:dict, result:pd.DataFrame, discharge:pd.DataFrame)-
 # creates a single list of parameter stacking each nodes parameter
 def parameter_stack(basin:dict) -> tuple:
     '''
-    Stackes all parameters into a list of a given basin
+    Stacks all parameters into a list of a given basin
     '''
     node_order_type = []
     stacked_parameter = []
@@ -198,7 +198,7 @@ def parameter_unstack(node_order_type:list, stacked_parameter:list) -> dict:
     '''
     unstacked_parameter = dict()
     
-    # later have to change this if other routhing method is added
+    # later have to change this if other routing method is added
     conv_fn = {
         'Subbasin': utils.tank_param_list2dict,
         'Reach': utils.muskingum_param_list2dict
@@ -215,7 +215,7 @@ def parameter_unstack(node_order_type:list, stacked_parameter:list) -> dict:
 
 def update_basin_with_unstacked_parameter(basin:dict, unstacked_parameter:dict)->dict:
     '''
-    returns updatated basin for provided unstacked parameters
+    returns updated basin for provided unstacked parameters
     '''
     for node in unstacked_parameter.keys():
         
@@ -226,7 +226,7 @@ def update_basin_with_unstacked_parameter(basin:dict, unstacked_parameter:dict)-
 
 def update_basin_with_stacked_parameter(basin:dict, node_order_type:list, stacked_parameter:list)->dict:
     '''
-    returns updatated basin for provided stacked parameters
+    returns updated basin for provided stacked parameters
     '''
     # check if stacked parameter length is okay
     conv_fn = {
@@ -245,7 +245,7 @@ def update_basin_with_stacked_parameter(basin:dict, node_order_type:list, stacke
 
 def merge_obs_sim(observed:pd.DataFrame, simulated:pd.DataFrame) -> pd.DataFrame:
     ''' 
-    Inner joins observed and simulated output with their indexe (time) 
+    Inner joins observed and simulated output with their index (time) 
     ref: https://pandas.pydata.org/docs/user_guide/merging.html#database-style-dataframe-or-named-series-joining-merging
     '''
     return pd.merge(

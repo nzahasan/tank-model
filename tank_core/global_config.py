@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
 This file contains parameter bounds &
-necessary parameter defination  and variables
+necessary parameter definition  and variables
 '''
 
 import numpy as np

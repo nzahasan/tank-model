@@ -4,15 +4,15 @@ import pandas as pd
 from pathlib import Path
 
 
-# def test_tank_core():
+def test_tank_core():
 
-#     sample_data = Path(__file__).absolute().parent / 'sample-data' / 'tank_sample_data.csv'
+    sample_data = Path(__file__).absolute().parent / 'test_data' / 'tank_sample_data.csv'
 
-#     data= pd.read_csv(sample_data)
+    data= pd.read_csv(sample_data)
 
-#     params = 0.5*(gp.tank_ub+gp.tank_lb)
+    params = 0.5*(gp.tank_ub+gp.tank_lb)
 
-#     q = tank_basin.tank_discharge(data['Pr'].values,data['ET'].values,24,3000,*params)
+    q = tank_basin.tank_discharge(data['Pr'].values,data['ET'].values,24,3000,*params)
 
     
 

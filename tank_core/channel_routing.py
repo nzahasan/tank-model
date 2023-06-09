@@ -17,11 +17,9 @@ def muskingum(in_flow:np.ndarray, del_t:float, k:float, x:float) -> np.ndarray:
     in_flow  - m^3/s
     del_t    - hr
     x        - hr
-
-    @test_data: https://www.engr.colostate.edu/~ramirez/ce_old/classes/cive322-Ramirez/CE322_Web/Example_MuskingumRouting.htm
     '''
 
-    # calculate timesetp
+    # calculate timestep
     n_step:int = in_flow.shape[0]
     
     # create a zero array of out_flow
@@ -40,7 +38,7 @@ def muskingum(in_flow:np.ndarray, del_t:float, k:float, x:float) -> np.ndarray:
 
     for t in np.arange(1,n_step):
 
-        out_flow[t] = C0*in_flow[t] + C1*in_flow[t-1] + C2*out_flow[t-1]
+        out_flow[t] = C0 * in_flow[t] + C1 * in_flow[t-1] + C2 * out_flow[t-1]
 
     return out_flow
 

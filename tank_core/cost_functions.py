@@ -10,7 +10,7 @@ Necessary cost function for model calibration and validation
         Nash-Sutcliffe Efficiency coefficient
         Range [-inf to 1]
         NSE value 1 means a perfect model
-        NSE > 0.6 is considerd as a good model.
+        NSE > 0.6 is considered as a good model.
     
     MSE: 
         Mean Squared Error

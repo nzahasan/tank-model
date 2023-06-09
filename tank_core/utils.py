@@ -61,7 +61,7 @@ def check_time_delta(delt_pr, delt_et, delt_proj)->float:
 
     if delt_proj != delt_pr_hr :
 
-        print('WARNING: Project interval doesnt match with timeseries interval\n:::::::> computing with input timeseries interval')
+        print('WARNING: Project interval doesn\'t match with time-series interval\n:::::::> computing with input timeseries interval')
 
         del_t = delt_pr_hr
     
