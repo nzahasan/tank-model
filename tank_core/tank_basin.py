@@ -104,7 +104,7 @@ def tank_discharge(
         side_outlet_flow[t,2]  = t2_soc * max( tank_storage[t,2] - t2_soh, 0 )
         
         
-        # TANK 3 : baseflow | Side outlet height = 0
+        # TANK 3 : base-flow | Side outlet height = 0
         side_outlet_flow[t,3]  = t3_soc *  tank_storage[t,3]
         
         '''
@@ -121,14 +121,14 @@ def tank_discharge(
         # Tank storage calculation of next time step
 
         '''
-        Tank storage:
-        -------------
+        Tank storage of next step:
+        --------------------------
         tank_storage[t+1] = tank_storage[t] 
                             + (precip[t+1] - evap[t+1])
                             + bottom_outlet_flow_of_upper_tank[t]
                             - (side_outlet_flow[t] + bottom_outlet_flow[t]) 
         '''
-        if t< time_step -1:
+        if t < (time_step - 1):
             tank_storage[t+1,0] = tank_storage[t,0] + del_rf_et[t+1] - ( side_outlet_flow[t,0] + bottom_outlet_flow[t,0] )
         
             tank_storage[t+1,1] = tank_storage[t,1] + bottom_outlet_flow[t,0] - ( side_outlet_flow[t,1] + bottom_outlet_flow[t,1] ) 
@@ -137,7 +137,7 @@ def tank_discharge(
 
             tank_storage[t+1,3] = tank_storage[t,3] + bottom_outlet_flow[t,2] - side_outlet_flow[t,3] 
             
-            # Set tank storage = 0 if tank storage is negetive
+            # Set tank storage = 0 if tank storage is negative
             
             tank_storage[t+1,0] = max(tank_storage[t+1,0],0)
             tank_storage[t+1,1] = max(tank_storage[t+1,1],0)

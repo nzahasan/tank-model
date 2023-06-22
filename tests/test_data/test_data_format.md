@@ -1,23 +1,39 @@
 # Test Data Format  
 ```json
 {   
-    "parameters": {
-        additional required parameter
-    },
+    
     "input": [
         {
-            input data 1 
+            "parameters": {
+                "param_name_1": value,
+                "param_name_2": value,
+                ...
+            },
+            "input_attr_1":[],
+            "input_attr_2":[],
+            ...
         },
-        {
-            input data 2 
+        {   
+            "parameters": {
+                "param_name_1": value,
+                "param_name_2": value,
+                ...
+            },
+            "input_attr_1":[],
+            "input_attr_2":[],
+            ...
         }
     ],
     "output": [
         { 
-            output data 1 
+            "output_attr_1":[],
+            "output_attr_2":[],
+            ...
         },
         { 
-            output data 2 
+            "output_attr_1":[],
+            "output_attr_2":[],
+            ...
         }
     ]
 }
