@@ -15,7 +15,7 @@
 #     area = 2000
 #     delTime = 24
 
-#     # calibrate & save the prameters
+#     # calibrate & save the parameters
 #     # param = TM.calibrate(rf,et,area,delTime,obsQ)
 #     # np.savez('model_data.npz',param=param)
     

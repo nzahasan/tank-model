@@ -36,10 +36,10 @@ def R2(x:np.ndarray, y:np.ndarray)->float:
     Pearson correlation coefficient (R^2)
     '''
     # check & calculate sample shape
-    if shape_alike(x,y):
-        n = x.shape[0]
-    else:
+    if not shape_alike(x,y):
         raise Exception('shape mismatch between x and y')
+    
+    n = x.shape[0]
 
     NU = (n * ((x*y).sum()) - (x.sum()) * (y.sum()))**2
     DE = (n * ((x**2).sum()) - (x.sum())**2 ) * ( n * ((y**2).sum()) - (y.sum())**2 ) 
