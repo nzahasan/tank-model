@@ -64,7 +64,7 @@ def ext_ra(date:datetime,lat:float) -> float:
     # can return undefined 
     sha     = acos( -1*tan(lat_r) * tan(sda) )        # sunset hour angle (ωs)
 
-    ext_ra  = (1440/pi) * gsc * dr * (                # extraterrestial radiation daily
+    ext_ra  = (1440/pi) * gsc * dr * (                # extraterrestrial radiation daily
                 sha * sin(lat_r) * sin(sda) 
                 + 
                 sin(sha) * cos(lat_r) * cos(sda) 
@@ -86,14 +86,14 @@ def hargreaves(tmin:float,tmax:float,date:datetime,lat:float) -> float:
     tmax: °C
     lat:  decimal degree 
 
-    output: mm day^-1
+    output: mm/day
     
     '''
     # check latitude
     if lat> 66.5 or lat<-66.5:
         raise ValueError('latitude out of bound for ext_ra calculation')
 
-    tmean = (tmin+tmax)/2      # tmean
+    tmean = (tmin + tmax) / 2      # tmean
 
     ra = ext_ra(date,lat)
 

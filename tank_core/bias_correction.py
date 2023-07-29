@@ -38,7 +38,7 @@ class gqm():
         
         return self
 
-    def set_params(self,obs_param_arr:np.ndarray,sim_param_arr:np.ndarray)->object:
+    def set_params(self,obs_param_arr:np.ndarray, sim_param_arr:np.ndarray)->object:
 
         self.obs_param['a'] = obs_param_arr[0]
         self.obs_param['b'] = obs_param_arr[1]

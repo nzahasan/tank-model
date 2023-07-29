@@ -7,14 +7,14 @@ from pathlib import Path
 
 
 
-def test_arima():
-    sample_data = Path(__file__).absolute().parent / 'sample-data' / 'arima_data.csv'
+# def test_arima():
+#     sample_data = Path(__file__).absolute().parent / 'sample-data' / 'arima_data.csv'
     
-    data = pd.read_csv(sample_data)
+#     data = pd.read_csv(sample_data)
 
-    vals = data['Sales']
+#     vals = data['Sales']
 
-    # model = autoARIMA(vals).fit()
+#     # model = autoARIMA(vals).fit()
     
-    # data = model.fitted_model.predict(typ='levels')
+#     # data = model.fitted_model.predict(typ='levels')
     

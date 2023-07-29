@@ -17,7 +17,7 @@ def tank_discharge(
     # time series information [should be of regular interval]
     precipitation:np.ndarray, evapotranspiration:np.ndarray, del_t:float,
     
-    # basin characterstics
+    # basin characteristics
     area:float,
     
     # tank 0 
@@ -71,7 +71,7 @@ def tank_discharge(
     del_rf_et = precipitation - evapotranspiration
     
     
-    # set initial tank storages | set to 0 if negetive value
+    # set initial tank storages | set to 0 if negative value
 
     tank_storage[0,0] = max(t0_is, 0)
     tank_storage[0,1] = max(t1_is, 0)
@@ -104,7 +104,7 @@ def tank_discharge(
         side_outlet_flow[t,2]  = t2_soc * max( tank_storage[t,2] - t2_soh, 0 )
         
         
-        # TANK 3 : baseflow | Side outlet height = 0
+        # TANK 3 : base-flow | Side outlet height = 0
         side_outlet_flow[t,3]  = t3_soc *  tank_storage[t,3]
         
         '''
@@ -121,14 +121,14 @@ def tank_discharge(
         # Tank storage calculation of next time step
 
         '''
-        Tank storage:
-        -------------
+        Tank storage of next step:
+        --------------------------
         tank_storage[t+1] = tank_storage[t] 
                             + (precip[t+1] - evap[t+1])
                             + bottom_outlet_flow_of_upper_tank[t]
                             - (side_outlet_flow[t] + bottom_outlet_flow[t]) 
         '''
-        if t< time_step -1:
+        if t < (time_step - 1):
             tank_storage[t+1,0] = tank_storage[t,0] + del_rf_et[t+1] - ( side_outlet_flow[t,0] + bottom_outlet_flow[t,0] )
         
             tank_storage[t+1,1] = tank_storage[t,1] + bottom_outlet_flow[t,0] - ( side_outlet_flow[t,1] + bottom_outlet_flow[t,1] ) 
@@ -137,7 +137,7 @@ def tank_discharge(
 
             tank_storage[t+1,3] = tank_storage[t,3] + bottom_outlet_flow[t,2] - side_outlet_flow[t,3] 
             
-            # Set tank storage = 0 if tank storage is negetive
+            # Set tank storage = 0 if tank storage is negative
             
             tank_storage[t+1,0] = max(tank_storage[t+1,0],0)
             tank_storage[t+1,1] = max(tank_storage[t+1,1],0)
@@ -148,8 +148,8 @@ def tank_discharge(
         '''
         Outlet flow check
         -----------------
-        If tank outflow becmes greater than  current storage(previous storage + inflow) 
-        the storage will be negetive. Side outlet flow + bottom outlet flow must not be 
+        If tank outflow becomes greater than  current storage(previous storage + inflow) 
+        the storage will be negative. Side outlet flow + bottom outlet flow must not be 
         greater than current storage. 
         
         The following sections checks for such error
@@ -164,7 +164,7 @@ def tank_discharge(
             
 
     '''
-    unit conversion coefficent for m^3/s
+    unit conversion coefficient for m^3/s
 
         MM x KM^2     10^-3 x 10^6                1000
     :: ----------- = --------------- [m^3s^-1]  = -------- [m^3s^-1]

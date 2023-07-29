@@ -4,7 +4,7 @@ Command line utility for model operation
 Supports:
     - Generation of new project
     - Compute project
-    - Optimize basin paramemeters
+    - Optimize basin parameters
     - Plot project results
 '''
 import json, os, click
@@ -56,7 +56,7 @@ def new_project(project_name):
         basin              = f'{project_name}.basin.json', # basin path - json-file
         precipitation      = f'{project_name}.pr.csv',     # precipitation path - csv file
         evapotranspiration = f'{project_name}.et.csv',     # evapotranspiration path - csv file
-        discharge          = f'{project_name}.q.csv',      # observered discharge path - csv file
+        discharge          = f'{project_name}.q.csv',      # observed discharge path - csv file
         result             = f'{project_name}.result.csv', # output file for discharge - csv file
         statistics         = f'{project_name}.stats.json'  # statistics calculated form observed discharge - json-file
     )
@@ -99,7 +99,7 @@ def compute(project_file):
     
     del_t_proj = project['interval']
     
-    # check time difference consistancy
+    # check time difference consistency
     del_t = utils.check_time_delta(dt_pr, dt_et, del_t_proj)
 
     computation_result, basin_states = ch.compute_project(basin, precipitation, evapotranspiration, del_t)
@@ -126,13 +126,13 @@ def compute(project_file):
     with open(statistics_file,'w') as stat_file_write_buffer:
         json.dump(statistics, stat_file_write_buffer, indent=2)
     
-    # N.B. always calculate statistics based on the availablity of data 
+    # N.B. always calculate statistics based on the availability of data 
     # in discharge file!!
 
 @cli.command()
 @click.option('-pf', '--project-file', help="project file", required=True)
 def plot_result(project_file):
-    '''Generets plots of model simuation results in project directory'''
+    '''Generates plots of model simulation results in project directory'''
     
     project_dir = Path(project_file).resolve().parent
     project = ioh.read_project_file(project_file)

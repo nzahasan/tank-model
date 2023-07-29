@@ -1,0 +1,24 @@
+{   
+  "input": [
+    {
+      "parameters": { },
+      "pr": [],
+      "et": []
+    },
+
+    {
+      "parameters": { },
+      "time": [],
+      "inflow": []
+    }
+  ],
+  "output": [
+    { 
+      "outflow": [ ]
+    },
+    { 
+      "outflow": [ ]
+    }
+  ]
+}
+

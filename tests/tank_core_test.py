@@ -6,7 +6,7 @@ from pathlib import Path
 
 def test_tank_core():
 
-    sample_data = Path(__file__).absolute().parent / 'sample-data' / 'tank_sample_data.csv'
+    sample_data = Path(__file__).absolute().parent / 'test_data' / 'tank_sample_data.csv'
 
     data= pd.read_csv(sample_data)
 

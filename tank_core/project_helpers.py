@@ -9,7 +9,7 @@ from .utils import (
 )
 
 
-# converts hec-hms basin to tank basin defination
+# converts hec-hms basin to tank basin definition
 def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
 
     basin_default = gc.tank_lb
@@ -19,7 +19,7 @@ def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
     nodes = hms_basin_def.split('End:')
 
     # nodes and properties required to create tank basin defination
-    sel_nodes = ["Subbasin","Reach","Junction","Sink"]
+    sel_nodes = ["Subbasin", "Reach", "Junction", "Sink"]
     generel_props =["Downstream","Area","Computation Point"]
     numeric_props = ["Area"]
 
@@ -62,7 +62,7 @@ def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
 
     basin:dict = {"basin_def":parsed_node}
 
-    # add add downsteram/child nodes, root node information
+    # add add downstream/child nodes, root node information
     for node in basin['basin_def']:
         ds = basin['basin_def'][node].get('downstream',None)
         
