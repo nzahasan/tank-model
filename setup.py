@@ -7,6 +7,7 @@ README_CONTENT = open('readme.md','r').read()
 SCRIPTS = [
     'scripts/tank_cmd.py',
     'scripts/cpc_et.py',
+    'scripts/gefs_download.py'
 ]
 
 PACKAGES = [

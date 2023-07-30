@@ -5,6 +5,15 @@
 # whole 35 days data comes one day late
 # download at 10pm BST
 
+# <reference forecast>
+# https://nomads.ncep.noaa.gov/cgi-bin/filter_gefs_atmos_0p50a.pl?
+# dir=/gefs.20230727/00/atmos/pgrb2ap5
+# &file=gec00.t00z.pgrb2a.0p50.f000
+# &var_APCP=on&var_TMAX=on&var_TMIN=on&lev_surface=on
+# &subregion=&toplat=35&leftlon=70&rightlon=100&bottomlat=20
+
+# for ensemble forecast <file=gep01.t00z.pgrb2a.0p50.f000>
+
 if [ -z $1 ];then 
     echo "provide analysis date as argument in yyyymmdd format"
     exit 200
@@ -13,8 +22,9 @@ fi
 adate=$1   
 
 # url_def
+url_pre="https://nomads.ncep.noaa.gov/cgi-bin/filter_gefs_atmos_0p50a.pl?"
+
 sub_region="&leftlon=70&rightlon=100&toplat=35&bottomlat=20"
-url_pre="https://nomads.ncep.noaa.gov/cgi-bin/filter_gefs_atmos_0p50a.pl"
 
 
 
