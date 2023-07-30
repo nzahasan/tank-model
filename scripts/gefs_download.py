@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import requests as req 
-import click
-from multiprocessing.pool import ThreadPool
-from pathlib import Path
 import time
+import click
 import shutil
 import subprocess
+import requests as req 
+from pathlib import Path
+from multiprocessing.pool import ThreadPool
 
 SLEEP_TIME = 2*60 # in seconds
 
@@ -50,7 +50,7 @@ def download_file(parameters:tuple, logging=True) -> None:
         time.sleep(SLEEP_TIME)
         download_file(parameters)
 
-def merge_grib_convert_nc(output_dir):
+def merge_grib_convert_nc(output_dir, cycle):
     
     for ens in range(31):
 
@@ -59,14 +59,13 @@ def merge_grib_convert_nc(output_dir):
         file_paths = list()
 
         for hr in range(3,243,3):
-            _fname = f'{_pre}{ens:02d}.t00z.pgrb2s.0p25.f{hr:03d}'
+            _fname = f'{_pre}{ens:02d}.t{cycle}z.pgrb2s.0p25.f{hr:03d}'
 
             _full_path = output_dir / _fname 
 
             file_paths.append(_full_path)
 
         file_checks = [fpath.exists() for fpath in file_paths]
-
 
 
         if False in file_checks:
@@ -124,7 +123,7 @@ def main(date:str, cycle:str, left:float, right:float, bottom:float, top:float, 
 
         for hr in range(3,243,3):
 
-            _fname = f'{_pre}{ens:02d}.t00z.pgrb2s.0p25.f{hr:03d}'
+            _fname = f'{_pre}{ens:02d}.t{cycle}z.pgrb2s.0p25.f{hr:03d}'
 
             full_url  = f"https://nomads.ncep.noaa.gov/cgi-bin/filter_gefs_atmos_0p25s.pl?"
             full_url += f"dir=/gefs.{date}/{cycle}/atmos/pgrb2sp25"
@@ -141,7 +140,7 @@ def main(date:str, cycle:str, left:float, right:float, bottom:float, top:float, 
     pool.close()
 
     # merge grib files and convert to netcdf4
-    merge_grib_convert_nc(output_dir)
+    merge_grib_convert_nc(output_dir, cycle)
     
 
 
