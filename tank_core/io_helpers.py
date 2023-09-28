@@ -9,6 +9,7 @@ import pandas as pd
 import json
 import os
 from datetime import datetime as dt
+from pathlib import Path
 
 from . import global_config as gc
 
@@ -54,7 +55,34 @@ def write_ts_file(df:pd.DataFrame,file_path:str)->None:
 
     return status
 
-def read_project_file(project_file:str)->dict:
+def check_project(project:dict, project_dir:Path, check_discharge_file:bool)->tuple:
+
+    input_keys = ["basin", "precipitation", "evapotranspiration" ]
+    if check_discharge_file: input_keys.append('discharge')
+    
+    # check if mandatory keys are present in the project definition
+    mandatory_keys = ["interval" , *input_keys]
+
+    for k in project.keys():
+        if k not in mandatory_keys:
+            return (False, f'Missing mandatory field {k} in project file')
+        
+    # check if time interval is okay
+    interval_checks = [
+        project['interval'] in [0.25, 0.5], 
+        project['interval'].is_integer() 
+    ]
+    if True not in interval_checks:
+        return (False, f'invalid interval {k} hr')
+    
+    # check if files of input_keys are present
+    for k in input_keys:
+        if not os.path.exists(project_dir /  project[k]):
+            (False, f'no file for {k} found in project directory')
+
+    return (True, 'All checks passed')
+
+def read_project_file(project_file:str, check_discharge_file=False)->dict:
 
     if not os.path.exists(project_file):
         raise Exception('provided project file doesn\'t exists')
@@ -64,13 +92,16 @@ def read_project_file(project_file:str)->dict:
         project = json.load(pfrb)
 
         # check if project file is okay
+        project_dir = Path(project_file).resolve().parent
+        check_status, msg = check_project(project, project_dir, check_discharge_file)
 
-        # check if basin file is  okay
-
+        if check_status == False:
+            raise Exception(msg)
 
         return project 
 
-    return None
+
+
         
 def read_basin_file(basin_file:str)->dict:
 

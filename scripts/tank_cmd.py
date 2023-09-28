@@ -184,7 +184,8 @@ def optimize(project_file):
     '''Automatically optimizes tank basin parameters for a given projects'''
     project_dir = os.path.dirname(os.path.abspath(project_file))
     
-    project = ioh.read_project_file(project_file)
+    # project must have discharge as this is mandatory 
+    project = ioh.read_project_file(project_file, check_discharge_file=True)
     
     basin_file = os.path.join(project_dir, project['basin'])
     precipitation_file = os.path.join(project_dir, project['precipitation'])

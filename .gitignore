@@ -38,3 +38,7 @@ project/
 *.egg-info/
 build/
 dist/
+
+#ide
+.idea/
+.vscode
