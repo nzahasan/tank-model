@@ -1,6 +1,8 @@
 # python
 __pycache__
 *.py[cod]
+*$py.class
+
 # binary blobs
 *.nc
 *.nc4
@@ -12,9 +14,6 @@ __pycache__
 
 # mypy
 .mypy_cache/
-
-# vscode
-.vscode
 
 # os
 .directory
@@ -35,7 +34,11 @@ project/
 .ipynb_checkpoints/
 
 #build files 
+eggs/
+.eggs/
+*.egg
 *.egg-info/
+wheels/
 build/
 dist/
 

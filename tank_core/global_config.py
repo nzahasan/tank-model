@@ -120,7 +120,7 @@ tank_ub:np.ndarray = np.array([
     tank_param_bounds['t3_soc']['max'],
 ])
 
-# Chanel - MUSKINGUM
+# Channel - MUSKINGUM
 
 muskingum_param_bound:dict = {
     "k" : {"min": 0, "max": 5},

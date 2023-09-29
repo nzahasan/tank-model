@@ -26,9 +26,14 @@ Necessary cost function for model calibration and validation
         Lower is better 
         +ve values indicate underestimation
         -ve values indicate model overestimation
+    KGE:
+        Kling-Gupta efficiency
+        KGE = 1 indicates perfect agreement
+        KGE -ve is bad model
 '''
 
 import numpy as np
+from scipy.stats import pearsonr
 from .utils import shape_alike
 
 def R2(x:np.ndarray, y:np.ndarray)->float:
@@ -86,3 +91,13 @@ def PBIAS(obs:np.ndarray, sim:np.ndarray)->float:
         raise Exception('shape mismatch between x and y')
     
     return (obs-sim).sum() * 100 / obs.sum()
+
+def KGE(sim, obs):
+    """
+    Kling-Gupta efficiency
+    """
+    eMean = (np.mean(sim) / np.mean(obs)) - 1 
+    eVar = (np.std(sim) / np.std(obs)) - 1 
+    eCor = pearsonr(sim, obs).statistic - 1
+
+    return 1 - np.sqrt(eMean**2 + eVar**2 + eCor**2)

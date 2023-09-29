@@ -2,7 +2,7 @@
 '''
 Necessary file i/o helper functions 
 - for reading files
-- checking time consistancy of input files
+- checking time consistency of input files
 '''
 import numpy as np
 import pandas as pd 
@@ -93,16 +93,14 @@ def read_project_file(project_file:str, check_discharge_file=False)->dict:
 
         # check if project file is okay
         project_dir = Path(project_file).resolve().parent
-        check_status, msg = check_project(project, project_dir, check_discharge_file)
+        check_ok, msg = check_project(project, project_dir, check_discharge_file)
 
-        if check_status == False:
+        if check_ok == False:
             raise Exception(msg)
 
         return project 
 
 
-
-        
 def read_basin_file(basin_file:str)->dict:
 
     if not os.path.exists(basin_file):
@@ -112,11 +110,11 @@ def read_basin_file(basin_file:str)->dict:
         
         basin = json.load(basin_file_rd_buffer)
 
-        # check if basin file is  okay [will work on it later]
+        # check if basin file is  okay [will work on it later, 
+        # basically check for missing link
 
         return basin 
 
-    
 
 
 

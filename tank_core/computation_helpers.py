@@ -14,8 +14,7 @@ from .cost_functions import (
     R2, 
     RMSE, 
     NSE, 
-    MSE, 
-    PBIAS
+    MSE
 )
 from . import global_config as gc
 

@@ -10,8 +10,8 @@ def shape_alike(x:np.ndarray,y:np.ndarray) -> bool:
     # checks if x,y numpy array are of same shape
     return True if x.shape == y.shape else False
 
-
-def tank_param_list2dict(parameters:list)->dict:
+# @marked for removal
+def tank_param_list2dict_(parameters:list)->dict:
 
     parameter_dict = dict()
 
@@ -22,8 +22,8 @@ def tank_param_list2dict(parameters:list)->dict:
     return parameter_dict
 
 
-
-def tank_param_dict2list(parameters:dict)->list:
+# @marked for removal
+def tank_param_dict2list_(parameters:dict)->list:
 
     parameter_list = list()
 
@@ -32,6 +32,22 @@ def tank_param_dict2list(parameters:dict)->list:
         parameter_list.append(parameters[parameter_name])
     
     return parameter_list
+
+def tank_param_list2dict(parameters:list)->dict:
+    # converts flattened parameter to a dict based on TANK_PARAMETER_ORDER
+    
+    return {
+        parameter_name:parameters[i] 
+        for i,parameter_name in enumerate(TANK_PARAMETER_ORDER) 
+    }
+
+
+def tank_param_dict2list(parameters:dict)->list:
+    # returns a list of flattened parameter following TANK_PARAMETER_ORDER
+    return [ 
+        parameters[parameter_name] 
+        for parameter_name in TANK_PARAMETER_ORDER
+    ]
 
 
 def muskingum_param_list2dict(parameters:list)->dict:
