@@ -44,6 +44,9 @@ def write_ts_file(df:pd.DataFrame,file_path:str)->None:
     writes model input/output timeseries files (precip, et, discharge, result etc.)
     returns 
     '''
+    # abort if index name is not Time
+    if df.index.name != 'Time':
+        raise Exception('Error: invalid time-series data no Time index found')
 
     status  = df.to_csv(
         file_path,

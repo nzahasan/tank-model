@@ -6,16 +6,10 @@ import numpy as np
 import pandas as pd
 from queue import Queue
 from scipy.optimize import minimize
+from . import utils
 from .tank_basin import tank_discharge
 from .channel_routing import muskingum
-from . import utils
-from .cost_functions import (
-    PBIAS, 
-    R2, 
-    RMSE, 
-    NSE, 
-    MSE
-)
+from .cost_functions import (PBIAS, R2, RMSE, NSE,)
 from . import global_config as gc
 
 
@@ -84,6 +78,7 @@ def compute_project(
     n_step = len(precipitation.index)
     
     computation_result = pd.DataFrame(index=precipitation.index)
+    
     model_states = dict(
         time = precipitation.index.to_numpy()
     )

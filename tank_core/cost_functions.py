@@ -92,12 +92,12 @@ def PBIAS(obs:np.ndarray, sim:np.ndarray)->float:
     
     return (obs-sim).sum() * 100 / obs.sum()
 
-def KGE(sim, obs):
+def KGE(obs:np.ndarray, sim:np.ndarray)->float:
     """
     Kling-Gupta efficiency
     """
     eMean = (np.mean(sim) / np.mean(obs)) - 1 
     eVar = (np.std(sim) / np.std(obs)) - 1 
-    eCor = pearsonr(sim, obs).statistic - 1
+    eCor = pearsonr(sim, obs).statistic - 1 
 
     return 1 - np.sqrt(eMean**2 + eVar**2 + eCor**2)
