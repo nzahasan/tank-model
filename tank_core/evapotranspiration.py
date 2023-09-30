@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-    Reference evapotranspiration calculatin models
+    Reference evapotranspiration calculation models
 
     References: 
     1. Evaluation of alternative methods for estimating reference evapotranspiration

@@ -3,7 +3,7 @@
 Time series error Correction Module for model
 ---------------------------------------------
 ARIMA(p,d,q)
-    p - autoregressive part
+    p - auto-regressive part
     d - integrated part / differentiation part
     q - moving average part
 

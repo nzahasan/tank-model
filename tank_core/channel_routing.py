@@ -19,15 +19,15 @@ def muskingum(in_flow:np.ndarray, del_t:float, k:float, x:float) -> np.ndarray:
     x        - hr
     '''
 
-    # calculate timestep
+    # calculate time-step
     n_step:int = in_flow.shape[0]
     
     # create a zero array of out_flow
     out_flow:np.ndarray = np.zeros(n_step, dtype=np.float64)
 
     C0:float = (-k*x+0.5*del_t) / (k*(1-x)+0.5*del_t)
-    C1:float = ( k*x+0.5*del_t) / (k*(1-x)+0.5*del_t)
-    C2:float = (k*(1-x)-0.5*del_t) / (k*(1-x)+0.5*del_t)
+    C1:float = (k*x+0.5 *del_t) / (k*(1-x)+0.5*del_t)
+    C2:float = (k*(1-x) - 0.5*del_t) / (k*(1-x)+0.5*del_t)
 
     # constraints check
     if (C0+C1+C2) > 1 or x >0.5 or (del_t/k + x) > 1:

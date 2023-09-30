@@ -3,7 +3,7 @@ Python implementation of Tank Hydrologic Model, a conceptual rainfall-runoff mod
 
 
 <p align="center">
-<img align="center" height="600px"  src="https://raw.githubusercontent.com/nzahasan/tank-model/master/assets/tank-model-schamatic.svg" >
+<img align="center" height="500px"  src="https://raw.githubusercontent.com/nzahasan/tank-model/master/assets/tank-model-schamatic.svg" >
 </p>
 
 ### Installation
@@ -14,13 +14,40 @@ Tank-Model can be installed as a python package using the following commands
 $ pip install https://github.com/nzahasan/tank-model/zipball/master
 ```
 
+after successful installation `tank_cmd.py` should be available which can be used for setting up new project, optimizing the project and computation.
+
+```bash
+# get help text command line utility
+$ tank_cmd.py --help
+
+# get help text of subcommand
+$ tank_cmd.py new-project --help
+```
 
 ### Setting up a new model:
 
-New project can be created using the following command. This creates a folder with a project defination inside it.
+New project can be created using the following command. This command creates a folder in working directory with a json formatted project definition inside it.
 ```bash
 $ tank_cmd.py new_project project_name
 ```
+
+A sample project definition looks like this
+```json
+{
+  "interval": 24.0,
+  "basin": "sample_project.basin.json",
+  "precipitation": "sample_project.pr.csv",
+  "evapotranspiration": "sample_project.et.csv",
+  "discharge": "sample_project.q.csv",
+  "result": "sample_project.result.csv",
+  "statistics": "sample_project.stats.json"
+}
+```
+here `interval` is the time step of simulation in hours. The other attributes are file locations; `precipitation`, `evapotranspiration` and `discharge` are CSV files containing time-series data. These files should be formatted according to the file format mentioned here <a href="file-format-spec.md">file-format-spec.md</a>
+
+`precipitation` & `evapotranspiration` serve as input data for the model simulation and resulting output is stored in the `result` file following the time-series CSV format mentioned earlier. Data in the `discharge` is used for model calibration. And performance matrices are stored in the `statistics` file.
+
+
 
 ### Converting HEC-HMS basin to tank model basin
 
