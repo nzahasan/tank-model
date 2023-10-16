@@ -47,7 +47,8 @@ def hms2tank(hms_basin_file, output_file):
 
 @cli.command()
 @click.argument('project_name', nargs=1)
-def new_project(project_name):
+@click.option('-bf', '--hms-basin-file', type=click.File('r'), help="HEC-HMS basin file path")
+def new_project(project_name, hms_basin_file):
 
     """creates a project directory generates a json formatted project file"""
     # hours [ 0.25, 0.5, 1.0, 2.0, 3.0 . . . . N ]
@@ -61,16 +62,30 @@ def new_project(project_name):
         statistics         = f'{project_name}.stats.json'  # statistics calculated form observed discharge - json-file
     )
     
-    if not os.path.exists(project_name):
-        os.makedirs(project_name)
+    project_path = Path(project_name)
+
+    if not os.path.exists(project_path):
+        os.makedirs(project_path)
     
-    project_file_path = os.path.join(project_name,f'{project_name}.project.json')
+    # write project def
+    project_file_path = project_path / f'{project_name}.project.json'
 
     with open(project_file_path,'w') as project_file:
         f = project_file.write(json.dumps(project,indent=2))
+    
+    # write basin def converted form hms basin
+    if hms_basin_file is not None:
+        hms_basin_file_content = hms_basin_file.read()
 
-    print(f'# An empty project structure for {project_name} has been created')
-    return f
+        basin_def = ph.hms_basin_to_tank_basin(hms_basin_file_content)
+
+        with open( project_path / project['basin'], 'w') as basin_out_file:
+            basin_out_file.write(json.dumps(basin_def,indent=2))
+
+    # copy precip and evap files to project location
+
+    print(f'# Project structure for {project_name} has been created')
+
 
 
 

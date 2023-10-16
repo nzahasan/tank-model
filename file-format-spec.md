@@ -1,10 +1,10 @@
-# File format guide  
+# Input File format guide  
 
-- Input files may contain precipitation and evapotranspiration data in separate file and should linked in JSON formatted project file.
-- Unit of precipitation and evapotranspiration should be in millimeters(mm). 
 - All input files should be in `CSV` format. 
-- CSV files should contain header row in uppercase characters. First column should be end-time (e.g. precipitation accumulation end time for a day) followed by data for each basin.
-- Values in `TIME` column should follow  this specific format `%Y-%m-%dT%H:%M:%S.%f%z`
+- All CSV files should contain a header row. 
+- For precipitation and evapotranspiration, first column header should be `Time` and other column's header should correspond to the subbasin name in the basin definition file.
+- Values in `Time` column should follow `ISO 8601` date format.
+- Unit of precipitation and evapotranspiration should be in millimeters(mm). 
 
 |Time                              | SB-1 | SB-2 | ... |
 |----------------------------------|------|------|-----|
