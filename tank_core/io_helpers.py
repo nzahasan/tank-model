@@ -61,13 +61,14 @@ def write_ts_file(df:pd.DataFrame,file_path:str)->None:
 def check_project(project:dict, project_dir:Path, check_discharge_file:bool)->tuple:
 
     input_keys = ["basin", "precipitation", "evapotranspiration" ]
-    if check_discharge_file: input_keys.append('discharge')
+    if check_discharge_file: 
+        input_keys.append('discharge')
     
     # check if mandatory keys are present in the project definition
     mandatory_keys = ["interval" , *input_keys]
 
-    for k in project.keys():
-        if k not in mandatory_keys:
+    for k in mandatory_keys:
+        if k not in project.keys():
             return (False, f'Missing mandatory field {k} in project file')
         
     # check if time interval is okay
