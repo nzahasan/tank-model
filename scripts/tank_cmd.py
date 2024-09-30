@@ -109,20 +109,18 @@ def compute(project_file):
 
     with open( project_dir / 'basin_states.pkl', 'wb') as pkl_handler:
         pickle.dump(basin_states, pkl_handler, protocol=pickle.HIGHEST_PROTOCOL)
-    
-     
-    print( 
-        tabulate(
-            [
-                ('NSE', statistics['BAHADURABAD']['NSE']),
-                ('RMSE', statistics['BAHADURABAD']['RMSE']),
-                ('R2', statistics['BAHADURABAD']['R2']),
-                ('PBIAS', statistics['BAHADURABAD']['PBIAS']),
-            ],
-            headers=['Statistics', 'BAHADURABAD'], tablefmt='psql'
-        ) 
-    )
 
+    heads = ["NSE", "RMSE", "R2", "PBIAS"]
+    data = [
+        [stat, *[statistics[stat][k] for k in heads]]
+        for stat in statistics
+    ]
+    print(
+        tabulate(
+            data,
+            headers=['Basin', *heads], tablefmt='psql'
+        )
+    )
     with open(statistics_file,'w') as stat_file_write_buffer:
         json.dump(statistics, stat_file_write_buffer, indent=2)
     
