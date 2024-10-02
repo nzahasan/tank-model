@@ -14,15 +14,6 @@ from . import global_config as gc
 
 
 
-def check_input_consistency(precipitation, evapotranspiration, del_t, start_time, end_time):
-
-    '''
-    Check input data consistency
-    '''
-
-    pass
-
-
 def build_computation_stack(project:dict) -> list:
 
     '''

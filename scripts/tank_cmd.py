@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 '''
-Command line utility for model operation
+Command line utility for model operation :
+==========================================
 Supports:
     - Generation of new project
     - Compute project
@@ -51,9 +52,8 @@ def hms2tank(hms_basin_file, output_file):
 def new_project(project_name, hms_basin_file):
 
     """creates a project directory generates a json formatted project file"""
-    # hours [ 0.25, 0.5, 1.0, 2.0, 3.0 . . . . N ]
+    # preferred hours [ 0.25, 0.5, 1.0, 2.0, 3.0 . . . . N ]
     project  = dict(
-        interval           = 24.0,                         # time interval in hour : float
         basin              = f'{project_name}.basin.json', # basin path - json-file
         precipitation      = f'{project_name}.pr.csv',     # precipitation path - csv file
         evapotranspiration = f'{project_name}.et.csv',     # evapotranspiration path - csv file
@@ -82,7 +82,7 @@ def new_project(project_name, hms_basin_file):
         with open( project_path / project['basin'], 'w') as basin_out_file:
             basin_out_file.write(json.dumps(basin_def,indent=2))
 
-    # copy precip and evap files to project location
+    # check + copy precip and evap files to project location
 
     print(f'# Project structure for {project_name} has been created')
 
@@ -93,11 +93,15 @@ def new_project(project_name, hms_basin_file):
 
 @cli.command()
 @click.option('-pf', '--project-file', type=click.Path(exists=True), help="project file", required=True)
-def compute(project_file):
+@click.option('-s', '--start', type=str, help="computation start time")
+@click.option('-e', '--end', type=str, help="computation start time")
+def compute(project_file, start, end):
     '''Computes tank model for given project file'''
+    
     # get project root directory
     project_dir = Path(project_file).resolve().parent
     
+    # read project and build paths for computation
     project = ioh.read_project_file(project_file)
     basin_file = project_dir / project['basin']
     precipitation_file = project_dir / project['precipitation']
@@ -106,22 +110,33 @@ def compute(project_file):
     statistics_file = project_dir / project['statistics']
     result_file =project_dir / project['result']
 
-    
+    # read files required for computation
     basin = ioh.read_basin_file(basin_file)
     precipitation, dt_pr = ioh.read_ts_file(precipitation_file)
     evapotranspiration, dt_et = ioh.read_ts_file(evapotranspiration_file)
-    discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
-    
-    del_t_proj = project['interval']
-    
-    # check time difference consistency
-    del_t = utils.check_time_delta(dt_pr, dt_et, del_t_proj)
+    discharge, _ = ioh.read_ts_file(discharge_file, check_missing=False)
+
+    # trim time-series based on start and end time
+    if start and end != None:
+        precipitation = utils.trim_ts(precipitation, start, end)
+        evapotranspiration = utils.trim_ts(evapotranspiration, start, end)
+
+    # required checking input consistency of precipitation and evapotranspiration
+    # - check if time difference of both time-series is same (get_delt does this)
+    # - check if both time-series has exactly same index (get_sim_start_end does this)
+    # - check for basin nodes names time-series files column matches > not implemented yet!
+
+    del_t = utils.get_delt(dt_pr, dt_et) # will return hour!!
+    sim_start, sim_end = utils.get_sim_start_end(precipitation.index, evapotranspiration.index)
+
+    print(f"INFO: Simulating for the period {sim_start} to {sim_end}")
 
     computation_result, basin_states = ch.compute_project(basin, precipitation, evapotranspiration, del_t)
     statistics = ch.compute_statistics(basin=basin, result=computation_result, discharge=discharge)
 
     ioh.write_ts_file(computation_result,result_file)
 
+    # stores tank-basin states in a pickle file for debugging
     with open( project_dir / 'basin_states.pkl', 'wb') as pkl_handler:
         pickle.dump(basin_states, pkl_handler, protocol=pickle.HIGHEST_PROTOCOL)
     
@@ -157,7 +172,7 @@ def plot_result(project_file):
     
     result,_ = ioh.read_ts_file(result_file)
 
-    discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
+    discharge, _ = ioh.read_ts_file(discharge_file,check_missing=False)
 
     basin_file = project_dir / project['basin']
     basin = ioh.read_basin_file(basin_file)
@@ -212,9 +227,9 @@ def optimize(project_file):
 
     precipitation, delt_pr = ioh.read_ts_file(precipitation_file)
     evapotranspiration, delt_et = ioh.read_ts_file(evapotranspiration_file)
-    discharge, _ = ioh.read_ts_file(discharge_file,check_time_diff=False)
+    discharge, _ = ioh.read_ts_file(discharge_file,check_missing=False)
 
-    del_t = utils.check_time_delta(delt_pr, delt_et, delt_proj)
+    del_t = utils.check_get_time_delta(delt_pr, delt_et, delt_proj)
 
     basin = ioh.read_basin_file(basin_file)
 

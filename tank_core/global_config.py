@@ -161,8 +161,9 @@ NUM_PARAMETER:dict = {
     'Reach': len(MUSKINGUM_PARAMETER_ORDER)
 }
 
-# project file io time format
-DATE_FMT:str = '%Y-%m-%dT%H:%M:%S.%f%z'
+# project file io time format 
+# [removed timezones as it was unnecessarily complicating things]
+DATE_FMT:str = '%Y-%m-%dT%H:%M:%S'
 
 # project file io float format
 FLOAT_FMT:str = '%.3f'

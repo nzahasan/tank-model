@@ -13,7 +13,7 @@ from pathlib import Path
 
 from . import global_config as gc
 
-def read_ts_file(file_path:str, check_time_diff:bool=True)-> tuple:
+def read_ts_file(file_path:str, check_missing:bool=True)-> tuple:
     '''
         reads model input/output timeseries files (precip, et, discharge, result etc.)
         returns tuple(dataframe, del_time[seconds])
@@ -22,20 +22,21 @@ def read_ts_file(file_path:str, check_time_diff:bool=True)-> tuple:
     # read file as pandas dataframe
     df = pd.read_csv(
         file_path,
-        index_col='Time',
-        parse_dates= True  # will parse index for datetime
+        index_col = 'Time',
+        parse_dates = True,  # will parse index for datetime
+        date_parser = lambda s: dt.strptime(s, gc.DATE_FMT)
     )
-    
+
     # sort by time
     df = df.sort_index()
     
     # check if missing date
-    t_diff = np.diff(df.index.to_numpy(), n=1)
+    t_diff = np.diff(df.index, n=1)
 
-    if check_time_diff and not np.all(t_diff==t_diff[0]):
+    if check_missing and not np.all(t_diff==t_diff[0]):
         raise Exception('Time difference is not equal, possible missing/irregular dates')
 
-    return (df , t_diff[0] ) if check_time_diff else (df, None)
+    return (df , t_diff[0] ) if check_missing else (df, None)
 
 
 def write_ts_file(df:pd.DataFrame,file_path:str)->None:

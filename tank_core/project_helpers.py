@@ -12,28 +12,30 @@ from .utils import (
 # converts hec-hms basin to tank basin definition
 def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
 
-    basin_default = tank_param_list2dict(gc.tank_lb)
-    channel_default = muskingum_param_list2dict(gc.muskingum_lb)
-    
     parsed_node = dict()
     
+    # split txt by "End:"
     nodes = hms_basin_def.split('End:')
 
     # nodes and properties required to create tank basin definition
     required_nodes = ["Subbasin", "Reach", "Junction", "Sink"]
-    generic_props = ["Downstream", "Computation Point"]
-    numeric_props = ["Area"]
+    generic_props  = ["Downstream", "Computation Point"]
+    numeric_props  = ["Area"]
     req_props = generic_props + numeric_props
 
+    # default parameters for basin and reach
+    basin_default = tank_param_list2dict(gc.tank_lb)
+    channel_default = muskingum_param_list2dict(gc.muskingum_lb)
+
     # converts line to attr,value pairs
-    line_to_kv = lambda line : [x.strip() for x in line.strip().split(':')]
+    line2list = lambda line : [x.strip() for x in line.strip().split(':')]
 
     for node in nodes:
 
         node = node.strip()
         node_lines = node.split('\n')
         
-        node_type, node_name= line_to_kv(node_lines.pop(0)) 
+        node_type, node_name= line2list(node_lines.pop(0)) 
 
         # skip if node is not required
         if node_type not in required_nodes : 
@@ -44,10 +46,10 @@ def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
         
         node_dict['type'] = node_type
         
-        if node_type=='Reach':
+        if node_type == 'Reach':
             node_dict['parameters'] = channel_default
         
-        if node_type=='Subbasin':
+        if node_type == 'Subbasin':
             node_dict['parameters'] = basin_default
 
         for line in node_lines:
@@ -59,7 +61,7 @@ def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
             if len(line) == 0:
                 continue 
 
-            prop, val= line_to_kv(line)
+            prop, val= line2list(line)
 
             # skip if not a required property
             if prop not in req_props: 
@@ -80,8 +82,9 @@ def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
 
     # add add downstream/parent nodes, root node information
     for node in basin['basin_def']:
-        ds = basin['basin_def'][node].get('downstream',None)
         
+        ds = basin['basin_def'][node].get('downstream',None)
+
         if ds is None:
             # this is root node || needs to be changed
             # can basins have multiple root node? 
