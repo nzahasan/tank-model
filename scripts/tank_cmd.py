@@ -111,16 +111,17 @@ def compute(project_file):
         pickle.dump(basin_states, pkl_handler, protocol=pickle.HIGHEST_PROTOCOL)
 
     heads = ["NSE", "RMSE", "R2", "PBIAS"]
-    data = [
-        [stat, *[statistics[stat][k] for k in heads]]
-        for stat in statistics
-    ]
-    print(
-        tabulate(
-            data,
-            headers=['Basin', *heads], tablefmt='psql'
-        )
-    )
+    data = {key: [] for key in ('Root Node', *heads)}
+    for node in basin["root_node"]:
+        stat = statistics.get(node)
+        if stat is None:
+            continue
+
+        data['Root Node'].append(node)
+        for key in heads:
+            data[key].append(stat.get(key))
+
+    print(tabulate(data, headers='keys', tablefmt='psql'))
     with open(statistics_file,'w') as stat_file_write_buffer:
         json.dump(statistics, stat_file_write_buffer, indent=2)
     
