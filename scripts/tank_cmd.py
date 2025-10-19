@@ -139,20 +139,19 @@ def compute(project_file, start, end):
     # stores tank-basin states in a pickle file for debugging
     with open( project_dir / 'basin_states.pkl', 'wb') as pkl_handler:
         pickle.dump(basin_states, pkl_handler, protocol=pickle.HIGHEST_PROTOCOL)
-    
-     
-    print( 
-        tabulate(
-            [
-                ('NSE', statistics['BAHADURABAD']['NSE']),
-                ('RMSE', statistics['BAHADURABAD']['RMSE']),
-                ('R2', statistics['BAHADURABAD']['R2']),
-                ('PBIAS', statistics['BAHADURABAD']['PBIAS']),
-            ],
-            headers=['Statistics', 'BAHADURABAD'], tablefmt='psql'
-        ) 
-    )
 
+    heads = ["NSE", "RMSE", "R2", "PBIAS"]
+    data = {key: [] for key in ('Root Node', *heads)}
+    for node in basin["root_node"]:
+        stat = statistics.get(node)
+        if stat is None:
+            continue
+
+        data['Root Node'].append(node)
+        for key in heads:
+            data[key].append(stat.get(key))
+
+    print(tabulate(data, headers='keys', tablefmt='psql'))
     with open(statistics_file,'w') as stat_file_write_buffer:
         json.dump(statistics, stat_file_write_buffer, indent=2)
     

@@ -28,7 +28,7 @@ $ tank_cmd.py new-project --help
 
 New project can be created using the following command. This command creates a folder in working directory with a json formatted project definition inside it.
 ```bash
-$ tank_cmd.py new_project project_name
+$ tank_cmd.py new-project project_name
 ```
 
 A sample project definition looks like this

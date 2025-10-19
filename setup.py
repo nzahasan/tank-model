@@ -25,7 +25,8 @@ REQUIRED_PACKAGES = [
     'pathlib',
     'pytest',
     'python-dateutil',
-    'pytz'
+    'pytz',
+    'seaborn'
 ]
 
 KEYWORDS = [
