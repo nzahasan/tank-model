@@ -98,9 +98,33 @@ def get_delt(delt_pr, delt_et)->float:
 
     return delt_pr_hr 
 
-def get_sim_start_end(precipitation, evapotranspiration)->str:
-    # checks for index also
-    pass
+def get_sim_start_end(precipitation, evapotranspiration)->tuple[str, str]:
+    # validates both indexes are identical and returns start/end timestamps
+    if len(precipitation) == 0 or len(evapotranspiration) == 0:
+        raise ValueError('Empty precipitation or evapotranspiration time-series')
+
+    if len(precipitation) != len(evapotranspiration):
+        raise ValueError('Mismatched precipitation and evapotranspiration record counts')
+
+    try:
+        same_index = precipitation.equals(evapotranspiration)
+    except AttributeError:
+        same_index = np.array_equal(np.asarray(precipitation), np.asarray(evapotranspiration))
+
+    if not same_index:
+        raise ValueError('Time indexes of precipitation and evapotranspiration do not match')
+
+    start = precipitation[0]
+    end = precipitation[-1]
+
+    if isinstance(start, dt):
+        start_str = start.strftime(gc.DATE_FMT)
+        end_str = end.strftime(gc.DATE_FMT)
+    else:
+        start_str = str(start)
+        end_str = str(end)
+
+    return start_str, end_str
 
 def trim_ts(ts_df:pd.DataFrame, start:str, end:str)->pd.DataFrame:
 
@@ -114,4 +138,3 @@ def trim_ts(ts_df:pd.DataFrame, start:str, end:str)->pd.DataFrame:
 
 
     return ts_df
-

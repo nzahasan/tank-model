@@ -13,11 +13,26 @@ from pathlib import Path
 
 from . import global_config as gc
 
-def read_ts_file(file_path:str, check_missing:bool=True)-> tuple:
+def read_ts_file(file_path:str, check_missing:bool=True, start:str=None, end:str=None)-> tuple:
     '''
         reads model input/output timeseries files (precip, et, discharge, result etc.)
+        optional filtering between start/end date strings matching gc.DATE_FMT
         returns tuple(dataframe, del_time[seconds])
     '''
+
+    def _parse_bound(label:str, value:str):
+        if value is None:
+            return None
+        try:
+            return dt.strptime(value, gc.DATE_FMT)
+        except ValueError as exc:
+            raise ValueError(f"Invalid {label} '{value}'. Expected format {gc.DATE_FMT}") from exc
+
+    start_dt = _parse_bound('start', start)
+    end_dt = _parse_bound('end', end)
+
+    if start_dt and end_dt and start_dt > end_dt:
+        raise ValueError('Start date must be before end date')
 
     # read file as pandas dataframe
     df = pd.read_csv(
@@ -32,11 +47,24 @@ def read_ts_file(file_path:str, check_missing:bool=True)-> tuple:
     
     # check if missing date
     t_diff = np.diff(df.index, n=1)
+    del_t = t_diff[0] if len(t_diff) else None
 
-    if check_missing and not np.all(t_diff==t_diff[0]):
-        raise Exception('Time difference is not equal, possible missing/irregular dates')
+    if check_missing:
+        if del_t is None:
+            raise ValueError('Not enough data points to evaluate time difference')
+        if not np.all(t_diff==del_t):
+            raise Exception('Time difference is not equal, possible missing/irregular dates')
 
-    return (df , t_diff[0] ) if check_missing else (df, None)
+    # clip to requested window if provided
+    if start_dt is not None:
+        df = df.loc[df.index >= start_dt]
+    if end_dt is not None:
+        df = df.loc[df.index <= end_dt]
+    
+    if (start_dt or end_dt) and df.empty:
+        raise ValueError('No data found within the requested date range')
+
+    return (df , del_t ) if check_missing else (df, None)
 
 
 def write_ts_file(df:pd.DataFrame,file_path:str)->None:
@@ -78,12 +106,12 @@ def check_project(project:dict, project_dir:Path, check_discharge_file:bool)->tu
         project['interval'].is_integer() 
     ]
     if True not in interval_checks:
-        return (False, f'invalid interval {k} hr')
+        return (False, f'invalid interval {project["interval"]} hr')
     
     # check if files of input_keys are present
     for k in input_keys:
         if not os.path.exists(project_dir /  project[k]):
-            (False, f'no file for {k} found in project directory')
+            return (False, f'no file for {k} found in project directory')
 
     return (True, 'All checks passed')
 
@@ -119,7 +147,5 @@ def read_basin_file(basin_file:str)->dict:
         # basically check for missing link
 
         return basin 
-
-
 
 

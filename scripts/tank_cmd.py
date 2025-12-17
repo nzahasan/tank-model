@@ -112,14 +112,9 @@ def compute(project_file, start, end):
 
     # read files required for computation
     basin = ioh.read_basin_file(basin_file)
-    precipitation, dt_pr = ioh.read_ts_file(precipitation_file)
-    evapotranspiration, dt_et = ioh.read_ts_file(evapotranspiration_file)
-    discharge, _ = ioh.read_ts_file(discharge_file, check_missing=False)
-
-    # trim time-series based on start and end time
-    if start and end != None:
-        precipitation = utils.trim_ts(precipitation, start, end)
-        evapotranspiration = utils.trim_ts(evapotranspiration, start, end)
+    precipitation, dt_pr = ioh.read_ts_file(precipitation_file, start=start, end=end)
+    evapotranspiration, dt_et = ioh.read_ts_file(evapotranspiration_file, start=start, end=end)
+    discharge, _ = ioh.read_ts_file(discharge_file, check_missing=False, start=start, end=end)
 
     # required checking input consistency of precipitation and evapotranspiration
     # - check if time difference of both time-series is same (get_delt does this)
