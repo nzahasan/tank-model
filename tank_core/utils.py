@@ -126,15 +126,20 @@ def get_sim_start_end(precipitation, evapotranspiration)->tuple[str, str]:
 
     return start_str, end_str
 
-def trim_ts(ts_df:pd.DataFrame, start:str, end:str)->pd.DataFrame:
 
-    if start != None:    
-        _start = dt.strptime(start, gc.DATE_FMT)
-        ts_df = ts_df[ts_df.index >=_start]
+def parse_date_str(date_str:str, label:str|None=None)->dt:
+    # checks if date string is in proper format
+    try:
+        return dt.strptime(date_str, gc.DATE_FMT)
+    except ValueError:
+        raise ValueError(f'Invalid date format {date_str} {f"of {label}" if label else ""}, expected format: {gc.DATE_FMT}')
+
+def trim_df(df:pd.DataFrame, start:str|None, end:str|None)->pd.DataFrame:
+    # trims dataframe based on start/end datetime strings
+    if start is not None:
+        df = df.loc[df.index >= parse_date_str(start,'start')]
+
+    if end is not None:
+        df = df.loc[df.index <= parse_date_str(end,'end')]
     
-    if end != None:
-        _end = dt.strptime(end, gc.DATE_FMT)
-        ts_df = ts_df[ts_df.index <= _end]
-
-
-    return ts_df
+    return df

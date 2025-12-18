@@ -11,28 +11,15 @@ import os
 from datetime import datetime as dt
 from pathlib import Path
 
-from . import global_config as gc
+from . import global_config as gc, utils
 
-def read_ts_file(file_path:str, check_missing:bool=True, start:str=None, end:str=None)-> tuple:
+def read_ts_file(file_path:str, check_missing:bool=True, start:str|None=None, end:str|None=None)-> tuple:
     '''
         reads model input/output timeseries files (precip, et, discharge, result etc.)
         optional filtering between start/end date strings matching gc.DATE_FMT
         returns tuple(dataframe, del_time[seconds])
     '''
 
-    def _parse_bound(label:str, value:str):
-        if value is None:
-            return None
-        try:
-            return dt.strptime(value, gc.DATE_FMT)
-        except ValueError as exc:
-            raise ValueError(f"Invalid {label} '{value}'. Expected format {gc.DATE_FMT}") from exc
-
-    start_dt = _parse_bound('start', start)
-    end_dt = _parse_bound('end', end)
-
-    if start_dt and end_dt and start_dt > end_dt:
-        raise ValueError('Start date must be before end date')
 
     # read file as pandas dataframe
     df = pd.read_csv(
@@ -44,6 +31,13 @@ def read_ts_file(file_path:str, check_missing:bool=True, start:str=None, end:str
 
     # sort by time
     df = df.sort_index()
+
+    # filter the dataframe
+    df = utils.trim_df(df, start, end)
+
+    # warn if no data found in the requested range
+    if df.empty:
+        raise ValueError('No data found within the requested date range')
     
     # check if missing date
     t_diff = np.diff(df.index, n=1)
@@ -54,15 +48,6 @@ def read_ts_file(file_path:str, check_missing:bool=True, start:str=None, end:str
             raise ValueError('Not enough data points to evaluate time difference')
         if not np.all(t_diff==del_t):
             raise Exception('Time difference is not equal, possible missing/irregular dates')
-
-    # clip to requested window if provided
-    if start_dt is not None:
-        df = df.loc[df.index >= start_dt]
-    if end_dt is not None:
-        df = df.loc[df.index <= end_dt]
-    
-    if (start_dt or end_dt) and df.empty:
-        raise ValueError('No data found within the requested date range')
 
     return (df , del_t ) if check_missing else (df, None)
 
@@ -99,13 +84,21 @@ def check_project(project:dict, project_dir:Path, check_discharge_file:bool)->tu
     for k in mandatory_keys:
         if k not in project.keys():
             return (False, f'Missing mandatory field {k} in project file')
-        
+    
+    fract_intervals = [0.25, 0.5, 0.75]
+
     # check if time interval is okay
-    interval_checks = [
-        project['interval'] in [0.25, 0.5], 
-        project['interval'].is_integer() 
-    ]
-    if True not in interval_checks:
+    interval_ok = ( 
+        (
+            project['interval'] > 0
+        ) 
+        and 
+        ( 
+            (project['interval'] in fract_intervals) or  project['interval'].is_integer() 
+        ) 
+    )
+    
+    if not interval_ok :
         return (False, f'invalid interval {project["interval"]} hr')
     
     # check if files of input_keys are present
