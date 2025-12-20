@@ -301,13 +301,14 @@ def optimize_project(
     param_bounds = np.column_stack((lower_bound_stacked,upper_bound_stacked))
     
     optim_func_static_args = (node_order_type, basin,precipitation,evapotranspiration, discharge, del_t)
+    
     optimizer = minimize(
-            fun =stat_by_stacked_parameter, 
-            x0 = initial_guess,
-            args = optim_func_static_args,
-            method ='L-BFGS-B',
-            bounds =param_bounds
-        )
+        fun = stat_by_stacked_parameter, 
+        x0 = initial_guess,
+        args = optim_func_static_args,
+        method = 'L-BFGS-B',
+        bounds = param_bounds
+    )
     
     return update_basin_with_stacked_parameter(basin, node_order_type, optimizer.x)
 

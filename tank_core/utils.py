@@ -87,16 +87,16 @@ def check_time_delta(delt_pr, delt_et, delt_proj)->float:
     return del_t
 
 
-def get_delt(delt_pr, delt_et)->float:
-    # returns delt in hours
-    # also checks if delt for both is equal also
+# def get_delt(delt_pr, delt_et)->float:
+#     # returns delt in hours
+#     # also checks if delt for both is equal also
 
-    if delt_pr != delt_et:
-        raise Exception ('Interval mismatch between PR and ET input files')
+#     if delt_pr != delt_et:
+#         raise Exception ('Interval mismatch between PR and ET input files')
     
-    delt_pr_hr = delt_pr.total_seconds() / 3600
+#     delt_pr_hr = delt_pr.total_seconds() / 3600
 
-    return delt_pr_hr 
+#     return delt_pr_hr 
 
 def get_sim_start_end(precipitation, evapotranspiration)->tuple[str, str]:
     # validates both indexes are identical and returns start/end timestamps
@@ -143,3 +143,20 @@ def trim_df(df:pd.DataFrame, start:str|None, end:str|None)->pd.DataFrame:
         df = df.loc[df.index <= parse_date_str(end,'end')]
     
     return df
+
+def get_delt(delt_pr, delt_et, delt_proj)->float:
+    # check for project time interval(in hour) with pr and et time interval
+    # returns del_t in hours
+    
+    if delt_pr != delt_et:
+        raise Exception ('Interval mismatch between PR and ET input files')
+
+    delt_pr_hr = delt_pr.total_seconds() / 3600
+
+    if delt_proj != delt_pr_hr :
+
+        print('WARNING: Project interval doesn\'t match with time-series interval\n:::::::> computing with input timeseries interval')
+
+        return delt_pr_hr
+    
+    return delt_proj

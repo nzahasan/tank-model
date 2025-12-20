@@ -117,11 +117,12 @@ def compute(project_file, start, end):
     discharge, _ = ioh.read_ts_file(discharge_file, check_missing=False, start=start, end=end)
 
     # required checking input consistency of precipitation and evapotranspiration
-    # - check if time difference of both time-series is same (get_delt does this)
+    # - check if time difference of both time-series is same also matches with project def (get_delt does this)
     # - check if both time-series has exactly same index (get_sim_start_end does this)
     # - check for basin nodes names time-series files column matches > not implemented yet!
 
-    del_t = utils.get_delt(dt_pr, dt_et) # will return hour!!
+    # checks and returns delt in hours
+    del_t = utils.get_delt(dt_pr, dt_et, project['interval']) 
     sim_start, sim_end = utils.get_sim_start_end(precipitation.index, evapotranspiration.index)
 
     print(f"INFO: Simulating for the period {sim_start} to {sim_end}")
@@ -136,7 +137,9 @@ def compute(project_file, start, end):
         pickle.dump(basin_states, pkl_handler, protocol=pickle.HIGHEST_PROTOCOL)
 
     heads = ["NSE", "RMSE", "R2", "PBIAS"]
+    
     data = {key: [] for key in ('Root Node', *heads)}
+    
     for node in basin["root_node"]:
         stat = statistics.get(node)
         if stat is None:
@@ -147,6 +150,7 @@ def compute(project_file, start, end):
             data[key].append(stat.get(key))
 
     print(tabulate(data, headers='keys', tablefmt='psql'))
+    
     with open(statistics_file,'w') as stat_file_write_buffer:
         json.dump(statistics, stat_file_write_buffer, indent=2)
     
@@ -223,7 +227,7 @@ def optimize(project_file):
     evapotranspiration, delt_et = ioh.read_ts_file(evapotranspiration_file)
     discharge, _ = ioh.read_ts_file(discharge_file,check_missing=False)
 
-    del_t = utils.check_get_time_delta(delt_pr, delt_et, delt_proj)
+    del_t = utils.get_delt(delt_pr, delt_et, delt_proj)
 
     basin = ioh.read_basin_file(basin_file)
 
