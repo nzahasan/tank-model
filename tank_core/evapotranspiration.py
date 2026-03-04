@@ -55,7 +55,7 @@ def ext_ra(date:datetime,lat:float) -> float:
 
     gsc     = 0.082                                   # global solar constant
 
-    _f = (2*pi*jul_day) / 365
+    _f = (2*pi*jul_day) / nday
     
     dr      = 1 + 0.033 * cos( _f )                   # inv. rel. distance Earth-Sun
 

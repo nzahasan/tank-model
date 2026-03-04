@@ -29,8 +29,8 @@ def muskingum(in_flow:np.ndarray, del_t:float, k:float, x:float) -> np.ndarray:
     C1:float = (k*x+0.5 *del_t) / (k*(1-x)+0.5*del_t)
     C2:float = (k*(1-x) - 0.5*del_t) / (k*(1-x)+0.5*del_t)
 
-    # constraints check
-    if (C0+C1+C2) > 1 or x >0.5 or (del_t/k + x) > 1:
+    # constraints check: coefficients must be non-negative for stable routing
+    if C0 < 0 or C1 < 0 or C2 < 0 or x > 0.5:
         print("WARNING-MUSKINGUM-01: violates k, x constraints")
 
     # initial condition

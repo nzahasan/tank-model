@@ -123,7 +123,7 @@ tank_ub:np.ndarray = np.array([
 # Channel - MUSKINGUM
 
 muskingum_param_bound:dict = {
-    "k" : {"min": 0, "max": 5},
+    "k" : {"min": 0.01, "max": 5},
     "x" : {"min": 0, "max": 0.5}
 
 }

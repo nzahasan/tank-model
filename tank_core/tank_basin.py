@@ -123,13 +123,13 @@ def tank_discharge(
         '''
         Tank storage of next step:
         --------------------------
-        tank_storage[t+1] = tank_storage[t] 
-                            + (precip[t+1] - evap[t+1])
+        tank_storage[t+1] = tank_storage[t]
+                            + (precip[t] - evap[t])
                             + bottom_outlet_flow_of_upper_tank[t]
-                            - (side_outlet_flow[t] + bottom_outlet_flow[t]) 
+                            - (side_outlet_flow[t] + bottom_outlet_flow[t])
         '''
         if t < (time_step - 1):
-            tank_storage[t+1,0] = tank_storage[t,0] + del_rf_et[t+1] - ( side_outlet_flow[t,0] + bottom_outlet_flow[t,0] )
+            tank_storage[t+1,0] = tank_storage[t,0] + del_rf_et[t] - ( side_outlet_flow[t,0] + bottom_outlet_flow[t,0] )
         
             tank_storage[t+1,1] = tank_storage[t,1] + bottom_outlet_flow[t,0] - ( side_outlet_flow[t,1] + bottom_outlet_flow[t,1] ) 
             
