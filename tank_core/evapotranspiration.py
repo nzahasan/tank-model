@@ -18,7 +18,6 @@ from math import (
     cos,
     tan,
     acos,
-    sqrt
 )
 from datetime import datetime
 
@@ -27,9 +26,12 @@ def days_in_year(year:int) -> int:
         calculate number of days in a year
         considering leap years
     '''
-    if   year%400==0 and year%100==0: return 366
-    elif year%4==0 and year%100!=0: return 366
-    else: return 365
+    if   year%400==0 and year%100==0: 
+        return 366
+    elif year%4==0 and year%100!=0: 
+        return 366
+    else: 
+        return 365
 
 
 def ext_ra(date:datetime,lat:float) -> float:
@@ -47,24 +49,29 @@ def ext_ra(date:datetime,lat:float) -> float:
     '''
 
 
-    lat_r   = radians(lat)                            # convert lat lon to radians (φ)
+    lat_r     = radians(lat)                            # convert lat lon to radians (φ)
 
-    jul_day = date.timetuple().tm_yday                # calculate jul_day 
-
-    nday    = days_in_year(date.timetuple().tm_year)  # total days in the year
-
-    gsc     = 0.082                                   # global solar constant
-
-    _f = (2*pi*jul_day) / 365
+    jul_day   = date.timetuple().tm_yday                # calculate jul_day 
     
-    dr      = 1 + 0.033 * cos( _f )                   # inv. rel. distance Earth-Sun
+    nday      = days_in_year(date.timetuple().tm_year)  # total days in the year
 
-    sda     = 0.409 * sin( _f - 1.39 )                # solar declination angle (δ)
+    gsc       = 0.082                                   # global solar constant
+
+    _f        = (2*pi*jul_day) / 365
+    
+    dr        = 1 + 0.033 * cos( _f )                   # inv. rel. distance Earth-Sun
+
+    sda       = 0.409 * sin( _f - 1.39 )                # solar declination angle (δ)
+
+    sha_term  = -1 * tan(lat_r) * tan(sda)              # input for sha calcualtion
+    
+    # clip between [-1 to +1]
+    sha_term  = max(-1, min(1, sha_term))                # continuous daylight, 1.0: continuous darkness
 
     # can return undefined 
-    sha     = acos( -1*tan(lat_r) * tan(sda) )        # sunset hour angle (ωs)
+    sha       = acos(sha_term)                           # sunset hour angle (ωs) 
 
-    ext_ra  = (1440/pi) * gsc * dr * (                # extraterrestrial radiation daily
+    ext_ra    = (1440/pi) * gsc * dr * (                 # extraterrestrial radiation daily
                 sha * sin(lat_r) * sin(sda) 
                 + 
                 sin(sha) * cos(lat_r) * cos(sda) 
@@ -89,10 +96,7 @@ def hargreaves(tmin:float,tmax:float,date:datetime,lat:float) -> float:
     output: mm/day
     
     '''
-    # check latitude
-    if lat> 66.5 or lat<-66.5:
-        raise ValueError('latitude out of bound for ext_ra calculation')
-
+    
     tmean = (tmin + tmax) / 2      # tmean
 
     ra = ext_ra(date,lat)
