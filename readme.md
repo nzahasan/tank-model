@@ -40,10 +40,14 @@ A sample project definition looks like this
   "evapotranspiration": "sample_project.et.csv",
   "discharge": "sample_project.q.csv",
   "result": "sample_project.result.csv",
-  "statistics": "sample_project.stats.json"
+  "statistics": "sample_project.stats.json",
+  "start": "2020-01-01T00:00:00",
+  "end": "2020-12-31T00:00:00"
 }
 ```
 here `interval` is the time step of simulation in hours. The other attributes are file locations; `precipitation`, `evapotranspiration` and `discharge` are CSV files containing time-series data. These files should be formatted according to the file format mentioned here <a href="file-format-spec.md">file-format-spec.md</a>
+
+`start` and `end` are optional and restrict `compute`, `optimize` and `plot-result` to the given date range (format `%Y-%m-%dT%H:%M:%S`, matching the time-series files). If omitted, the full period available in the input files is simulated; either one can be given on its own, in which case the other side of the range is left unbounded.
 
 `precipitation` & `evapotranspiration` serve as input data for the model simulation and resulting output is stored in the `result` file following the time-series CSV format mentioned earlier. Data in the `discharge` is used for model calibration. And performance matrices are stored in the `statistics` file.
 

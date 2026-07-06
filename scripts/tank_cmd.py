@@ -93,14 +93,12 @@ def new_project(project_name, hms_basin_file):
 
 @cli.command()
 @click.option('-pf', '--project-file', type=click.Path(exists=True), help="project file", required=True)
-@click.option('-s', '--start', type=str, help="computation start time")
-@click.option('-e', '--end', type=str, help="computation start time")
-def compute(project_file, start, end):
+def compute(project_file):
     '''Computes tank model for given project file'''
-    
+
     # get project root directory
     project_dir = Path(project_file).resolve().parent
-    
+
     # read project and build paths for computation
     project = ioh.read_project_file(project_file)
     basin_file = project_dir / project['basin']
@@ -109,6 +107,11 @@ def compute(project_file, start, end):
     discharge_file = project_dir / project['discharge']
     statistics_file = project_dir / project['statistics']
     result_file =project_dir / project['result']
+
+    # simulation date range, taken from project definition
+    # (missing start/end means simulate for the full period)
+    start = project.get('start')
+    end = project.get('end')
 
     # read files required for computation
     basin = ioh.read_basin_file(basin_file)
@@ -164,13 +167,18 @@ def plot_result(project_file):
     
     project_dir = Path(project_file).resolve().parent
     project = ioh.read_project_file(project_file)
-    
+
     result_file = project_dir / project['result']
     discharge_file = project_dir / project['discharge']
-    
-    result,_ = ioh.read_ts_file(result_file)
 
-    discharge, _ = ioh.read_ts_file(discharge_file,check_missing=False)
+    # simulation date range, taken from project definition
+    # (missing start/end means simulate for the full period)
+    start = project.get('start')
+    end = project.get('end')
+
+    result,_ = ioh.read_ts_file(result_file, start=start, end=end)
+
+    discharge, _ = ioh.read_ts_file(discharge_file, check_missing=False, start=start, end=end)
 
     basin_file = project_dir / project['basin']
     basin = ioh.read_basin_file(basin_file)
@@ -223,9 +231,14 @@ def optimize(project_file):
     result_file = os.path.join(project_dir, project['result'])
     delt_proj = project['interval']
 
-    precipitation, delt_pr = ioh.read_ts_file(precipitation_file)
-    evapotranspiration, delt_et = ioh.read_ts_file(evapotranspiration_file)
-    discharge, _ = ioh.read_ts_file(discharge_file,check_missing=False)
+    # simulation date range, taken from project definition
+    # (missing start/end means simulate for the full period)
+    start = project.get('start')
+    end = project.get('end')
+
+    precipitation, delt_pr = ioh.read_ts_file(precipitation_file, start=start, end=end)
+    evapotranspiration, delt_et = ioh.read_ts_file(evapotranspiration_file, start=start, end=end)
+    discharge, _ = ioh.read_ts_file(discharge_file, check_missing=False, start=start, end=end)
 
     del_t = utils.get_delt(delt_pr, delt_et, delt_proj)
 
