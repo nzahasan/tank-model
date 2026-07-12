@@ -19,7 +19,7 @@ pathlib==1.0.1
 patsy==1.0.2
 pillow==12.0.0
 pluggy==1.6.0
-Pygments==2.19.2
+Pygments==2.20.0
 pyparsing==3.2.5
 pyscissor==1.1.7
 pytest==9.0.2
