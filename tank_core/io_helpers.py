@@ -26,7 +26,7 @@ def read_ts_file(file_path:str, check_missing:bool=True, start:str|None=None, en
         file_path,
         index_col = 'Time',
         parse_dates = True,  # will parse index for datetime
-        date_parser = lambda s: dt.strptime(s, gc.DATE_FMT)
+        date_format = gc.DATE_FMT,
     )
 
     # sort by time

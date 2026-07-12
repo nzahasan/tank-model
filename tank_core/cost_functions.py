@@ -36,6 +36,15 @@ import numpy as np
 from scipy.stats import pearsonr
 from .utils import shape_alike
 
+def get_clean_pairs(sim: np.ndarray, obs: np.ndarray, min_valid: int = 2):
+    
+    mask = ~(np.isnan(sim) | np.isnan(obs))
+
+    if mask.sum() < min_valid:
+        raise ValueError(f'only {mask.sum()} valid (non-NaN) pairs, need >= {min_valid}')
+
+    return sim[mask], obs[mask]
+
 def R2(x:np.ndarray, y:np.ndarray)->float:
     '''
     Pearson correlation coefficient (R^2)
@@ -59,7 +68,7 @@ def NSE(sim:np.ndarray, obs:np.ndarray)->float:
     # N.B. sim and obs is not interchangeable for NSE
 
     if not shape_alike(sim,obs):
-        raise Exception('shape mismatch between x and y')
+        raise Exception('shape mismatch between sim and obs')
 
     obs_mean = obs.mean()
 
@@ -83,7 +92,7 @@ def RMSE(x:np.ndarray, y:np.ndarray)->float:
 
     return np.sqrt(MSE(x,y))
 
-def PBIAS(obs:np.ndarray, sim:np.ndarray)->float:
+def PBIAS(sim:np.ndarray, obs:np.ndarray)->float:
     '''
     Percentage Bias
     '''
@@ -92,10 +101,14 @@ def PBIAS(obs:np.ndarray, sim:np.ndarray)->float:
     
     return (obs-sim).sum() * 100 / obs.sum()
 
-def KGE(obs:np.ndarray, sim:np.ndarray)->float:
-    """
+def KGE(sim:np.ndarray, obs:np.ndarray)->float:
+    '''
     Kling-Gupta efficiency
-    """
+    '''
+    
+    if not shape_alike(sim,obs):
+        raise Exception('shape mismatch between sim and obs')
+    
     eMean = (np.mean(sim) / np.mean(obs)) - 1 
     eVar = (np.std(sim) / np.std(obs)) - 1 
     eCor = pearsonr(sim, obs).statistic - 1 

@@ -136,9 +136,9 @@ def compute_statistics(basin:dict, result:pd.DataFrame, discharge:pd.DataFrame)-
         if obs_key in merged_keys and sim_key in merged_keys:
             statistics[node]={
                 "RMSE": RMSE(merged[obs_key].to_numpy(), merged[sim_key].to_numpy()),
-                "NSE" : NSE(merged[sim_key].to_numpy(), merged[obs_key].to_numpy() ),
+                "NSE" : NSE(sim=merged[sim_key].to_numpy(), obs=merged[obs_key].to_numpy() ),
                 "R2"  : R2(merged[sim_key].to_numpy(), merged[obs_key].to_numpy() ),
-                "PBIAS"  : PBIAS(sim=merged[sim_key].to_numpy(),obs=merged[obs_key].to_numpy() )
+                "PBIAS"  : PBIAS(sim=merged[sim_key].to_numpy(), obs=merged[obs_key].to_numpy() )
             }
 
     return statistics
@@ -263,7 +263,7 @@ def stat_by_stacked_parameter(
     
     root_node = updated_basin['root_node'][0]
     sim_key, obs_key = f'{root_node}_sim', f'{root_node}_obs' 
-    _nse = NSE(merged[sim_key].to_numpy(),merged[obs_key].to_numpy())
+    _nse = NSE(sim=merged[sim_key].to_numpy(), obs=merged[obs_key].to_numpy())
     
 
     return 1 - _nse
