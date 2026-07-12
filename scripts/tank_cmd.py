@@ -110,14 +110,16 @@ def compute(project_file):
 
     # simulation date range, taken from project definition
     # (missing start/end means simulate for the full period)
-    start = project.get('start')
-    end = project.get('end')
+    start_proj = project.get('start',None)
+    end_proj = project.get('end',None)
+
+    print(f"INFO: project contains simulation date from {start_proj} to {end_proj}")
 
     # read files required for computation
     basin = ioh.read_basin_file(basin_file)
-    precipitation, dt_pr = ioh.read_ts_file(precipitation_file, start=start, end=end)
-    evapotranspiration, dt_et = ioh.read_ts_file(evapotranspiration_file, start=start, end=end)
-    discharge, _ = ioh.read_ts_file(discharge_file, check_missing=False, start=start, end=end)
+    precipitation, dt_pr = ioh.read_ts_file(precipitation_file, start=start_proj, end=end_proj)
+    evapotranspiration, dt_et = ioh.read_ts_file(evapotranspiration_file, start=start_proj, end=end_proj)
+    discharge, _ = ioh.read_ts_file(discharge_file, check_missing=False, start=start_proj, end=end_proj)
 
     # required checking input consistency of precipitation and evapotranspiration
     # - check if time difference of both time-series is same also matches with project def (get_delt does this)
@@ -173,12 +175,14 @@ def plot_result(project_file):
 
     # simulation date range, taken from project definition
     # (missing start/end means simulate for the full period)
-    start = project.get('start')
-    end = project.get('end')
+    start_proj = project.get('start',None)
+    end_proj = project.get('end',None)
 
-    result,_ = ioh.read_ts_file(result_file, start=start, end=end)
+    print(f"INFO: project contains simulation date from {start_proj} to {end_proj}")
 
-    discharge, _ = ioh.read_ts_file(discharge_file, check_missing=False, start=start, end=end)
+    result,_ = ioh.read_ts_file(result_file, start=start_proj, end=end_proj)
+
+    discharge, _ = ioh.read_ts_file(discharge_file, check_missing=False, start=start_proj, end=end_proj)
 
     basin_file = project_dir / project['basin']
     basin = ioh.read_basin_file(basin_file)
@@ -233,14 +237,19 @@ def optimize(project_file):
 
     # simulation date range, taken from project definition
     # (missing start/end means simulate for the full period)
-    start = project.get('start')
-    end = project.get('end')
+    start_proj = project.get('start',None)
+    end_proj = project.get('end',None)
 
-    precipitation, delt_pr = ioh.read_ts_file(precipitation_file, start=start, end=end)
-    evapotranspiration, delt_et = ioh.read_ts_file(evapotranspiration_file, start=start, end=end)
-    discharge, _ = ioh.read_ts_file(discharge_file, check_missing=False, start=start, end=end)
+    print(f"INFO: project contains simulation date from {start_proj} to {end_proj}")
+
+    precipitation, delt_pr = ioh.read_ts_file(precipitation_file, start=start_proj, end=end_proj)
+    evapotranspiration, delt_et = ioh.read_ts_file(evapotranspiration_file, start=start_proj, end=end_proj)
+    discharge, _ = ioh.read_ts_file(discharge_file, check_missing=False, start=start_proj, end=end_proj)
 
     del_t = utils.get_delt(delt_pr, delt_et, delt_proj)
+    optim_start, optim_end = utils.get_sim_start_end(precipitation.index, evapotranspiration.index)
+
+    print(f"INFO: Optimizing for the period {optim_start} to {optim_end}")
 
     basin = ioh.read_basin_file(basin_file)
 

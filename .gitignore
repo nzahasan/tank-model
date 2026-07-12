@@ -45,3 +45,4 @@ dist/
 #ide
 .idea/
 .vscode
+.claude

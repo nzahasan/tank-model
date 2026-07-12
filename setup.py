@@ -45,7 +45,7 @@ setup(
     scripts = SCRIPTS,
     test_suite = 'tests',
     license = 'MIT',
-    python_requires = '>=3.6',
+    python_requires = '>=3.10',
     description= 'Python implementation of Tank Hydrologic Model, a conceptual rainfall-runoff model proposed by Sugawara and Funiyuki (1956)',
     long_description = README_CONTENT,
     long_description_content_type = 'text/markdown',
