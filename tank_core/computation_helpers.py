@@ -260,9 +260,12 @@ def stat_by_stacked_parameter(
     result, _ = compute_project(updated_basin, rainfall, evapotranspiration, del_t)
 
     merged = merge_obs_sim(observed=discharge, simulated=result)
-    
+
+    #@need-fixing : fix for multiple root node
     root_node = updated_basin['root_node'][0]
+
     sim_key, obs_key = f'{root_node}_sim', f'{root_node}_obs' 
+
     _nse = NSE(sim=merged[sim_key].to_numpy(), obs=merged[obs_key].to_numpy())
     
 
@@ -274,7 +277,8 @@ def optimize_project(
         basin:dict, 
         precipitation:pd.DataFrame, 
         evapotranspiration:pd.DataFrame, 
-        discharge:pd.DataFrame, del_t:float
+        discharge:pd.DataFrame, 
+        del_t:float
     )->dict:
     '''
     Optimizes parameters of a basin and returns updated basin file

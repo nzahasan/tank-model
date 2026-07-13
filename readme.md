@@ -71,6 +71,10 @@ $ tank_cmd.py compute -pf project_name.project.json
 $ tank_cmd.py optimize -pf project_name.project.json
 ```
 
+### Known Limitions
+
+  - Currently there is no way to optimize for multiple root node 
+
 ### References:  
     1. Paik K., Kim J. H., Kim H. S., Lee D. R. (2005) A conceptual rainfall-runoff model considering seasonal variation.
     2. Aguilar C., Polo M. J. (2011) Generating reference evapotranspiration surfaces from the Hargreaves equation at watershed scale.
