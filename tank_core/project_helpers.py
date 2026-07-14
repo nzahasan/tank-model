@@ -9,13 +9,19 @@ from .utils import (
 )
 
 
+# converts line to attr,value pairs
+def line2list(line:str)->list: 
+    _line = line.strip()
+    # split by first occurance of ":"
+    return [x.strip() for x in _line.split(':',1)]
+
 # converts hec-hms basin to tank basin definition
 def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
 
     parsed_node = dict()
     
     # split txt by "End:"
-    nodes = hms_basin_def.split('End:')
+    all_node_text_splits = hms_basin_def.split('End:')
 
     # nodes and properties required to create tank basin definition
     required_nodes = ["Subbasin", "Reach", "Junction", "Sink"]
@@ -24,16 +30,14 @@ def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
     req_props = generic_props + numeric_props
 
     # default parameters for basin and reach
-    basin_default = tank_param_list2dict(gc.tank_lb)
-    channel_default = muskingum_param_list2dict(gc.muskingum_lb)
+    basin_default = tank_param_list2dict(gc.tank_lb.tolist())
+    channel_default = muskingum_param_list2dict(gc.muskingum_lb.tolist())
 
-    # converts line to attr,value pairs
-    line2list = lambda line : [x.strip() for x in line.strip().split(':')]
-
-    for node in nodes:
-
-        node = node.strip()
-        node_lines = node.split('\n')
+    for node_text in all_node_text_splits:
+        
+        # strip each node text of empty spaces
+        # split lines and remove empty lines
+        node_lines = [line for line in node_text.strip().splitlines() if line.strip()]
         
         node_type, node_name= line2list(node_lines.pop(0)) 
 
@@ -41,10 +45,7 @@ def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
         if node_type not in required_nodes : 
             continue
         
-        # this is confusing! why did I do this?
-        node_dict = parsed_node[node_name] = dict()
-        
-        node_dict['type'] = node_type
+        node_dict = dict(type=node_type)
         
         if node_type == 'Reach':
             node_dict['parameters'] = channel_default
@@ -54,13 +55,6 @@ def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
 
         for line in node_lines:
             
-            # remove starting and ending whitespaces
-            line=line.strip()
-            
-            # check for empty lines
-            if len(line) == 0:
-                continue 
-
             prop, val= line2list(line)
 
             # skip if not a required property
@@ -76,6 +70,9 @@ def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
             # set node property
             node_dict[prop] = val
 
+        parsed_node[node_name] = node_dict
+
+        
     basin = dict(
         basin_def= parsed_node
     )
