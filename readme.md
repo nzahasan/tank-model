@@ -8,10 +8,16 @@ Python implementation of Tank Hydrologic Model, a conceptual rainfall-runoff mod
 
 ### Installation
 
-Tank-Model can be installed as a python package using the following commands
+Tank-Model can be installed as a python package from PyPI
 
 ```bash
-$ pip install https://github.com/nzahasan/tank-model/zipball/master
+$ pip install tank-model
+```
+
+Alternatively, it can be installed directly from git
+
+```bash
+$ pip install https://github.com/nzahasan/tank-model/zipball/main
 ```
 
 after successful installation `tank_cmd.py` should be available which can be used for setting up new project, optimizing the project and computation.
