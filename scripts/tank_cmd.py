@@ -45,6 +45,24 @@ def hms2tank(hms_basin_file, output_file):
     output_file.write(json.dumps(basin_def,indent=2))
 
 
+@cli.command()
+@click.option('-bf', '--basin-file', type=click.Path(exists=True), help="tank basin json file", required=True)
+def listnode(basin_file):
+    """lists all nodes in a basin file"""
+
+    basin = ioh.read_basin_file(basin_file)
+
+    data = {'Name': [], 'Type': [], 'Downstream': [], 'Upstream': []}
+
+    for name, node in basin['basin_def'].items():
+        data['Name'].append(name)
+        data['Type'].append(node['type'])
+        data['Downstream'].append(node.get('downstream', ''))
+        data['Upstream'].append(', '.join(node.get('upstream', [])))
+
+    print(tabulate(data, headers='keys', tablefmt='psql'))
+
+
 
 @cli.command()
 @click.argument('project_name', nargs=1)
