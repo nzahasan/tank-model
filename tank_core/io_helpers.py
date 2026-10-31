@@ -127,18 +127,24 @@ def read_project_file(project_file:str, check_discharge_file=False)->dict:
         return project 
 
 
+def _reject_duplicate_keys(pairs):
+    seen = {}
+    for key, value in pairs:
+        if key in seen:
+            raise ValueError(f'Duplicate key found in basin file: "{key}"')
+        seen[key] = value
+    return seen
+
+
 def read_basin_file(basin_file:str)->dict:
 
     if not os.path.exists(basin_file):
         raise Exception('provided basin file doesn\'t exists')
 
     with open(basin_file,'r') as basin_file_rd_buffer:
-        
-        basin = json.load(basin_file_rd_buffer)
 
-        # check if basin file is  okay [will work on it later, 
-        # basically check for missing link
+        basin = json.load(basin_file_rd_buffer, object_pairs_hook=_reject_duplicate_keys)
 
-        return basin 
+        return basin
 
 

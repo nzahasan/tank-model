@@ -70,6 +70,9 @@ def hms_basin_to_tank_basin(hms_basin_def:str)->dict:
             # set node property
             node_dict[prop] = val
 
+        if node_name in parsed_node:
+            raise ValueError(f'Duplicate node name found in basin file: "{node_name}"')
+
         parsed_node[node_name] = node_dict
 
         

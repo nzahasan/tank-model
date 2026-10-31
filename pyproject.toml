@@ -10,6 +10,7 @@ authors = [
 dependencies = [
     "click>=8.4.2",
     "matplotlib>=3.11.0",
+    "netcdf4>=1.7.5",
     "numpy>=2.5.1",
     "pandas>=3.0.3",
     "pathlib>=1.0.1",
@@ -20,6 +21,10 @@ dependencies = [
     "tabulate>=0.10.0",
 ]
 
+[project.scripts]
+tank_cmd = "tank_core.cli.tank_cmd:cli"
+cpc_et = "tank_core.cli.cpc_et:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -29,9 +34,6 @@ path = "tank_core/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["tank_core"]
-
-[tool.hatch.build.targets.wheel.shared-scripts]
-"scripts" = "/"
 
 [dependency-groups]
 dev = [
