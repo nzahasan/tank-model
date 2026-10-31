@@ -2,9 +2,9 @@
 '''
 Tank Hydrologic Model
 =====================
-Python implementation of Tank Hydrologic Model. 
-Tank-Model is a conceptual rainfall-runoff model 
+Python implementation of Tank Hydrologic Model.
+Tank-Model is a conceptual rainfall-runoff model
 proposed by Sugawara and Funiyuki (1956).
 '''
-__version__ = '3.0.0b3'
+__version__ = '3.0.0b4'
 __author__ = 'Nazmul Ahasan <nzahasan@gmail.com>'

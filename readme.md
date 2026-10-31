@@ -20,21 +20,21 @@ Alternatively, it can be installed directly from git
 $ pip install https://github.com/nzahasan/tank-model/zipball/main
 ```
 
-after successful installation `tank_cmd.py` should be available which can be used for setting up new project, optimizing the project and computation.
+after successful installation `tank_cmd` should be available which can be used for setting up new project, optimizing the project and computation.
 
 ```bash
 # get help text command line utility
-$ tank_cmd.py --help
+$ tank_cmd --help
 
 # get help text of subcommand
-$ tank_cmd.py new-project --help
+$ tank_cmd new-project --help
 ```
 
 ### Setting up a new model:
 
 New project can be created using the following command. This command creates a folder in working directory with a json formatted project definition inside it.
 ```bash
-$ tank_cmd.py new-project project_name
+$ tank_cmd new-project project_name
 ```
 
 A sample project definition looks like this
@@ -62,19 +62,19 @@ here `interval` is the time step of simulation in hours. The other attributes ar
 ### Converting HEC-HMS basin to tank model basin
 
 ```bash
-$ tank_cmd.py hms2tank -bf hechms_basin_file -of output_tank_basin_file_path
+$ tank_cmd hms2tank -bf hechms_basin_file -of output_tank_basin_file_path
 ```
 
 ### Computing tank model
 
 ```bash
-$ tank_cmd.py compute -pf project_name.project.json
+$ tank_cmd compute -pf project_name.project.json
 ```
 
 ### Automatic optimization of tank model
 
 ```bash
-$ tank_cmd.py optimize -pf project_name.project.json
+$ tank_cmd optimize -pf project_name.project.json
 ```
 
 ### Known Limitions
