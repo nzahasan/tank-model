@@ -3,22 +3,30 @@ name = "tank-model"
 dynamic = ["version"]
 description = "Python implementation of Tank Hydrologic Model, a conceptual rainfall-runoff model proposed by Sugawara and Funiyuki (1956)"
 readme = "readme.md"
-requires-python = ">=3.12"
+requires-python = ">=3.8"
 authors = [
     { name = "Nazmul Ahasan", email = "nzahasan@gmail.com" }
 ]
 dependencies = [
-    "click>=8.4.2",
-    "matplotlib>=3.11.0",
-    "netcdf4>=1.7.5",
-    "numpy>=2.5.1",
-    "pandas>=3.0.3",
-    "pathlib>=1.0.1",
-    "pytest>=9.1.1",
-    "scipy>=1.18.0",
-    "seaborn>=0.13.2",
-    "statsmodels>=0.14.6",
-    "tabulate>=0.10.0",
+    "click>=8.1",
+    "matplotlib>=3.7",
+    "netcdf4>=1.6",
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "scipy>=1.10",
+    "seaborn>=0.13",
+    "statsmodels>=0.14",
+    "tabulate>=0.9",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 
 [project.scripts]
@@ -37,7 +45,7 @@ packages = ["tank_core"]
 
 [dependency-groups]
 dev = [
-    "flake8>=7.3.0",
-    "pytest>=9.1.1",
-    "twine>=6.2.0",
+    "flake8>=5.0",
+    "pytest>=7.2",
+    "twine>=4.0",
 ]

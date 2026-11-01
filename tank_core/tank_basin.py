@@ -8,6 +8,8 @@
     (Kyungrock Paik, Joong H. Kim, Hung S. Kim and Dong R. Lee)
 '''
 
+# lets python 3.8/3.9 accept newer type hints (`dict[...]`)
+from __future__ import annotations
 import numpy as np
 from . import utils
 
