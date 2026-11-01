@@ -4,6 +4,8 @@ Necessary file i/o helper functions
 - for reading files
 - checking time consistency of input files
 '''
+# lets python 3.8/3.9 accept newer type hints (`str | None`)
+from __future__ import annotations
 import numpy as np
 import pandas as pd 
 import json

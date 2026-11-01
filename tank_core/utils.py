@@ -3,6 +3,8 @@
 Collection of some utility function
 '''
 
+# lets python 3.8/3.9 accept newer type hints (`str | None, tuple[...]`)
+from __future__ import annotations
 import numpy as np
 import pandas as pd
 from datetime import datetime as dt

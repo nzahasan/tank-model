@@ -1,4 +1,4 @@
-name: test-build-package-upload-pypi
+name: release-workflow
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.12", "3.13", "3.14" ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14" ]
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
@@ -52,8 +52,10 @@ jobs:
     needs: build
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
+    environment: release
     permissions:
       id-token: write
+      contents: write
     steps:
       - name: Download dist artifact
         uses: actions/download-artifact@v4
@@ -62,3 +64,7 @@ jobs:
           path: dist/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Upload to GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" dist/* --repo "${{ github.repository }}" --clobber
