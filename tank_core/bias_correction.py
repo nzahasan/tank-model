@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import annotations
 from typing import NamedTuple
 import numpy as np
 from scipy.stats import gamma
@@ -66,31 +65,32 @@ class gqm:
 
         return self
 
-    def set_params(self,obs_param_arr:np.ndarray, sim_param_arr:np.ndarray)->object:
+    def set_params(self,obs_param_arr:np.ndarray, sim_param_arr:np.ndarray, wet_threshold=0.01)->object:
 
         self.obs_param = GammaParam(*obs_param_arr[:3])
         self.sim_param = GammaParam(*sim_param_arr[:3])
+        self.wet_threshold = wet_threshold
 
         return self
 
-    def correct(self,simVal:float|np.ndarray) -> float|np.ndarray :
+    def correct(self,simVal:np.ndarray) -> np.ndarray :
 
         simVal = np.asarray(simVal, dtype=float)
         C_obs = self.obs_param.c
         C_sim = self.sim_param.c
 
-        # caluclate G_obs following transfer function
-        G_sim = gamma.cdf(simVal, a=self.sim_param.a, scale=self.sim_param.b, loc=0)
+        # using gamma sf/isf instead of cdf/ppf
+        # gamma.cdf rounds to exactly 1.0 for large values and gamma.ppf(1) = inf,
+        # gamma.sf/isf keep precision in the upper tail so extremes stay finite
+        S_sim = gamma.sf(simVal, a=self.sim_param.a, scale=self.sim_param.b, loc=0)
 
-        F_sim = C_sim + (1 - C_sim) * G_sim
+        S_obs = (1 - C_sim) / (1 - C_obs) * S_sim
 
-        G_obs = (F_sim - C_obs) / (1 - C_obs)
+        # clip survival value between [0,1]
+        S_obs = np.clip(S_obs, 0, 1)
 
-        # clip gamma cdf value between [0,1]
-        G_obs = np.clip(G_obs, 0, 1)
-
-        # inverse gamma to get obs/corrected
-        corrVal = gamma.ppf(G_obs,a=self.obs_param.a, scale=self.obs_param.b, loc=0)
+        # inverse survival function to get obs/corrected
+        corrVal = gamma.isf(S_obs, a=self.obs_param.a, scale=self.obs_param.b, loc=0)
 
         # simulated dry days stay dry
         corrVal = np.where(simVal <= self.wet_threshold, 0, corrVal)
