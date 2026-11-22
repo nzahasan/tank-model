@@ -1,5 +1,5 @@
 # Tank Hydrologic Model  
-Python implementation of Tank Hydrologic Model, a conceptual rainfall-runoff model proposed by Sugawara and Funiyuki (1956)
+Python implementation of the Tank Hydrologic Model, a conceptual rainfall-runoff model proposed by Sugawara and Funiyuki (1956).
 
 
 <p align="center">
@@ -8,36 +8,36 @@ Python implementation of Tank Hydrologic Model, a conceptual rainfall-runoff mod
 
 ### Installation
 
-Tank-Model can be installed as a python package from PyPI
+Tank-Model can be installed from PyPI:
 
 ```bash
 $ pip install tank-model
 ```
 
-Alternatively, it can be installed directly from git
+Or install it directly from GitHub:
 
 ```bash
 $ pip install https://github.com/nzahasan/tank-model/zipball/main
 ```
 
-after successful installation `tank_cmd` should be available which can be used for setting up new project, optimizing the project and computation.
+After installation, the `tank_cmd` command-line tool is available. Use it to create a new project, calibrate (optimize) its parameters, and run the simulation.
 
 ```bash
-# get help text command line utility
+# show help for the command-line tool
 $ tank_cmd --help
 
-# get help text of subcommand
+# show help for a subcommand
 $ tank_cmd new-project --help
 ```
 
-### Setting up a new model:
+### Setting up a new model
 
-New project can be created using the following command. This command creates a folder in working directory with a json formatted project definition inside it.
+Create a new project with the command below. It creates a folder with the project name in the current directory, containing a JSON project definition file.
 ```bash
 $ tank_cmd new-project project_name
 ```
 
-A sample project definition looks like this
+A sample project definition:
 ```json
 {
   "interval": 24.0,
@@ -51,15 +51,17 @@ A sample project definition looks like this
   "end": "2020-12-31T00:00:00"
 }
 ```
-here `interval` is the time step of simulation in hours. The other attributes are file locations; `precipitation`, `evapotranspiration` and `discharge` are CSV files containing time-series data. These files should be formatted according to the file format mentioned here <a href="file-format-spec.md">file-format-spec.md</a>
+`interval` is the simulation time step in hours. The other attributes are file paths. `precipitation`, `evapotranspiration` and `discharge` are CSV time-series files and must follow the format described in [file-format-spec.md](file-format-spec.md).
 
-`start` and `end` are optional and restrict `compute`, `optimize` and `plot-result` to the given date range (format `%Y-%m-%dT%H:%M:%S`, matching the time-series files). If omitted, the full period available in the input files is simulated; either one can be given on its own, in which case the other side of the range is left unbounded.
+`start` and `end` are optional. They limit `compute`, `optimize` and `plot-result` to the given date range (format `%Y-%m-%dT%H:%M:%S`, same as in the time-series files). If both are omitted, the full period in the input files is used. You can set just one of them; the range is then open on the other side.
 
-`precipitation` & `evapotranspiration` serve as input data for the model simulation and resulting output is stored in the `result` file following the time-series CSV format mentioned earlier. Data in the `discharge` is used for model calibration. And performance matrices are stored in the `statistics` file.
+`precipitation` and `evapotranspiration` are the model inputs. The simulated output is written to the `result` file, using the same time-series CSV format. Observed flow in `discharge` is used to calibrate the model, and performance metrics (RMSE, NSE, R², PBIAS) are written to the `statistics` file.
 
 
 
 ### Converting HEC-HMS basin to tank model basin
+
+Convert an HEC-HMS basin file into a tank model basin file:
 
 ```bash
 $ tank_cmd hms2tank -bf hechms_basin_file -of output_tank_basin_file_path
@@ -67,22 +69,26 @@ $ tank_cmd hms2tank -bf hechms_basin_file -of output_tank_basin_file_path
 
 ### Computing tank model
 
+Run the simulation for a project using its current parameters:
+
 ```bash
 $ tank_cmd compute -pf project_name.project.json
 ```
 
-### Automatic optimization of tank model
+### Optimizing (calibrating) the tank model
+
+Automatically calibrate the model parameters against the observed discharge:
 
 ```bash
 $ tank_cmd optimize -pf project_name.project.json
 ```
 
-### Known Limitions
+### Known Limitations
 
-  - Currently there is no way to optimize for multiple root node 
+  - Optimization only supports basins with a single outlet (root node). If a basin has more than one root node, only the first one is used.
 
 ### References:  
-    1. Paik K., Kim J. H., Kim H. S., Lee D. R. (2005) A conceptual rainfall-runoff model considering seasonal variation.
-    2. Aguilar C., Polo M. J. (2011) Generating reference evapotranspiration surfaces from the Hargreaves equation at watershed scale.
-    3. Taib A. T. M., Tahir W., Ramli S., Mohtar I. S. A. (2022) Hydro-Meteorological Flood Forecasting Using Tank Model With Satellite-Based Rainfall Input For Kemaman River Catchment.
-    4. D. N. Moriasi, J. G. Arnold, M. W. Van Liew, R. L. Bingner, R. D. Harmel, T. L. Veith (2007) Model Evaluation Guidelines For Systematic Quantification Of Accuracy In Watershed Simulations.
+1. Paik K., Kim J. H., Kim H. S., Lee D. R. (2005) A conceptual rainfall-runoff model considering seasonal variation.
+2. Aguilar C., Polo M. J. (2011) Generating reference evapotranspiration surfaces from the Hargreaves equation at watershed scale.
+3. Taib A. T. M., Tahir W., Ramli S., Mohtar I. S. A. (2022) Hydro-Meteorological Flood Forecasting Using Tank Model With Satellite-Based Rainfall Input For Kemaman River Catchment.
+4. D. N. Moriasi, J. G. Arnold, M. W. Van Liew, R. L. Bingner, R. D. Harmel, T. L. Veith (2007) Model Evaluation Guidelines For Systematic Quantification Of Accuracy In Watershed Simulations.
